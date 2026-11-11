@@ -2,9 +2,9 @@ package gestordecine;
 
 public class Pelicula {
 
-    private int idPelicula;
+    private final int idPelicula;
     private String tituloPelicula;
-    private int duracionPelicula;
+    private final int duracionPelicula;
     private boolean activa;
 
     public Pelicula(int idPelicula, String tituloPelicula, int duracionPelicula) {
@@ -14,8 +14,12 @@ public class Pelicula {
 
         this.idPelicula = idPelicula;
         
+        if (duracionPelicula <= 0) {
+            throw new IllegalArgumentException("La duración debe ser mayor a cero");
+        }
+        this.duracionPelicula = duracionPelicula;
+        
         setTituloPelicula(tituloPelicula);
-        setDuracionPelicula(duracionPelicula);
         this.activa = true;
     }
 
@@ -40,13 +44,6 @@ public class Pelicula {
             throw new IllegalArgumentException("El titulo de la pelicula no puede estar vacio");
         }
         this.tituloPelicula = tituloPelicula.trim();
-    }
-
-    public void setDuracionPelicula(int duracionPelicula) {
-        if (duracionPelicula <= 0) {
-            throw new IllegalArgumentException("La duración debe ser mayor a cero");
-        }
-        this.duracionPelicula = duracionPelicula;
     }
 
     public void desactivar(){
