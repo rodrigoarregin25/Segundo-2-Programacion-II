@@ -101,5 +101,35 @@ public String getEmail (){
     return email;
 }
 
+    /**
+     * Que hace: dice si dos clientes son el mismo (mismo dni)
+     * Parametros: otroObjeto (Object) el objeto a comparar con este cliente
+     * Retorna: true si tienen el mismo dni, false si no
+     */
+
+    @Override
+    public boolean equals(Object otroObjeto) {
+        if (this == otroObjeto) {
+            return true;
+        }
+        
+        if (otroObjeto == null || getClass() != otroObjeto.getClass()) {
+            return false;
+        }
+
+        Cliente otroCliente = (Cliente) otroObjeto;
+        return dni == otroCliente.dni;
+    }
+
+    /**
+     * Que hace: calcula el hash del cliente, usando el mismo campo que equals
+     * Retorna: el hash (int)
+     */
+    
+    @Override
+    public int hashCode() {
+        return dni;
+    }
+
 }
         
