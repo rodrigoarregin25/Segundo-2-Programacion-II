@@ -20,28 +20,27 @@ public class Cliente implements Serializable {
     private String nombre; 
     private String apellido; 
     private String email; 
+    private String contrasenia; 
+    
     
     
 
 /**
- * Qué hace?: crea un cliente con sus datos
- * Parametros: dni (int), nombre (String), apellido (String), email (String)
+ * Que hace: crea un cliente validando sus datos
+ * Parametros: dni (int), nombre (String), apellido (String), email (String),
+ *             contrasenia (String)
+ * Lanza: IllegalArgumentException si el dni es menor o igual a 0
+ *        o si el nombre, apellido, email o contrasenia son null o estan vacios
  */
 
 
-public Cliente(int dni, String nombre, String apellido, String email){
+public Cliente(int dni, String nombre, String apellido, String email, String contrasenia){
     
     //validaciones
     
+
     
-    /**
- * Que hace: crea un cliente validando sus datos
- * Parametros: dni (int), nombre (String), apellido (String), email (String)
- * Lanza: IllegalArgumentException si el dni es menor o igual a 0
- *        o si el nombre, apellido o email son null o estan vacios
- */
-    
-    if (dni <=0){
+    if(dni <=0){
     throw new IllegalArgumentException("El numero de DNI debe ser mayor a cero");
 
 }
@@ -56,8 +55,12 @@ public Cliente(int dni, String nombre, String apellido, String email){
         throw new IllegalArgumentException("El apellido no puede estar vacio");
     }
     
-    if(email == null || email.trim().equals("")){ //preguntar a Rodrigo si dejamos email o no. depende interfaz
+    if(email == null || email.trim().equals("")){ 
         throw new IllegalArgumentException("El email no puede estar vacio");
+    }
+    
+    if(contrasenia == null || contrasenia.trim().equals("")){ 
+        throw new IllegalArgumentException("La contraseña no puede estar vacia");
     }
     
     
@@ -67,6 +70,8 @@ public Cliente(int dni, String nombre, String apellido, String email){
     this.nombre = nombre; 
     this.apellido = apellido;
     this.email = email; 
+    this.contrasenia = contrasenia; 
+    
     }
 
 /**
@@ -100,6 +105,16 @@ public String getApellido (){
 public String getEmail (){
     return email;
 }
+
+/**
+ * Que hace: devuelve la contraseña del cliente
+ * Retorna: la contraseña (String)
+ */
+
+public String getContrasenia () {
+    return contrasenia;
+}
+
 
     /**
      * Que hace: dice si dos clientes son el mismo (mismo dni)
