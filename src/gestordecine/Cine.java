@@ -63,19 +63,47 @@ public class Cine {
             throw new IllegalArgumentException("La funcion no puede ser nula");
         }
 
-            for (Funcion existente : funciones) {
-                if (existente.getIdFuncion() == funcion.getIdFuncion()) {
-                    throw new RegistroDuplicadoException("Ya existe una funcion con ese ID");
-                }
+        boolean salaEncontrada = false;
+        for (Sala existeSala : salas) {
+            if (existeSala == funcion.getSala()) {
+                salaEncontrada = true;
+                break;
             }
-            
-            boolean salaEncontrada = false;
-            for (Sala existe : salas){
-                if (existe.getIdSala() == funcion.getSala())
+        }
+        if (!salaEncontrada) {
+            throw new IllegalArgumentException("La sala no está registrada en el cine");
+        }
 
+        boolean peliculaEncontrada = false;
+        for (Pelicula existePelicula : peliculas) {
+            if (existePelicula == funcion.getPelicula()) {
+                peliculaEncontrada = true;
+                break;
+            }
+        }
+        if (!peliculaEncontrada) {
+            throw new IllegalArgumentException("La pelicula no esta registrada en el cine");
 
         }
 
+        for (Funcion existente : funciones) {
+            if (existente.getIdFuncion() == funcion.getIdFuncion()) {
+                throw new RegistroDuplicadoException("Ya existe una funcion con ese ID");
+            }
+
+            if (existente.getSala() == funcion.getSala()) {
+
+                if (funcion.getFechaHora().isBefore(existente.getFechaHoraFin()) && funcion.getFechaHoraFin().isAfter(existente.getFechaHora())) {
+                    throw new IllegalArgumentException("Ya existe una funcion programada en ese horario");
+                }
+            }
+        }
+
+        if (!funcion.getPelicula().isActiva()) {
+            throw new IllegalArgumentException("No se puede programar una función de una película inactiva");
+        }
+
+        funciones.add(funcion);
     }
 
 }
