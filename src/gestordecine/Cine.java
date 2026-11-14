@@ -1,8 +1,9 @@
 package gestordecine;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Cine {
+public class Cine implements Serializable {
 
     private final ArrayList<Pelicula> peliculas;
     private final ArrayList<Sala> salas;

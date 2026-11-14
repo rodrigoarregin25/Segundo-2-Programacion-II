@@ -1,8 +1,9 @@
 package gestordecine;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public final class Sala {
+public final class Sala implements Serializable {
 
     private final int idSala;
     private String nombreSala;

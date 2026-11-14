@@ -1,8 +1,9 @@
 package gestordecine;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class Funcion {
+public class Funcion implements Serializable{
 
     private final int idFuncion;
     private final Sala sala;

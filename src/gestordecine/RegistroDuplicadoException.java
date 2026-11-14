@@ -1,7 +1,7 @@
 
 package gestordecine;
 
-public class RegistroDuplicadoException extends Exception {
+public class RegistroDuplicadoException extends IllegalArgumentException  {
     
     public RegistroDuplicadoException(String mensaje) {
         super(mensaje);

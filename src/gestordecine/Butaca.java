@@ -1,6 +1,8 @@
 package gestordecine;
 
-public class Butaca {
+import java.io.Serializable;
+
+public class Butaca implements Serializable{
 
     private final char filaButaca;
     private final int numeroButaca;
