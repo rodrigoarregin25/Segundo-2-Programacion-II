@@ -12,16 +12,14 @@ public class EntradaEstudiante extends Entrada{
     
     private static final double DESCUENTO = 0.20;
 
+    /**
+     * Que hace: crea una entrada de estudiante para una butaca con su precio base
+     * Parametros: butaca (Butaca), precioBase (double)
+     * Lanza: IllegalArgumentException si la butaca es nula o el precio base es menor o igual a 0
+     */
     
-    
-  /**
-     * Que hace: crea una entrada de estudiante con su precio base
-     * Parametros: precioBase (double)
-     * Lanza: IllegalArgumentException si el precio base es menor o igual a 0
-     */ 
-    
- public EntradaEstudiante (double precioBase){
-     super(precioBase);
+ public EntradaEstudiante (Butaca butaca, double precioBase){
+     super(butaca, precioBase);
  }
    /**
      * Que hace: calcula el precio final aplicando el descuento de estudiante
