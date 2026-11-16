@@ -3,28 +3,34 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.ArrayList;
 
 
 
 /**
- * Reserva de un cliente para una funcion. Tiene un codigo unico (R + numero)
- * y puede estar confirmada o cancelada.
+ * Reserva de un cliente para una funcion. Tiene un codigo unico (R + digitos al azar),
+ * una lista de entradas (una por butaca) y puede estar confirmada o cancelada.
  */
 public class Reserva implements Serializable {
 
     
     private static final int CANTIDAD_DIGITOS = 5;
+    
     private static HashSet<String> codigosUsados = new HashSet<>();
+    
     private String codigoReserva;
     private boolean confirmada;
     private Cliente cliente;
     private Funcion funcion;
     private double importeTotal;
+    private ArrayList<Entrada> entradas;
     
-   /**
- * Reserva de un cliente para una funcion. Tiene un codigo unico (R + digitos al azar)
- * y puede estar confirmada o cancelada.
- */
+    /**
+     * Que hace: crea una reserva confirmada para un cliente y una funcion
+     * Parametros: cliente (Cliente), funcion (Funcion)
+     * Lanza: IllegalArgumentException si el cliente o la funcion son nulos,
+     *        o si la funcion ya comenzo
+     */
     
     public Reserva(Cliente cliente, Funcion funcion) {
 
@@ -47,12 +53,13 @@ public class Reserva implements Serializable {
         }
     } while (codigosUsados.contains(codigoNuevo));
     codigosUsados.add(codigoNuevo);
+    
     // guardo los datos de la reserva (siempre arranca confirmada)
     this.cliente = cliente;
     this.funcion = funcion;
     this.confirmada = true; 
     this.codigoReserva = codigoNuevo;
-    
+    this.entradas = new ArrayList<>();
 }
 
     /**
@@ -72,6 +79,31 @@ public class Reserva implements Serializable {
         }
         this.confirmada = false;
     }
+    
+    /**
+     * Que hace: agrega una entrada a la reserva y actualiza el importe total
+     * Parametros: entrada (Entrada)
+     * Lanza: IllegalArgumentException si la entrada es nula, si la reserva esta cancelada
+     *        o si la butaca ya esta en esta reserva
+     */
+    
+public void agregarEntrada (Entrada entrada){
+    
+    if(entrada == null){
+        throw new IllegalArgumentException("La entrada no puede ser nula");
+    }
+    if (!confirmada){
+        throw new IllegalArgumentException("La reserva esta cancelada");
+        
+    }
+    for (Entrada existente : entradas){
+        if(existente.getButaca().equals(entrada.getButaca())){
+        throw new IllegalArgumentException("La butaca ya esta en esta reserva");
+    }
+    }
+    entradas.add(entrada); // la agrego y sumo su precio final al total
+    importeTotal = importeTotal + entrada.calcularPrecioFinal();
+}
 /**
  * Que hace: devuelve el codigo de la reserva
  * Retorna: el codigo (String)
@@ -103,4 +135,14 @@ public Funcion getFuncion() {
 public double getImporteTotal() {
     return importeTotal;
 }
+
+ /**
+ * Que hace: devuelve una copia de la lista de entradas de la reserva
+ * Retorna: las entradas (ArrayList de Entrada)
+ */
+
+public ArrayList<Entrada> getEntradas(){
+    return new ArrayList<>(entradas);
+}
+
 }
