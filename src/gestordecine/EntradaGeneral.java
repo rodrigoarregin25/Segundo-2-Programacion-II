@@ -11,13 +11,13 @@ package gestordecine;
 public class EntradaGeneral extends Entrada {
     
     /**
-     * Que hace: crea una entrada general con su precio base
-     * Parametros: precioBase (double)
-     * Lanza: IllegalArgumentException si el precio base es menor o igual a 0
+     * Que hace: crea una entrada general para una butaca con su precio base
+     * Parametros: butaca (Butaca), precioBase (double)
+     * Lanza: IllegalArgumentException si la butaca es nula o el precio base es menor o igual a 0
      */
 
-    public EntradaGeneral(double precioBase) {
-        super(precioBase);
+    public EntradaGeneral(Butaca butaca, double precioBase) {
+        super(butaca, precioBase);
     }
     
       /**
