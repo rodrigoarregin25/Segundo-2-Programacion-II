@@ -5,28 +5,26 @@
 package gestordecine;
 
 /**
- * Entrada de estudiante. Tiene un descuento del 45% sobre el precio base.
+ * Entrada de jubilados. Tiene un descuento del 45% sobre el precio base.
  */
 
 public class EntradaJubilados extends Entrada {
     
     private static final double DESCUENTO = 0.45;
     
-      /**
-* Que hace: crea una entrada de Jubilados con su precio base
-* Parametros: precioBase (double)
-* Lanza: IllegalArgumentException si el precio base es menor o igual a 0
-*/ 
-    
-    
-    public EntradaJubilados (double precioBase){
-        super(precioBase);
+ /**
+ * Que hace: crea una entrada de jubilado para una butaca con su precio base
+ * Parametros: butaca (Butaca), precioBase (double)
+ * Lanza: IllegalArgumentException si la butaca es nula o el precio base es menor o igual a 0
+ */
+public EntradaJubilados (Butaca butaca, double precioBase){
+    super(butaca, precioBase);
         
     }
     
     
        /**
-* Que hace: calcula el precio final aplicando el descuento de estudiante
+* Que hace: calcula el precio final aplicando el descuento de jubilados
 * Retorna: el precio base menos el 45% (double)
 */
  @Override 
