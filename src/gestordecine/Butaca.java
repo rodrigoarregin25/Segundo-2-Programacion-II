@@ -1,6 +1,7 @@
 package gestordecine;
+import java.io.Serializable;
 
-public class Butaca {
+public class Butaca implements Serializable {
 
     private final char filaButaca;
     private final int numeroButaca;
@@ -30,6 +31,32 @@ public class Butaca {
     
     public String getIdentificador(){
          return "" + filaButaca + numeroButaca;
+    }
+    
+    /**
+     * Que hace: compara dos butacas por fila y numero
+     * Parametros: otroObjeto (Object)
+     * Retorna: true si es la misma fila y el mismo numero, false si no
+     */
+    @Override
+    public boolean equals(Object otroObjeto) {
+        if (this == otroObjeto) {
+            return true;
+        }
+        if (otroObjeto == null || getClass() != otroObjeto.getClass()) {
+            return false;
+        }
+        Butaca otraButaca = (Butaca) otroObjeto;
+        return filaButaca == otraButaca.filaButaca && numeroButaca == otraButaca.numeroButaca;
+    }
+    
+     /**
+     * Que hace: calcula el hash de la butaca a partir de su identificador (fila + numero)
+     * Retorna: el hash del identificador, por ejemplo el de "A5" (int)
+     */
+    @Override
+    public int hashCode() {
+        return getIdentificador().hashCode();
     }
 
 }
