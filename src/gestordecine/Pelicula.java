@@ -3,8 +3,10 @@
  */
 package gestordecine;
 
+import java.io.Serializable;
 
-public class Pelicula {
+
+public class Pelicula implements Serializable {
 
     private final int idPelicula;
     private String tituloPelicula;
