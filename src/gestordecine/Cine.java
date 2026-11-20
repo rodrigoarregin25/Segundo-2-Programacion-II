@@ -1,6 +1,8 @@
 package gestordecine;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class Cine implements Serializable {
@@ -105,6 +107,98 @@ public class Cine implements Serializable {
         }
 
         funciones.add(funcion);
+    }
+
+    public Pelicula buscarPeliculaPorId(int id) {
+
+        for (Pelicula pelicula : peliculas) {
+            if (pelicula.getIdPelicula() == id) {
+                return pelicula;
+            }
+
+        }
+
+        return null;
+    }
+
+    public Sala buscarSalaPorId(int id) {
+
+        for (Sala sala : salas) {
+            if (sala.getIdSala() == id) {
+                return sala;
+            }
+
+        }
+
+        return null;
+    }
+    
+    public Funcion buscarFuncionPorId(int id) {
+
+        for (Funcion funcion : funciones) {
+            if (funcion.getIdFuncion() == id) {
+                return funcion;
+            }
+
+        }
+
+        return null;
+    }
+
+    public ArrayList<Funcion> buscarFuncionesPorPelicula(int idPelicula) {
+        ArrayList<Funcion> resultados = new ArrayList<>();
+
+        for (Funcion funcion : funciones) {
+            if (funcion.getPelicula().getIdPelicula() == idPelicula) {
+                resultados.add(funcion);
+            }
+        }
+
+        return resultados;
+
+    }
+
+    public ArrayList<Funcion> buscarFuncionesPorSala(int idSala) {
+        ArrayList<Funcion> resultados = new ArrayList<>();
+
+        for (Funcion funcion : funciones) {
+            if (funcion.getSala().getIdSala() == idSala) {
+                resultados.add(funcion);
+            }
+        }
+
+        return resultados;
+
+    }
+
+    public ArrayList<Funcion> buscarFuncionesPorFecha(LocalDate fecha) {
+        ArrayList<Funcion> resultados = new ArrayList<>();
+
+        if (fecha == null) {
+            throw new IllegalArgumentException("La fecha no puede ser nula");
+        }
+
+        for (Funcion funcion : funciones) {
+            if (funcion.getFechaHora().toLocalDate().equals(fecha)) {
+                resultados.add(funcion);
+            }
+        }
+
+        return resultados;
+    }
+
+    public ArrayList<Funcion> buscarFuncionesFuturas() {
+        ArrayList<Funcion> resultados = new ArrayList<>();
+        
+        LocalDateTime ahora = LocalDateTime.now();
+
+        for (Funcion funcion : funciones) {
+            if (funcion.getFechaHora().isAfter(ahora)) {
+                resultados.add(funcion);
+            }
+        }
+
+        return resultados;
     }
 
 }
