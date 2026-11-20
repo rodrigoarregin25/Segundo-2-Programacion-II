@@ -53,7 +53,11 @@ public class PersistenciaCine {
     public Cine cargar() throws IOException, ClassNotFoundException {
         try (
                 FileInputStream archivo = new FileInputStream(rutaArchivo); ObjectInputStream entrada = new ObjectInputStream(archivo)) {
-            return (Cine) entrada.readObject();
+            Cine cine = (Cine) entrada.readObject();
+
+            cine.getServicioDeReservas().recargarCodigos();
+
+            return cine;
         }
     }
 }
