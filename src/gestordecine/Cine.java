@@ -189,7 +189,7 @@ public class Cine implements Serializable {
 
     public ArrayList<Funcion> buscarFuncionesFuturas() {
         ArrayList<Funcion> resultados = new ArrayList<>();
-        
+
         LocalDateTime ahora = LocalDateTime.now();
 
         for (Funcion funcion : funciones) {
@@ -199,6 +199,29 @@ public class Cine implements Serializable {
         }
 
         return resultados;
+    }
+
+    public void editarPelicula(int idPelicula, String nuevoTitulo) {
+
+        Pelicula pelicula = buscarPeliculaPorId(idPelicula);
+
+        if (pelicula == null) {
+            throw new IllegalArgumentException("La pelicula no existe");
+        }
+
+        pelicula.setTituloPelicula(nuevoTitulo);
+    }
+
+    public void desactivarPelicula(int idPelicula) {
+        
+        Pelicula pelicula = buscarPeliculaPorId(idPelicula);
+
+        if (pelicula == null) {
+            throw new IllegalArgumentException("La pelicula no existe");
+        }
+
+        pelicula.desactivar();
+
     }
 
 }
