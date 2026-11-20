@@ -1,0 +1,74 @@
+
+
+.ventana-principal {
+    -fx-background-color: #0D111B;
+}
+
+.menu-lateral {
+    -fx-background-color: #111B2B;
+    -fx-padding: 30 18 30 18;
+}
+
+.logo-cine {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 27px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 0 35 10;
+}
+
+.boton-menu {
+    -fx-background-color: transparent;
+    -fx-text-fill: #AAB6C8;
+    -fx-font-size: 15px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 14 18;
+    -fx-background-radius: 10;
+    -fx-max-width: Infinity;
+    -fx-cursor: hand;
+}
+
+.boton-menu:hover {
+    -fx-background-color: #243650;
+    -fx-text-fill: #FFFFFF;
+}
+
+.contenido-principal {
+    -fx-padding: 40;
+}
+
+.titulo-pagina {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+}
+
+.subtitulo-pagina {
+    -fx-text-fill: #8998AE;
+    -fx-font-size: 15px;
+}
+
+.boton-primario {
+    -fx-background-color: #2389F5;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 12px 20px;
+    -fx-background-radius: 10px;
+    -fx-cursor: hand;
+}
+
+.boton-primario:hover {
+    -fx-background-color: #45A0FF;
+}
+
+.tarjeta-contenido {
+    -fx-background-color: #151F30;
+    -fx-background-radius: 14px;
+    -fx-padding: 25px;
+}
+
+.titulo-seccion {
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}

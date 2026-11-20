@@ -1,15 +1,28 @@
 package gestordecine;
 
-/**
- *
- * @author rodri
- */
-public class GestorDeCine {
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
-    /**
-     * @param args the command line arguments
-     */
+public class GestorDeCine extends Application {
+
+    @Override
+    public void start(Stage stage) throws Exception {
+
+        Parent raiz = FXMLLoader.load(
+                getClass().getResource("Principal.fxml")
+        );
+
+        Scene escena = new Scene(raiz, 1200, 750);
+
+        stage.setTitle("CINEMA | Sistema de Reservas");
+        stage.setScene(escena);
+        stage.show();
+    }
+
     public static void main(String[] args) {
-        // TODO code application logic here
+        launch(args);
     }
 }

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="gestordecine.PrincipalController"
+            prefWidth="1200" prefHeight="750"
+            stylesheets="@estilos.css"
+            styleClass="ventana-principal">
+
+    <left>
+        <VBox spacing="12" prefWidth="240" styleClass="menu-lateral">
+
+            <Label text="CINEMA" styleClass="logo-cine"/>
+
+            <Button text="Cartelera" styleClass="boton-menu"/>
+            <Button text="Reservas" styleClass="boton-menu"/>
+            <Button text="Películas"
+                    styleClass="boton-menu"
+                    onAction="#mostrarPeliculas"/>
+            <Button text="Salas" styleClass="boton-menu"/>
+            <Button text="Funciones" styleClass="boton-menu"/>
+
+        </VBox>
+    </left>
+
+    <center>
+        <VBox spacing="15" styleClass="contenido-principal">
+            <Label fx:id="tituloPagina"
+                   text="Cartelera"
+                   styleClass="titulo-pagina"/>
+            <Label text="Descubrí las próximas funciones disponibles"
+                   styleClass="subtitulo-pagina"/>
+        </VBox>
+    </center>
+
+</BorderPane>
