@@ -10,11 +10,14 @@ public class Cine implements Serializable {
     private final ArrayList<Pelicula> peliculas;
     private final ArrayList<Sala> salas;
     private final ArrayList<Funcion> funciones;
+    private final ServicioDeReservas servicioDeReservas;
+
 
     public Cine() {
         this.peliculas = new ArrayList<>();
         this.salas = new ArrayList<>();
         this.funciones = new ArrayList<>();
+        this.servicioDeReservas = new ServicioDeReservas();
     }
 
     public ArrayList<Pelicula> getPeliculas() {
@@ -27,6 +30,10 @@ public class Cine implements Serializable {
 
     public ArrayList<Funcion> getFunciones() {
         return new ArrayList<>(funciones);
+    }
+
+    public ServicioDeReservas getServicioDeReservas() {
+        return servicioDeReservas;
     }
 
     public void registrarPelicula(Pelicula pelicula) throws RegistroDuplicadoException {
