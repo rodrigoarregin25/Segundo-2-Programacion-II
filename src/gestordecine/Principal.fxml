@@ -5,7 +5,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Button?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml"
+<BorderPane fx:id="contenedorPrincipal"
+            xmlns:fx="http://javafx.com/fxml"
             fx:controller="gestordecine.PrincipalController"
             prefWidth="1200" prefHeight="750"
             stylesheets="@estilos.css"

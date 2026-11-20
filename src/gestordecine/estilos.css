@@ -72,3 +72,120 @@
     -fx-font-size: 20px;
     -fx-font-weight: bold;
 }
+
+
+
+/* TABLA DE PELICULAS */
+
+.tabla-peliculas {
+    -fx-background-color: #151F30;
+    -fx-control-inner-background: #151F30;
+    -fx-border-color: #2B3A50;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 1;
+}
+
+.tabla-peliculas .column-header-background {
+    -fx-background-color: #1E3048;
+}
+
+.tabla-peliculas .column-header,
+.tabla-peliculas .filler {
+    -fx-background-color: transparent;
+    -fx-size: 46px;
+    -fx-border-color: transparent;
+}
+
+.tabla-peliculas .column-header .label {
+    -fx-text-fill: #AFC4DA;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.tabla-peliculas .table-row-cell {
+    -fx-background-color: #151F30;
+    -fx-border-color: transparent transparent #243247 transparent;
+    -fx-cell-size: 50px;
+}
+
+.tabla-peliculas .table-row-cell:odd {
+    -fx-background-color: #192538;
+}
+
+.tabla-peliculas .table-row-cell:hover {
+    -fx-background-color: #263C58;
+}
+
+.tabla-peliculas .table-row-cell:selected {
+    -fx-background-color: #174A75;
+}
+
+.tabla-peliculas .table-cell {
+    -fx-text-fill: #E4EDF8;
+    -fx-font-size: 14px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 14;
+    -fx-border-color: transparent;
+}
+
+.tabla-peliculas .placeholder .label {
+    -fx-text-fill: #8FA4BC;
+}
+
+.tabla-peliculas:focused {
+    -fx-background-insets: 0;
+}
+
+.tabla-peliculas .scroll-bar {
+    -fx-background-color: #151F30;
+}
+
+.tabla-peliculas .scroll-bar .thumb {
+    -fx-background-color: #354B66;
+    -fx-background-radius: 8;
+}
+
+/* FORMULARIOS */
+
+.etiqueta-formulario {
+    -fx-text-fill: #DCE6F3;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.campo-formulario {
+    -fx-background-color: #0D1625;
+    -fx-text-fill: #FFFFFF;
+    -fx-prompt-text-fill: #71849D;
+    -fx-border-color: #30415A;
+    -fx-border-width: 1;
+    -fx-border-radius: 9;
+    -fx-background-radius: 9;
+    -fx-padding: 13 15;
+    -fx-font-size: 14px;
+}
+
+.campo-formulario:focused {
+    -fx-border-color: #2389F5;
+    -fx-border-width: 2;
+}
+
+.boton-secundario {
+    -fx-background-color: #26364C;
+    -fx-text-fill: #DCE6F3;
+    -fx-font-size: 14px;
+    -fx-padding: 12 22;
+    -fx-background-radius: 9;
+    -fx-cursor: hand;
+}
+
+.boton-secundario:hover {
+    -fx-background-color: #354B66;
+}
+
+.mensaje-error {
+    -fx-text-fill: #FF7B85;
+    -fx-font-size: 13px;
+}

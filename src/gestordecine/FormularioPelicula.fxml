@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="gestordecine.FormularioPeliculaController"
+      spacing="25"
+      styleClass="contenido-principal">
+
+    <VBox spacing="8">
+        <Label fx:id="tituloFormulario"
+               text="Registrar película"
+               styleClass="titulo-pagina"/>
+
+        <Label text="Completá los datos de la película"
+               styleClass="subtitulo-pagina"/>
+    </VBox>
+
+    <VBox spacing="22"
+          maxWidth="650"
+          styleClass="tarjeta-contenido">
+
+        <VBox spacing="9">
+            <Label text="Título de la película"
+                   styleClass="etiqueta-formulario"/>
+
+            <TextField fx:id="campoTitulo"
+                       promptText="Ej: Avatar"
+                       styleClass="campo-formulario"/>
+        </VBox>
+
+        <VBox spacing="9">
+            <Label text="Duración (minutos)"
+                   styleClass="etiqueta-formulario"/>
+
+            <TextField fx:id="campoDuracion"
+                       promptText="Ej: 180"
+                       styleClass="campo-formulario"/>
+        </VBox>
+
+        <Label fx:id="mensajeError"
+               text=""
+               wrapText="true"
+               styleClass="mensaje-error"/>
+
+        <HBox spacing="15" alignment="CENTER_RIGHT">
+
+            <Button text="Cancelar"
+                    styleClass="boton-secundario"/>
+
+            <Button text="Guardar película"
+                    styleClass="boton-primario"/>
+
+        </HBox>
+
+    </VBox>
+
+</VBox>

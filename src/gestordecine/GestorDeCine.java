@@ -11,9 +11,18 @@ public class GestorDeCine extends Application {
     @Override
     public void start(Stage stage) throws Exception {
 
-        Parent raiz = FXMLLoader.load(
+        PersistenciaCine persistencia = new PersistenciaCine("cine_integrado.dat");
+
+        Cine cine = persistencia.cargarOCrear();
+
+        FXMLLoader loader = new FXMLLoader(
                 getClass().getResource("Principal.fxml")
         );
+
+        Parent raiz = loader.load();
+
+        PrincipalController controlador = loader.getController();
+        controlador.setCine(cine);
 
         Scene escena = new Scene(raiz, 1200, 750);
 
