@@ -231,4 +231,20 @@ public class Cine implements Serializable {
 
     }
 
+    public Reserva confirmarReserva(Cliente cliente, Funcion funcion, ArrayList<Entrada> entradas) {
+        if (funcion == null) {
+            throw new IllegalArgumentException("La funcion no puede ser nula");
+        }
+
+        Funcion registrada = buscarFuncionPorId(funcion.getIdFuncion());
+
+        if (registrada != funcion) {
+            throw new IllegalArgumentException(
+                    "La funcion no esta registrada en este cine");
+        }
+
+        return servicioDeReservas.confirmarReserva(cliente, funcion, entradas);
+
+    }
+
 }
