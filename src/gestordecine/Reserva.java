@@ -137,12 +137,24 @@ public double getImporteTotal() {
 }
 
  /**
- * Que hace: devuelve una copia de la lista de entradas de la reserva
- * Retorna: las entradas (ArrayList de Entrada)
- */
+  * Que hace: devuelve una copia de la lista de entradas de la reserva
+  * Retorna: las entradas (ArrayList de Entrada)
+  */
 
 public ArrayList<Entrada> getEntradas(){
     return new ArrayList<>(entradas);
 }
+/**
+ * Que hace: vuelve a cargar los codigos ya usados a partir de las reservas guardadas,
+ *           para que no se repitan al abrir el programa de nuevo
+ * Parametros: reservasGuardadas (ArrayList de Reserva)
+ */
+
+    public static void recargarCodigos(ArrayList<Reserva> reservasGuardadas) {
+        codigosUsados.clear();
+        for (Reserva reserva : reservasGuardadas) {
+            codigosUsados.add(reserva.getCodigoReserva());
+        }
+    }
 
 }

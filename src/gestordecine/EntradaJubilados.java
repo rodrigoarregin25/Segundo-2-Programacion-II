@@ -31,5 +31,13 @@ public EntradaJubilados (Butaca butaca, double precioBase){
  public double calcularPrecioFinal(){
      return getPrecioBase() * (1 - DESCUENTO);
  }
+/**
+* Que hace: devuelve el nombre del tipo de entrada
+* Retorna: "Entrada Jubilados" (String)
+*/
+@Override
+public String getTipo() {
+    return "Entrada Jubilados";
+}
     
 }

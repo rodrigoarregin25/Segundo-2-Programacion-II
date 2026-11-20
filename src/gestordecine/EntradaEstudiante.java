@@ -25,9 +25,18 @@ public class EntradaEstudiante extends Entrada{
      * Que hace: calcula el precio final aplicando el descuento de estudiante
      * Retorna: el precio base menos el 20% (double)
      */
- @Override 
- public double calcularPrecioFinal (){
-     return getPrecioBase() * (1 - DESCUENTO);
+    @Override 
+    public double calcularPrecioFinal (){
+        return getPrecioBase() * (1 - DESCUENTO);
  }
+ 
+   /**
+    * Que hace: devuelve el nombre del tipo de entrada
+    * Retorna: "Entrada Estudiante" (String)
+    */
+    @Override
+public String getTipo() {
+    return "Entrada Estudiante";
+    }
     
 }

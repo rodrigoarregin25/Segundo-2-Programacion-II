@@ -28,5 +28,13 @@ public class EntradaGeneral extends Entrada {
     public double calcularPrecioFinal() {
         return getPrecioBase();
     }
+    /**
+     * Que hace: devuelve el nombre del tipo de entrada
+     * Retorna: "Entrada General" (String)
+     */
+    @Override
+    public String getTipo() {
+        return "Entrada General";
+    }
 
 }

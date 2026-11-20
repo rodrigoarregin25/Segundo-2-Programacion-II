@@ -37,6 +37,12 @@ throw new IllegalArgumentException("El precio base debe ser mayor a cero");
  */
 public abstract double calcularPrecioFinal(); 
 
+/**
+* Que hace: devuelve el nombre del tipo de entrada
+* Retorna: el tipo, por ejemplo "General" (String)
+*/
+public abstract String getTipo();
+
  /**
  * Que hace: devuelve la butaca de la entrada
  * Retorna: la butaca (Butaca)
