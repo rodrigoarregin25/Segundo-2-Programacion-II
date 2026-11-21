@@ -414,3 +414,55 @@
     -fx-text-fill: #94A3B8;
     -fx-font-size: 13px;
 }
+
+/* CARTELERA */
+
+.scroll-cartelera,
+.scroll-cartelera > .viewport {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+.contenedor-cartelera {
+    -fx-padding: 10 0 20 0;
+}
+
+.tarjeta-pelicula {
+    -fx-background-color: #151F30;
+    -fx-background-radius: 12;
+    -fx-padding: 12;
+    -fx-spacing: 8;
+
+    -fx-pref-width: 224;
+    -fx-min-width: 224;
+    -fx-max-width: 224;
+
+    -fx-pref-height: 440;
+    -fx-min-height: 440;
+    -fx-max-height: 440;
+}
+
+.titulo-tarjeta-pelicula {
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+.info-tarjeta-pelicula {
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 12px;
+}
+
+.puntuacion-pelicula {
+    -fx-text-fill: #FBBF24;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.tarjeta-pelicula {
+    -fx-cursor: hand;
+}
+
+.tarjeta-pelicula:hover {
+    -fx-background-color: #1E2E46;
+}

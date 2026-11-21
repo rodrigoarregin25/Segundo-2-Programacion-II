@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="gestordecine.CarteleraController"
+      spacing="20"
+      styleClass="contenido-principal">
+
+    <Label text="Cartelera"
+           styleClass="titulo-pagina"/>
+
+    <Label text="Descubrí las películas disponibles en nuestro cine"
+           styleClass="subtitulo-pagina"/>
+
+    <ScrollPane fitToWidth="true"
+                hbarPolicy="NEVER"
+                VBox.vgrow="ALWAYS"
+                styleClass="scroll-cartelera">
+
+        <FlowPane fx:id="contenedorPeliculas"
+                  hgap="20"
+                  vgap="20"
+                  prefWrapLength="900"
+                  styleClass="contenedor-cartelera"/>
+
+    </ScrollPane>
+
+</VBox>

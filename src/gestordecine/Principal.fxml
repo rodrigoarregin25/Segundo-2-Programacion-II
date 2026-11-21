@@ -17,7 +17,9 @@
 
             <Label text="CINEMA" styleClass="logo-cine"/>
 
-            <Button text="Cartelera" styleClass="boton-menu"/>
+            <Button text="Cartelera"
+                    styleClass="boton-menu"
+                    onAction="#mostrarCartelera"/>
             <Button text="Reservas" styleClass="boton-menu"/>
             <Button text="Películas"
                     styleClass="boton-menu"

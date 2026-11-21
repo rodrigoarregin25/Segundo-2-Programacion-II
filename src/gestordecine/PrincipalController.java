@@ -161,4 +161,47 @@ public class PrincipalController {
             e.printStackTrace();
         }
     }
+
+    @FXML
+    public void mostrarCartelera() {
+
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("Cartelera.fxml")
+            );
+
+            Parent pantalla = loader.load();
+
+            CarteleraController controlador = loader.getController();
+            controlador.setPrincipalController(this);
+            controlador.configurar(cine);
+            contenedorPrincipal.setCenter(pantalla);
+
+        } catch (IOException e) {
+            System.out.println("Error al cargar la cartelera:");
+            e.printStackTrace();
+        }
+    }
+    
+    public void mostrarDetallePelicula(Pelicula pelicula) {
+
+    try {
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("DetallePelicula.fxml")
+        );
+
+        Parent pantalla = loader.load();
+
+        DetallePeliculaController controlador = loader.getController();
+
+        controlador.setPrincipalController(this);
+        controlador.configurar(pelicula);
+
+        contenedorPrincipal.setCenter(pantalla);
+
+    } catch (IOException e) {
+        System.out.println("Error al cargar el detalle de película:");
+        e.printStackTrace();
+    }
+}
 }
