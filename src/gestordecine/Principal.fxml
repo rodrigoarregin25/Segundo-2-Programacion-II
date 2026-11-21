@@ -20,7 +20,9 @@
             <Button text="Cartelera"
                     styleClass="boton-menu"
                     onAction="#mostrarCartelera"/>
-            <Button text="Reservas" styleClass="boton-menu"/>
+            <Button text="Reservas"
+                    styleClass="boton-menu"
+                    onAction="#mostrarNuevaReserva"/>
             <Button text="Películas"
                     styleClass="boton-menu"
                     onAction="#mostrarPeliculas"/>
