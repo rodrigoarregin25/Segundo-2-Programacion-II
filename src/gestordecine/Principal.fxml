@@ -20,14 +20,18 @@
             <Button text="Cartelera"
                     styleClass="boton-menu"
                     onAction="#mostrarCartelera"/>
-            <Button text="Reservas" styleClass="boton-menu"/>
+            <Button text="Reservas"
+                    styleClass="boton-menu"
+                    onAction="#mostrarNuevaReserva"/>
             <Button text="Películas"
                     styleClass="boton-menu"
                     onAction="#mostrarPeliculas"/>
             <Button text="Salas" 
                     styleClass="boton-menu"
                     onAction="#mostrarSalas"/>
-            <Button text="Funciones" styleClass="boton-menu"/>
+            <Button text="Funciones"
+                    styleClass="boton-menu"
+                    onAction="#mostrarFunciones"/>
 
         </VBox>
     </left>
