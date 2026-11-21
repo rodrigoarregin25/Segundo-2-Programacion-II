@@ -12,7 +12,6 @@ public class Cine implements Serializable {
     private final ArrayList<Funcion> funciones;
     private final ServicioDeReservas servicioDeReservas;
 
-
     public Cine() {
         this.peliculas = new ArrayList<>();
         this.salas = new ArrayList<>();
@@ -139,7 +138,7 @@ public class Cine implements Serializable {
 
         return null;
     }
-    
+
     public Funcion buscarFuncionPorId(int id) {
 
         for (Funcion funcion : funciones) {
@@ -220,7 +219,7 @@ public class Cine implements Serializable {
     }
 
     public void desactivarPelicula(int idPelicula) {
-        
+
         Pelicula pelicula = buscarPeliculaPorId(idPelicula);
 
         if (pelicula == null) {
@@ -245,6 +244,18 @@ public class Cine implements Serializable {
 
         return servicioDeReservas.confirmarReserva(cliente, funcion, entradas);
 
+    }
+
+    public int obtenerSiguienteIdPelicula() {
+        int mayorId = 0;
+
+        for (Pelicula pelicula : peliculas) {
+            if (pelicula.getIdPelicula() > mayorId) {
+                mayorId = pelicula.getIdPelicula();
+            }
+        }
+
+        return mayorId + 1;
     }
 
 }

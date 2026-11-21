@@ -11,7 +11,7 @@ public class GestorDeCine extends Application {
     @Override
     public void start(Stage stage) throws Exception {
 
-        PersistenciaCine persistencia = new PersistenciaCine("cine_integrado.dat");
+        PersistenciaCine persistencia = new PersistenciaCine("cine_app.dat");
 
         Cine cine = persistencia.cargarOCrear();
 
@@ -22,7 +22,7 @@ public class GestorDeCine extends Application {
         Parent raiz = loader.load();
 
         PrincipalController controlador = loader.getController();
-        controlador.setCine(cine);
+        controlador.configurar(cine, persistencia);
 
         Scene escena = new Scene(raiz, 1200, 750);
 

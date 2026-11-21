@@ -5,14 +5,17 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.scene.control.Label;
 
 public class PeliculasController {
 
     private Cine cine;
     private PrincipalController principalController;
+    private PersistenciaCine persistencia;
 
-    public void setCine(Cine cine) {
+    public void configurar(Cine cine, PersistenciaCine persistencia) {
         this.cine = cine;
+        this.persistencia = persistencia;
         tablaPeliculas.getItems().setAll(cine.getPeliculas());
     }
 
@@ -31,6 +34,9 @@ public class PeliculasController {
 
     @FXML
     private TableColumn<Pelicula, String> colEstado;
+
+    @FXML
+    private Label mensajeEstado;
 
     @FXML
     private void initialize() {
@@ -58,4 +64,50 @@ public class PeliculasController {
     private void nuevaPelicula() {
         principalController.mostrarFormularioPelicula();
     }
+
+    @FXML
+    private void editarPelicula() {
+
+        Pelicula seleccionada = tablaPeliculas.getSelectionModel().getSelectedItem();
+
+        if (seleccionada == null) {
+            mostrarMensaje("Seleccioná una película para editar.");
+            return;
+        }
+
+        principalController.mostrarFormularioEditarPelicula(seleccionada);
+    }
+
+    @FXML
+    private void desactivarPelicula() {
+
+        Pelicula seleccionada = tablaPeliculas.getSelectionModel().getSelectedItem();
+
+        if (seleccionada == null) {
+            mostrarMensaje("Seleccioná una película.");
+            return;
+        }
+
+        if (!seleccionada.isActiva()) {
+            mostrarMensaje("La película ya está desactivada.");
+            return;
+        }
+
+        try {
+            cine.desactivarPelicula(seleccionada.getIdPelicula());
+
+            persistencia.guardar(cine);
+
+            tablaPeliculas.refresh();
+
+        } catch (Exception e) {
+            mostrarMensaje("Error al desactivar la película: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    
+    private void mostrarMensaje(String mensaje) {
+    mensajeEstado.setText(mensaje);
+    mensajeEstado.setVisible(true);
+}
 }

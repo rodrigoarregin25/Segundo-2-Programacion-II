@@ -189,3 +189,21 @@
     -fx-text-fill: #FF7B85;
     -fx-font-size: 13px;
 }
+
+.boton-peligro {
+    -fx-background-color: #773044;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14px;
+    -fx-padding: 12 22;
+    -fx-background-radius: 9;
+    -fx-cursor: hand;
+}
+
+.boton-peligro:hover {
+    -fx-background-color: #A33D55;
+}
+
+.mensaje-error {
+    -fx-text-fill: #FF7B85;
+    -fx-font-size: 13px;
+}

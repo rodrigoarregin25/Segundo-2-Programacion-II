@@ -51,11 +51,14 @@
         <HBox spacing="15" alignment="CENTER_RIGHT">
 
             <Button text="Cancelar"
-                    styleClass="boton-secundario"/>
+                    styleClass="boton-secundario"
+                    onAction="#cancelar"/>
 
-            <Button text="Guardar película"
-                    styleClass="boton-primario"/>
 
+            <Button fx:id="botonGuardar"
+                    text="Guardar película"
+                    styleClass="boton-primario"
+                    onAction="#guardarPelicula"/>
         </HBox>
 
     </VBox>

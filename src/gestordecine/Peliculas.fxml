@@ -54,7 +54,32 @@
             </columns>
 
         </TableView>
+        
+        <VBox alignment="BOTTOM_RIGHT" spacing="8">
 
+            <Label fx:id="mensajeEstado"
+                   text=""
+                   visible="false"
+                   managed="true"
+                   minHeight="20"
+                   prefHeight="20"
+                   maxHeight="20"
+                   styleClass="mensaje-error"/>
+
+            <HBox alignment="CENTER_RIGHT" spacing="12">
+
+                <Button text="Editar película"
+                        styleClass="boton-secundario"
+                        onAction="#editarPelicula"/>
+
+                <Button text="Desactivar película"
+                        styleClass="boton-peligro"
+                        onAction="#desactivarPelicula"/>
+
+            </HBox>
+
+        </VBox>
+        
     </VBox>
-
+    
 </VBox>
