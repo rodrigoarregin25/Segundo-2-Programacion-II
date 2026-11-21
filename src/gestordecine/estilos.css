@@ -298,3 +298,17 @@
 .campo-formulario.text-area:focused {
     -fx-border-color: #2389F5;
 }
+
+/* INDICADORES DE ESTADO */
+
+.tabla-peliculas .table-cell.estado-activo {
+    -fx-text-fill: #22C55E;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.tabla-peliculas .table-cell.estado-inactivo {
+    -fx-text-fill: #EF4444;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}

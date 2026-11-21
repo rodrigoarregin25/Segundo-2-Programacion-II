@@ -40,17 +40,27 @@
                    styleClass="tabla-peliculas">
 
             <columns>
+                <TableColumn fx:id="colEstado"
+                             text="Estado"
+                             prefWidth="90"/>
+                
                 <TableColumn fx:id="colTitulo"
                              text="Título"
-                             prefWidth="300"/>
+                             prefWidth="400"/>
 
                 <TableColumn fx:id="colDuracion"
                              text="Duración"
-                             prefWidth="150"/>
+                             prefWidth="110"/>
+                
+                <TableColumn fx:id="colFechaEstreno"
+                             text="Año"
+                             prefWidth="90"/>
+                
+                <TableColumn fx:id="colGenero"
+                             text="Genero"
+                             prefWidth="200"/>
 
-                <TableColumn fx:id="colEstado"
-                             text="Estado"
-                             prefWidth="150"/>
+                
             </columns>
 
         </TableView>

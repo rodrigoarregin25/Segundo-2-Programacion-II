@@ -6,6 +6,8 @@ import javafx.scene.control.TableColumn;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
+import javafx.geometry.Pos;
 
 public class PeliculasController {
 
@@ -39,6 +41,12 @@ public class PeliculasController {
     private Label mensajeEstado;
 
     @FXML
+    private TableColumn<Pelicula, Integer> colFechaEstreno;
+
+    @FXML
+    private TableColumn<Pelicula, String> colGenero;
+
+    @FXML
     private void initialize() {
 
         colTitulo.setCellValueFactory(datos
@@ -56,6 +64,44 @@ public class PeliculasController {
         colEstado.setCellValueFactory(datos
                 -> new SimpleStringProperty(
                         datos.getValue().isActiva() ? "Activa" : "Inactiva"
+                )
+        );
+
+        colEstado.setCellFactory(columna -> new TableCell<Pelicula, String>() {
+
+            @Override
+            protected void updateItem(String estado, boolean empty) {
+                super.updateItem(estado, empty);
+
+                if (empty || estado == null) {
+                    setText(null);
+                    setGraphic(null);
+                    return;
+                }
+
+                boolean activa = estado.equals("Activa");
+
+                setText(activa ? "✓" : "✕");
+
+                getStyleClass().removeAll("estado-activo", "estado-inactivo");
+
+                getStyleClass().add(
+                        activa ? "estado-activo" : "estado-inactivo"
+                );
+
+                setAlignment(Pos.CENTER);
+            }
+        });
+
+        colFechaEstreno.setCellValueFactory(datos
+                -> new SimpleIntegerProperty(
+                        datos.getValue().getAnioEstreno()
+                ).asObject()
+        );
+
+        colGenero.setCellValueFactory(datos
+                -> new SimpleStringProperty(
+                        datos.getValue().getGenero()
                 )
         );
     }
@@ -105,9 +151,9 @@ public class PeliculasController {
             e.printStackTrace();
         }
     }
-    
+
     private void mostrarMensaje(String mensaje) {
-    mensajeEstado.setText(mensaje);
-    mensajeEstado.setVisible(true);
-}
+        mensajeEstado.setText(mensaje);
+        mensajeEstado.setVisible(true);
+    }
 }

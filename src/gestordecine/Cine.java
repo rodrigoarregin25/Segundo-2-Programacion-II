@@ -11,6 +11,8 @@ public class Cine implements Serializable {
     private final ArrayList<Sala> salas;
     private final ArrayList<Funcion> funciones;
     private final ServicioDeReservas servicioDeReservas;
+    private static final long serialVersionUID = -7996707478867040710L;
+    
 
     public Cine() {
         this.peliculas = new ArrayList<>();
@@ -207,7 +209,17 @@ public class Cine implements Serializable {
         return resultados;
     }
 
-    public void editarPelicula(int idPelicula, String nuevoTitulo) {
+    public void editarPelicula(
+            int idPelicula,
+            String titulo,
+            int anio,
+            String genero,
+            String director,
+            String actores,
+            String sinopsis,
+            double puntuacion,
+            String clasificacion,
+            String poster) {
 
         Pelicula pelicula = buscarPeliculaPorId(idPelicula);
 
@@ -215,7 +227,15 @@ public class Cine implements Serializable {
             throw new IllegalArgumentException("La pelicula no existe");
         }
 
-        pelicula.setTituloPelicula(nuevoTitulo);
+        pelicula.setTituloPelicula(titulo);
+        pelicula.setAnioEstreno(anio);
+        pelicula.setGenero(genero);
+        pelicula.setDirector(director);
+        pelicula.setActores(actores);
+        pelicula.setSinopsis(sinopsis);
+        pelicula.setPuntuacion(puntuacion);
+        pelicula.setClasificacion(clasificacion);
+        pelicula.setPoster(poster);
     }
 
     public void desactivarPelicula(int idPelicula) {
