@@ -97,4 +97,68 @@ public class PrincipalController {
                     + e.getMessage());
         }
     }
+
+    @FXML
+    public void mostrarSalas() {
+
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("Salas.fxml")
+            );
+
+            Parent pantalla = loader.load();
+            SalasController controlador = loader.getController();
+            controlador.configurar(cine, persistencia);
+            controlador.setPrincipalController(this);
+
+            contenedorPrincipal.setCenter(pantalla);
+
+        } catch (IOException e) {
+            System.out.println("Error al cargar la pantalla de salas:");
+            e.printStackTrace();
+        }
+    }
+
+    public void mostrarFormularioSala() {
+
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("FormularioSala.fxml")
+            );
+
+            Parent pantalla = loader.load();
+
+            FormularioSalaController controlador = loader.getController();
+
+            controlador.configurar(cine, persistencia, this);
+
+            contenedorPrincipal.setCenter(pantalla);
+
+        } catch (IOException e) {
+            System.out.println("Error al cargar el formulario de sala:");
+            e.printStackTrace();
+        }
+    }
+
+    public void mostrarFormularioEditarSala(Sala sala) {
+
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("FormularioSala.fxml")
+            );
+
+            Parent pantalla = loader.load();
+
+            FormularioSalaController controlador = loader.getController();
+
+            controlador.configurar(cine, persistencia, this);
+            controlador.configurarEdicion(sala);
+
+            contenedorPrincipal.setCenter(pantalla);
+
+        } catch (IOException e) {
+            System.out.println("Error al cargar el formulario de edición de sala:");
+            e.printStackTrace();
+        }
+    }
 }

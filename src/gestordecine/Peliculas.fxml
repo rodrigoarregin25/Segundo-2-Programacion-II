@@ -7,6 +7,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.ComboBox?>
 
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="gestordecine.PeliculasController"
@@ -32,8 +33,21 @@
 
     <VBox spacing="15" styleClass="tarjeta-contenido">
 
-        <Label text="Películas registradas"
-               styleClass="titulo-seccion"/>
+        <HBox alignment="CENTER_LEFT" spacing="12">
+
+            <Label text="Películas registradas"
+                   styleClass="titulo-seccion"/>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Label text="Estado:"
+                   styleClass="subtitulo-pagina"/>
+
+            <ComboBox fx:id="filtroEstado"
+                      prefWidth="130"
+                      styleClass="filtro-estado"/>
+
+        </HBox>
 
         <TableView fx:id="tablaPeliculas"
                    prefHeight="400"
@@ -82,7 +96,8 @@
                         styleClass="boton-secundario"
                         onAction="#editarPelicula"/>
 
-                <Button text="Desactivar película"
+                <Button fx:id="botonEstado"
+                        text="Desactivar película"
                         styleClass="boton-peligro"
                         onAction="#desactivarPelicula"/>
 

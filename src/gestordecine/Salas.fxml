@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ComboBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="gestordecine.SalasController"
+      spacing="25"
+      styleClass="contenido-principal">
+
+    <!-- ENCABEZADO -->
+
+    <VBox spacing="15">
+
+        <!-- Fila superior: título y botones -->
+        <HBox alignment="CENTER_LEFT" spacing="20">
+
+            <Label text="Administración de salas"
+                   styleClass="titulo-pagina"/>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Button text="Editar sala"
+                    styleClass="boton-secundario"
+                    onAction="#editarSala"/>
+
+            <Button fx:id="botonEstado"
+                    text="Desactivar sala"
+                    styleClass="boton-peligro"
+                    onAction="#cambiarEstadoSala"/>
+
+            <Button text="+ Nueva sala"
+                    styleClass="boton-primario"
+                    onAction="#nuevaSala"/>
+
+        </HBox>
+
+        <HBox alignment="CENTER_LEFT" spacing="8">
+
+            <Label text="Gestioná las salas y su distribución de butacas"
+                   styleClass="subtitulo-pagina"/>
+
+            <Region minWidth="50" prefWidth="35"/>
+
+            <Label text="Estado:"
+                   styleClass="subtitulo-pagina"/>
+
+            <ComboBox fx:id="filtroEstado"
+                      prefWidth="130"
+                      styleClass="filtro-estado"/>
+
+        </HBox>
+    </VBox>
+
+    <!-- CONTENIDO -->
+
+    <HBox spacing="20" VBox.vgrow="ALWAYS">
+
+        <!-- LISTADO DE SALAS -->
+
+        <VBox spacing="15"
+              prefWidth="350"
+              styleClass="tarjeta-contenido">
+
+            <VBox spacing="8">
+
+                <Label text="Salas registradas"
+                       styleClass="titulo-seccion"/>
+
+            </VBox>
+            
+            <HBox alignment="CENTER_LEFT" spacing="10"
+                  styleClass="encabezado-lista-salas">
+
+                <Label text="Estado"
+                       minWidth="65"
+                       prefWidth="65"
+                       maxWidth="65"/>
+
+                <Label text="Nombre"
+                       styleClass="subtitulo-pagina"/>
+
+            </HBox>
+
+            <ListView fx:id="listaSalas"
+                      VBox.vgrow="ALWAYS"
+                      styleClass="lista-salas"/>
+
+        </VBox>
+
+        <!-- DISTRIBUCION DE BUTACAS -->
+
+        <VBox spacing="20"
+              HBox.hgrow="ALWAYS"
+              styleClass="tarjeta-contenido">
+
+            <Label text="Distribución de butacas"
+                   styleClass="titulo-seccion"/>
+
+            <Label fx:id="nombreSalaSeleccionada"
+                   text="Seleccioná una sala para ver su distribución"
+                   styleClass="subtitulo-pagina"/>
+
+            <VBox fx:id="contenedorButacas"
+                  alignment="TOP_CENTER"
+                  spacing="12"
+                  VBox.vgrow="ALWAYS"/>
+
+            <Label fx:id="cantidadButacas"
+                   text=""
+                   styleClass="subtitulo-pagina"/>
+
+        </VBox>
+
+    </HBox>
+
+</VBox>

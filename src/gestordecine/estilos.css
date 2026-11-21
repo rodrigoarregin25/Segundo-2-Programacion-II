@@ -312,3 +312,105 @@
     -fx-font-size: 20px;
     -fx-font-weight: bold;
 }
+
+
+/* ADMINISTRACION DE SALAS */
+
+.lista-salas {
+    -fx-background-color: #0D1625;
+    -fx-control-inner-background: #0D1625;
+    -fx-border-color: #30415A;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+.lista-salas .list-cell {
+    -fx-background-color: #0D1625;
+    -fx-text-fill: #DCE6F3;
+    -fx-font-size: 14px;
+    -fx-padding: 15;
+}
+
+.lista-salas .list-cell:filled:hover {
+    -fx-background-color: #263C58;
+}
+
+.lista-salas .list-cell:filled:selected {
+    -fx-background-color: #174A75;
+    -fx-text-fill: #FFFFFF;
+}
+
+.lista-salas .list-cell:empty {
+    -fx-background-color: transparent;
+}
+
+/* REPRESENTACION DE BUTACAS */
+
+.butaca-visual {
+    -fx-background-color: #28618D;
+    -fx-background-radius: 5;
+    -fx-min-width: 28;
+    -fx-min-height: 28;
+    -fx-pref-width: 28;
+    -fx-pref-height: 28;
+}
+
+.butaca-visual:hover {
+    -fx-background-color: #3987BF;
+}
+
+.pantalla-cine {
+    -fx-background-color: #426B91;
+    -fx-background-radius: 12;
+    -fx-pref-height: 8;
+    -fx-max-height: 8;
+}
+
+/* PLANO DE SALAS */
+
+.texto-pantalla {
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 12px;
+    -fx-padding: 0 0 20 0;
+}
+
+.etiqueta-fila {
+    -fx-text-fill: #AFC4DA;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-min-width: 25px;
+    -fx-alignment: CENTER;
+}
+
+.butaca-visual {
+    -fx-background-color: #28618D;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 10px;
+    -fx-background-radius: 5;
+    -fx-min-width: 28px;
+    -fx-min-height: 28px;
+    -fx-pref-width: 28px;
+    -fx-pref-height: 28px;
+    -fx-alignment: CENTER;
+}
+
+.texto-pantalla {
+    -fx-text-fill: #C7CFDB;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.barra-pantalla {
+    -fx-background-color: linear-gradient(to right, #1A5E94, #39A8FF, #1A5E94);
+    -fx-background-radius: 999;
+    -fx-effect: dropshadow(gaussian, rgba(57,168,255,0.35), 14, 0.2, 0, 0);
+}
+
+.encabezado-lista-salas {
+    -fx-padding: 0 0 0 16;
+}
+
+.encabezado-lista-salas .label {
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 13px;
+}

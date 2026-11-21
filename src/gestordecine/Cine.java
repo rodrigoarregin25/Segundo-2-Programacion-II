@@ -4,6 +4,11 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 public class Cine implements Serializable {
 
@@ -36,6 +41,28 @@ public class Cine implements Serializable {
         return servicioDeReservas;
     }
 
+    public Cine copiar() throws IOException, ClassNotFoundException {
+
+        ByteArrayOutputStream memoria = new ByteArrayOutputStream();
+
+        try (ObjectOutputStream salida
+                = new ObjectOutputStream(memoria)) {
+
+            salida.writeObject(this);
+        }
+
+        try (ObjectInputStream entrada
+                = new ObjectInputStream(
+                        new ByteArrayInputStream(memoria.toByteArray()))) {
+
+            Cine copia = (Cine) entrada.readObject();
+
+            copia.getServicioDeReservas().recargarCodigos();
+
+            return copia;
+        }
+    }
+
     public void registrarPelicula(Pelicula pelicula) throws RegistroDuplicadoException {
 
         if (pelicula == null) {
@@ -65,6 +92,36 @@ public class Cine implements Serializable {
         }
 
         salas.add(sala);
+    }
+
+    public void desactivarSala(int idSala) {
+
+        Sala sala = buscarSalaPorId(idSala);
+
+        if (sala == null) {
+            throw new IllegalArgumentException("La sala no existe.");
+        }
+
+        if (!sala.isActiva()) {
+            throw new IllegalStateException("La sala ya está desactivada.");
+        }
+
+        sala.desactivar();
+    }
+
+    public void reactivarSala(int idSala) {
+
+        Sala sala = buscarSalaPorId(idSala);
+
+        if (sala == null) {
+            throw new IllegalArgumentException("La sala no existe.");
+        }
+
+        if (sala.isActiva()) {
+            throw new IllegalStateException("La sala ya está activa.");
+        }
+
+        sala.reactivar();
     }
 
     public void programarFuncion(Funcion funcion) throws RegistroDuplicadoException {
@@ -263,6 +320,21 @@ public class Cine implements Serializable {
 
     }
 
+    public void reactivarPelicula(int idPelicula) {
+
+        Pelicula pelicula = buscarPeliculaPorId(idPelicula);
+
+        if (pelicula == null) {
+            throw new IllegalArgumentException("La película no existe.");
+        }
+
+        if (pelicula.isActiva()) {
+            throw new IllegalStateException("La película ya está activa.");
+        }
+
+        pelicula.reactivar();
+    }
+
     public Reserva confirmarReserva(Cliente cliente, Funcion funcion, ArrayList<Entrada> entradas) {
         if (funcion == null) {
             throw new IllegalArgumentException("La funcion no puede ser nula");
@@ -289,6 +361,40 @@ public class Cine implements Serializable {
         }
 
         return mayorId + 1;
+    }
+
+    public int obtenerSiguienteIdSala() {
+
+        int mayorId = 0;
+
+        for (Sala sala : salas) {
+            if (sala.getIdSala() > mayorId) {
+                mayorId = sala.getIdSala();
+            }
+        }
+
+        return mayorId + 1;
+    }
+
+    public void editarSala(int idSala, String nuevoNombre) {
+
+        Sala sala = buscarSalaPorId(idSala);
+
+        if (sala == null) {
+            throw new IllegalArgumentException("La sala no existe");
+        }
+
+        for (Sala existente : salas) {
+            if (existente.getIdSala() != idSala
+                    && existente.getNombreSala().equalsIgnoreCase(nuevoNombre.trim())) {
+
+                throw new IllegalArgumentException(
+                        "Ya existe otra sala con ese nombre"
+                );
+            }
+        }
+
+        sala.setNombreSala(nuevoNombre);
     }
 
 }

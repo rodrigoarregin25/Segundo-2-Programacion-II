@@ -5,11 +5,14 @@ import java.util.ArrayList;
 
 public final class Sala implements Serializable {
 
+    private static final long serialVersionUID = -6729183293122678294L;
     private final int idSala;
     private String nombreSala;
     private final int cantidadFilas;
     private final int butacasPorFila;
+    private String distribucionButacas;
     private final ArrayList<Butaca> butacas;
+    private boolean activa = true;
 
     public Sala(int idSala, String nombreSala, int cantidadFilas, int butacasPorFila) {
         setNombreSala(nombreSala);
@@ -30,6 +33,8 @@ public final class Sala implements Serializable {
         this.butacasPorFila = butacasPorFila;
         this.butacas = new ArrayList<>();
 
+        this.distribucionButacas = String.valueOf(butacasPorFila);
+
         for (int i = 0; i < cantidadFilas; i++) {
             char fila = (char) ('A' + i);
 
@@ -41,12 +46,66 @@ public final class Sala implements Serializable {
 
     }
 
+    public Sala(int idSala, String nombreSala,
+            int cantidadFilas, String distribucionButacas) {
+
+        this(idSala, nombreSala, cantidadFilas,
+                calcularTotalButacas(distribucionButacas));
+
+        this.distribucionButacas = distribucionButacas.trim()
+                .replaceAll("\\s+", "");
+    }
+
+    private static int calcularTotalButacas(String distribucion) {
+
+        if (distribucion == null
+                || !distribucion.trim().matches("\\d+(\\s*-\\s*\\d+)*")) {
+
+            throw new IllegalArgumentException(
+                    "La distribución debe tener el formato 4-8-4."
+            );
+        }
+
+        int total = 0;
+
+        for (String bloque : distribucion.split("-")) {
+
+            int cantidad;
+
+            try {
+                cantidad = Integer.parseInt(bloque.trim());
+                total = Math.addExact(total, cantidad);
+            } catch (ArithmeticException e) {
+                throw new IllegalArgumentException(
+                        "La cantidad de butacas es demasiado grande."
+                );
+            }
+
+            if (cantidad <= 0) {
+                throw new IllegalArgumentException(
+                        "Cada bloque debe tener al menos una butaca."
+                );
+            }
+        }
+
+        return total;
+    }
+
     public void setNombreSala(String nombreSala) {
         if (nombreSala == null || nombreSala.isBlank()) {
             throw new IllegalArgumentException("El nombre de la sala no puede estar vacio");
         }
 
         this.nombreSala = nombreSala.trim();
+    }
+
+    public String getDistribucionButacas() {
+
+        if (distribucionButacas == null) {
+            return String.valueOf(butacasPorFila);
+        }
+
+        return distribucionButacas;
     }
 
     public int getIdSala() {
@@ -68,5 +127,17 @@ public final class Sala implements Serializable {
     public ArrayList<Butaca> getButacas() {
         return new ArrayList<>(butacas);
     }
-    
+
+    public boolean isActiva() {
+        return activa;
+    }
+
+    public void desactivar() {
+        this.activa = false;
+    }
+
+    public void reactivar() {
+        this.activa = true;
+    }
+
 }

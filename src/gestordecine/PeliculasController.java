@@ -5,9 +5,14 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 
 public class PeliculasController {
 
@@ -18,7 +23,30 @@ public class PeliculasController {
     public void configurar(Cine cine, PersistenciaCine persistencia) {
         this.cine = cine;
         this.persistencia = persistencia;
-        tablaPeliculas.getItems().setAll(cine.getPeliculas());
+        ObservableList<Pelicula> peliculas
+                = FXCollections.observableArrayList(cine.getPeliculas());
+
+        FilteredList<Pelicula> peliculasFiltradas
+                = new FilteredList<>(peliculas);
+
+        tablaPeliculas.setItems(peliculasFiltradas);
+
+        filtroEstado.valueProperty().addListener((observable, anterior, nuevo) -> {
+            peliculasFiltradas.setPredicate(pelicula -> {
+                if ("Activas".equals(nuevo)) {
+                    return pelicula.isActiva();
+                }
+
+                if ("Inactivas".equals(nuevo)) {
+                    return !pelicula.isActiva();
+                }
+
+                return true;
+            });
+        });
+
+        filtroEstado.setValue("Activas");
+        peliculasFiltradas.setPredicate(Pelicula::isActiva);
     }
 
     public void setPrincipalController(PrincipalController principalController) {
@@ -45,6 +73,12 @@ public class PeliculasController {
 
     @FXML
     private TableColumn<Pelicula, String> colGenero;
+
+    @FXML
+    private ComboBox<String> filtroEstado;
+
+    @FXML
+    private Button botonEstado;
 
     @FXML
     private void initialize() {
@@ -104,6 +138,27 @@ public class PeliculasController {
                         datos.getValue().getGenero()
                 )
         );
+
+        filtroEstado.getItems().addAll("Activas", "Inactivas", "Todas");
+        filtroEstado.setValue("Activas");
+
+        tablaPeliculas.getSelectionModel().selectedItemProperty()
+                .addListener((observable, anterior, seleccionada) -> {
+
+                    if (seleccionada == null) {
+                        botonEstado.setDisable(true);
+                        botonEstado.setText("Desactivar Película");
+                        return;
+                    }
+
+                    botonEstado.setDisable(false);
+
+                    if (seleccionada.isActiva()) {
+                        botonEstado.setText("Desactivar Película");
+                    } else {
+                        botonEstado.setText("Restaurar Película");
+                    }
+                });
     }
 
     @FXML
@@ -134,20 +189,22 @@ public class PeliculasController {
             return;
         }
 
-        if (!seleccionada.isActiva()) {
-            mostrarMensaje("La película ya está desactivada.");
-            return;
-        }
-
         try {
-            cine.desactivarPelicula(seleccionada.getIdPelicula());
+            Cine cineTrabajo = cine.copiar();
 
-            persistencia.guardar(cine);
+            if (seleccionada.isActiva()) {
+                cineTrabajo.desactivarPelicula(seleccionada.getIdPelicula());
+            } else {
+                cineTrabajo.reactivarPelicula(seleccionada.getIdPelicula());
+            }
 
-            tablaPeliculas.refresh();
+            persistencia.guardar(cineTrabajo);
+
+            principalController.actualizarCine(cineTrabajo);
+            principalController.mostrarPeliculas();
 
         } catch (Exception e) {
-            mostrarMensaje("Error al desactivar la película: " + e.getMessage());
+            mostrarMensaje("Error al cambiar el estado de la película: " + e.getMessage());
             e.printStackTrace();
         }
     }

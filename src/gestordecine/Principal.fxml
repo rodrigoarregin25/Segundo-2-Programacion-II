@@ -22,7 +22,9 @@
             <Button text="Películas"
                     styleClass="boton-menu"
                     onAction="#mostrarPeliculas"/>
-            <Button text="Salas" styleClass="boton-menu"/>
+            <Button text="Salas" 
+                    styleClass="boton-menu"
+                    onAction="#mostrarSalas"/>
             <Button text="Funciones" styleClass="boton-menu"/>
 
         </VBox>

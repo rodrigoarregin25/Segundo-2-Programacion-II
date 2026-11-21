@@ -1,4 +1,3 @@
-
 package gestordecine;
 
 import java.io.*;
@@ -23,22 +22,36 @@ public class FormularioPeliculaController {
 
     private File archivoPosterSeleccionado;
 
-    @FXML private Label tituloFormulario;
-    @FXML private Label mensajeError;
-    @FXML private Label nombrePoster;
+    @FXML
+    private Label tituloFormulario;
+    @FXML
+    private Label mensajeError;
+    @FXML
+    private Label nombrePoster;
 
-    @FXML private TextField campoTitulo;
-    @FXML private TextField campoDuracion;
-    @FXML private TextField campoAnio;
-    @FXML private TextField campoGenero;
-    @FXML private TextField campoDirector;
-    @FXML private TextField campoActores;
-    @FXML private TextField campoPuntuacion;
-    @FXML private TextField campoClasificacion;
+    @FXML
+    private TextField campoTitulo;
+    @FXML
+    private TextField campoDuracion;
+    @FXML
+    private TextField campoAnio;
+    @FXML
+    private TextField campoGenero;
+    @FXML
+    private TextField campoDirector;
+    @FXML
+    private TextField campoActores;
+    @FXML
+    private TextField campoPuntuacion;
+    @FXML
+    private TextField campoClasificacion;
 
-    @FXML private TextArea campoSinopsis;
-    @FXML private Button botonGuardar;
-    @FXML private ImageView vistaPoster;
+    @FXML
+    private TextArea campoSinopsis;
+    @FXML
+    private Button botonGuardar;
+    @FXML
+    private ImageView vistaPoster;
 
     public void configurar(
             Cine cine,
@@ -143,13 +156,11 @@ public class FormularioPeliculaController {
 
             // Trabajamos con una copia para no modificar
             // el Cine original si falla la persistencia.
-
-            Cine cineTrabajo = copiarCine(cine);
+            Cine cineTrabajo = cine.copiar();
 
             if (peliculaEnEdicion != null) {
 
                 // EDITAR PELÍCULA
-
                 int id = peliculaEnEdicion.getIdPelicula();
 
                 Pelicula pelicula = cineTrabajo.buscarPeliculaPorId(id);
@@ -161,7 +172,6 @@ public class FormularioPeliculaController {
                 }
 
                 // Validamos y editamos primero sobre la copia.
-
                 cineTrabajo.editarPelicula(
                         id,
                         titulo,
@@ -176,7 +186,6 @@ public class FormularioPeliculaController {
                 );
 
                 // Copiamos el póster solamente si cambió.
-
                 if (archivoPosterSeleccionado != null) {
                     nuevoPoster = guardarPoster(id);
                     pelicula.setPoster(nuevoPoster);
@@ -185,7 +194,6 @@ public class FormularioPeliculaController {
             } else {
 
                 // REGISTRAR PELÍCULA
-
                 int id = cineTrabajo.obtenerSiguienteIdPelicula();
 
                 int duracion = Integer.parseInt(
@@ -200,7 +208,6 @@ public class FormularioPeliculaController {
 
                 // Primero validamos todos los datos.
                 // El nombre temporal es solo para validar.
-
                 Pelicula pelicula = new Pelicula(
                         id,
                         titulo,
@@ -216,7 +223,6 @@ public class FormularioPeliculaController {
                 );
 
                 // Ahora copiamos el archivo real.
-
                 nuevoPoster = guardarPoster(id);
 
                 pelicula.setPoster(nuevoPoster);
@@ -225,7 +231,6 @@ public class FormularioPeliculaController {
             }
 
             // Persistimos antes de reemplazar el Cine activo.
-
             persistencia.guardar(cineTrabajo);
 
             guardadoCompleto = true;
@@ -256,7 +261,6 @@ public class FormularioPeliculaController {
 
             // Si no se pudo guardar, eliminamos solamente
             // la imagen nueva. La anterior queda intacta.
-
             if (!guardadoCompleto && nuevoPoster != null) {
                 try {
                     Files.deleteIfExists(
@@ -284,8 +288,8 @@ public class FormularioPeliculaController {
 
         Files.createDirectories(carpetaPosters);
 
-        String nombreOriginal =
-                archivoPosterSeleccionado.getName().toLowerCase();
+        String nombreOriginal
+                = archivoPosterSeleccionado.getName().toLowerCase();
 
         String extension = nombreOriginal.endsWith(".png")
                 ? ".png" : ".jpg";
@@ -309,17 +313,15 @@ public class FormularioPeliculaController {
             throws IOException, ClassNotFoundException {
 
         // Serializamos el Cine en memoria.
-
         ByteArrayOutputStream memoria = new ByteArrayOutputStream();
 
-        try (ObjectOutputStream salida =
-                new ObjectOutputStream(memoria)) {
+        try (ObjectOutputStream salida
+                = new ObjectOutputStream(memoria)) {
 
             salida.writeObject(original);
         }
 
-        // Lo recuperamos como una instancia independiente.
-
+        // Lo recuperamos como una instancia independient
         try (ObjectInputStream entrada = new ObjectInputStream(
                 new ByteArrayInputStream(memoria.toByteArray()))) {
 

@@ -1,4 +1,3 @@
-
 package gestordecine;
 
 import java.io.Serializable;
@@ -50,7 +49,6 @@ public class Pelicula implements Serializable {
     }
 
     // GETTERS
-
     public int getIdPelicula() {
         return idPelicula;
     }
@@ -100,7 +98,6 @@ public class Pelicula implements Serializable {
     }
 
     // SETTERS
-
     public void setTituloPelicula(String tituloPelicula) {
         if (tituloPelicula == null || tituloPelicula.isBlank()) {
             throw new IllegalArgumentException("El título de la película no puede estar vacío");
@@ -174,8 +171,11 @@ public class Pelicula implements Serializable {
     }
 
     // ESTADO
-
     public void desactivar() {
         this.activa = false;
+    }
+
+    public void reactivar() {
+        this.activa = true;
     }
 }
