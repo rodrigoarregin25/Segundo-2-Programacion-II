@@ -23,6 +23,7 @@ public class NuevaReservaController {
     private static final double ESPACIO_ENTRE_ELEMENTOS = 8;
     private static final double ANCHO_PASILLO = 26;
     private static final double ANCHO_ETIQUETA_FILA = 24;
+    private static final int MAXIMO_ENTRADAS = 10;
 
     private Cine cine;
     private PersistenciaCine persistencia;
@@ -37,6 +38,8 @@ public class NuevaReservaController {
 
     @FXML
     private ComboBox<String> comboFuncion;
+    @FXML
+    private ComboBox<String> comboCantidad;
     @FXML
     private ComboBox<String> comboTipoEntrada;
     @FXML
@@ -63,14 +66,28 @@ public class NuevaReservaController {
     private TextArea areaComprobante;
 
     /**
-     * Que hace: carga los tipos de entrada y avisa cuando se elige otra funcion.
-     * JavaFX lo llama solo al abrir la pantalla.
+     * Que hace: carga las cantidades y los tipos de entrada, y avisa cuando se
+     * elige otra funcion o otra cantidad. JavaFX lo llama solo al abrir la pantalla.
      */
     @FXML
     private void initialize() {
         comboTipoEntrada.getItems().addAll(
                 "Entrada General", "Entrada Estudiante", "Entrada Jubilados");
         comboTipoEntrada.getSelectionModel().selectFirst();
+
+        for (int i = 1; i <= MAXIMO_ENTRADAS; i++) {
+            comboCantidad.getItems().add(String.valueOf(i));
+        }
+        comboCantidad.getSelectionModel().selectFirst();
+
+        // Al cambiar la cantidad se borra lo marcado para empezar de nuevo
+        comboCantidad.getSelectionModel().selectedIndexProperty()
+                .addListener((observable, anterior, nuevo) -> {
+                    entradas.clear();
+                    ocultarError();
+                    dibujarButacas();
+                    actualizarResumen();
+                });
 
         comboFuncion.getSelectionModel().selectedIndexProperty()
                 .addListener((observable, anterior, nuevo) -> {
@@ -108,6 +125,14 @@ public class NuevaReservaController {
 
     public void setPrincipalController(PrincipalController principalController) {
         this.principalController = principalController;
+    }
+
+    /**
+     * Que hace: devuelve la cantidad de entradas elegida en el desplegable.
+     * Retorna: la cantidad (de 1 a 10).
+     */
+    private int obtenerCantidad() {
+        return comboCantidad.getSelectionModel().getSelectedIndex() + 1;
     }
 
     /**
@@ -208,7 +233,8 @@ public class NuevaReservaController {
 
     /**
      * Que hace: marca la butaca con el tipo de entrada elegido, o la desmarca
-     * si ya estaba marcada. Las ocupadas no se pueden marcar.
+     * si ya estaba marcada. Las ocupadas no se pueden marcar, y tampoco se
+     * pueden marcar mas butacas que la cantidad de entradas elegida.
      * Parametros: butaca (la butaca donde se hizo clic).
      */
     private void alternarButaca(Butaca butaca) {
@@ -224,6 +250,11 @@ public class NuevaReservaController {
         if (posicion >= 0) {
             entradas.remove(posicion);
         } else {
+            if (entradas.size() >= obtenerCantidad()) {
+                mostrarError("Ya elegiste las " + obtenerCantidad()
+                        + " butacas. Desmarca una o aumenta la cantidad de entradas");
+                return;
+            }
             entradas.add(crearEntrada(butaca));
         }
 
@@ -294,6 +325,10 @@ public class NuevaReservaController {
             }
             if (entradas.isEmpty()) {
                 throw new IllegalArgumentException("Debe seleccionar al menos una butaca");
+            }
+            if (entradas.size() != obtenerCantidad()) {
+                throw new IllegalArgumentException("Elegiste " + obtenerCantidad()
+                        + " entradas pero marcaste " + entradas.size() + " butacas");
             }
 
             int dni;
