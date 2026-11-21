@@ -269,7 +269,7 @@ public class Cine implements Serializable {
             int idPelicula,
             String titulo,
             int anio,
-            String genero,
+            ArrayList<Genero> generos,
             String director,
             String actores,
             String sinopsis,
@@ -288,7 +288,7 @@ public class Cine implements Serializable {
                 titulo,
                 pelicula.getDuracionPelicula(),
                 anio,
-                genero,
+                generos,
                 director,
                 actores,
                 sinopsis,
@@ -299,7 +299,7 @@ public class Cine implements Serializable {
 
         pelicula.setTituloPelicula(titulo);
         pelicula.setAnioEstreno(anio);
-        pelicula.setGenero(genero);
+        pelicula.setGeneros(generos);
         pelicula.setDirector(director);
         pelicula.setActores(actores);
         pelicula.setSinopsis(sinopsis);

@@ -133,9 +133,9 @@ public class PeliculasController {
                 ).asObject()
         );
 
-        colGenero.setCellValueFactory(datos
-                -> new SimpleStringProperty(
-                        datos.getValue().getGenero()
+        colGenero.setCellValueFactory(
+                datos -> new SimpleStringProperty(
+                        formatearGeneros(datos.getValue())
                 )
         );
 
@@ -213,4 +213,16 @@ public class PeliculasController {
         mensajeEstado.setText(mensaje);
         mensajeEstado.setVisible(true);
     }
+
+    private String formatearGeneros(Pelicula pelicula) {
+
+        if (pelicula.getGeneros().isEmpty()) {
+            return "Sin género";
+        }
+
+        return pelicula.getGeneros().stream()
+                .map(Genero::toString)
+                .collect(java.util.stream.Collectors.joining(", "));
+    }
+
 }

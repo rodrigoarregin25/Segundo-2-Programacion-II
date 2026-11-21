@@ -3,8 +3,6 @@ package gestordecine;
 import java.io.*;
 import java.nio.file.*;
 import java.util.UUID;
-
-import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -12,6 +10,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import javafx.fxml.FXML;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.layout.FlowPane;
 
 public class FormularioPeliculaController {
 
@@ -36,8 +40,6 @@ public class FormularioPeliculaController {
     @FXML
     private TextField campoAnio;
     @FXML
-    private TextField campoGenero;
-    @FXML
     private TextField campoDirector;
     @FXML
     private TextField campoActores;
@@ -52,6 +54,10 @@ public class FormularioPeliculaController {
     private Button botonGuardar;
     @FXML
     private ImageView vistaPoster;
+    @FXML
+    private FlowPane contenedorGeneros;
+
+    private final Map<Genero, ToggleButton> botonesGenero = new HashMap<>();
 
     public void configurar(
             Cine cine,
@@ -78,7 +84,6 @@ public class FormularioPeliculaController {
         campoDuracion.setDisable(true);
 
         campoAnio.setText(String.valueOf(pelicula.getAnioEstreno()));
-        campoGenero.setText(pelicula.getGenero());
         campoDirector.setText(pelicula.getDirector());
         campoActores.setText(pelicula.getActores());
         campoSinopsis.setText(pelicula.getSinopsis());
@@ -99,6 +104,19 @@ public class FormularioPeliculaController {
                         new Image(ruta.toUri().toString())
                 );
                 nombrePoster.setText(pelicula.getPoster());
+            }
+        }
+        // Limpiar los géneros seleccionados
+        for (ToggleButton boton : botonesGenero.values()) {
+            boton.setSelected(false);
+        }
+
+        // Marcar los géneros de la película
+        for (Genero genero : pelicula.getGeneros()) {
+            ToggleButton boton = botonesGenero.get(genero);
+
+            if (boton != null) {
+                boton.setSelected(true);
             }
         }
     }
@@ -145,6 +163,7 @@ public class FormularioPeliculaController {
 
         try {
             String titulo = campoTitulo.getText().trim();
+            ArrayList<Genero> generos = obtenerGenerosSeleccionados();
 
             int anio = Integer.parseInt(
                     campoAnio.getText().trim()
@@ -176,7 +195,7 @@ public class FormularioPeliculaController {
                         id,
                         titulo,
                         anio,
-                        campoGenero.getText(),
+                        generos,
                         campoDirector.getText(),
                         campoActores.getText(),
                         campoSinopsis.getText(),
@@ -213,7 +232,7 @@ public class FormularioPeliculaController {
                         titulo,
                         duracion,
                         anio,
-                        campoGenero.getText(),
+                        generos,
                         campoDirector.getText(),
                         campoActores.getText(),
                         campoSinopsis.getText(),
@@ -308,28 +327,37 @@ public class FormularioPeliculaController {
 
         return nombreArchivo;
     }
+    
+    private void cargarGeneros() {
+        contenedorGeneros.getChildren().clear();
+        botonesGenero.clear();
 
-    private Cine copiarCine(Cine original)
-            throws IOException, ClassNotFoundException {
+        for (Genero genero : Genero.values()) {
+            ToggleButton boton = new ToggleButton(genero.toString());
+            boton.getStyleClass().add("chip-genero");
 
-        // Serializamos el Cine en memoria.
-        ByteArrayOutputStream memoria = new ByteArrayOutputStream();
+            botonesGenero.put(genero, boton);
+            contenedorGeneros.getChildren().add(boton);
+        }
+    }
 
-        try (ObjectOutputStream salida
-                = new ObjectOutputStream(memoria)) {
+    @FXML
+    private void initialize() {
+        cargarGeneros();
+    }
 
-            salida.writeObject(original);
+    private ArrayList<Genero> obtenerGenerosSeleccionados() {
+
+        ArrayList<Genero> seleccionados = new ArrayList<>();
+
+        for (Genero genero : Genero.values()) {
+            ToggleButton boton = botonesGenero.get(genero);
+
+            if (boton != null && boton.isSelected()) {
+                seleccionados.add(genero);
+            }
         }
 
-        // Lo recuperamos como una instancia independient
-        try (ObjectInputStream entrada = new ObjectInputStream(
-                new ByteArrayInputStream(memoria.toByteArray()))) {
-
-            Cine copia = (Cine) entrada.readObject();
-
-            copia.getServicioDeReservas().recargarCodigos();
-
-            return copia;
-        }
+        return seleccionados;
     }
 }

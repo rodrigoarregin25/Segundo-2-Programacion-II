@@ -51,7 +51,7 @@ public class DetallePeliculaController {
 
         informacionPelicula.setText(
                 pelicula.getAnioEstreno()
-                + " · " + pelicula.getGenero()
+                + " · " + formatearGeneros(pelicula)
                 + " · " + pelicula.getDuracionPelicula() + " min"
         );
 
@@ -85,5 +85,16 @@ public class DetallePeliculaController {
 
             imagenPoster.setImage(imagen);
         }
+    }
+
+    private String formatearGeneros(Pelicula pelicula) {
+
+        if (pelicula.getGeneros().isEmpty()) {
+            return "Sin género";
+        }
+
+        return pelicula.getGeneros().stream()
+                .map(Genero::toString)
+                .collect(java.util.stream.Collectors.joining(", "));
     }
 }

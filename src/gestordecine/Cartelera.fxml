@@ -4,6 +4,10 @@
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ComboBox?>
 
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="gestordecine.CarteleraController"
@@ -15,6 +19,21 @@
 
     <Label text="Descubrí las películas disponibles en nuestro cine"
            styleClass="subtitulo-pagina"/>
+    
+    <HBox alignment="CENTER_LEFT" spacing="15"
+          styleClass="filtros-cartelera">
+
+        <TextField fx:id="campoBusqueda"
+                   promptText="Buscar película..."
+                   prefWidth="300"
+                   styleClass="campo-busqueda-cartelera"/>
+
+        <ComboBox fx:id="filtroGenero"
+                  prefWidth="200"
+                  promptText="Todos los géneros"
+                  styleClass="filtro-genero-cartelera"/>
+
+    </HBox>
 
     <ScrollPane fitToWidth="true"
                 hbarPolicy="NEVER"

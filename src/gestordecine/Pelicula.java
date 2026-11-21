@@ -2,6 +2,7 @@ package gestordecine;
 
 import java.io.Serializable;
 import java.time.Year;
+import java.util.ArrayList;
 
 public class Pelicula implements Serializable {
 
@@ -12,7 +13,7 @@ public class Pelicula implements Serializable {
     private final int duracionPelicula;
     private boolean activa;
     private int anioEstreno;
-    private String genero;
+    private ArrayList<Genero> generos;
     private String director;
     private String actores;
     private String sinopsis;
@@ -21,7 +22,7 @@ public class Pelicula implements Serializable {
     private String poster;
 
     public Pelicula(int idPelicula, String tituloPelicula, int duracionPelicula,
-            int anioEstreno, String genero, String director,
+            int anioEstreno, ArrayList<Genero> generos, String director,
             String actores, String sinopsis, double puntuacion,
             String clasificacion, String poster) {
 
@@ -32,6 +33,7 @@ public class Pelicula implements Serializable {
         if (duracionPelicula <= 0) {
             throw new IllegalArgumentException("La duración debe ser mayor a cero");
         }
+        setGeneros(generos);
 
         this.idPelicula = idPelicula;
         this.duracionPelicula = duracionPelicula;
@@ -39,7 +41,6 @@ public class Pelicula implements Serializable {
 
         setTituloPelicula(tituloPelicula);
         setAnioEstreno(anioEstreno);
-        setGenero(genero);
         setDirector(director);
         setActores(actores);
         setSinopsis(sinopsis);
@@ -69,10 +70,6 @@ public class Pelicula implements Serializable {
         return anioEstreno;
     }
 
-    public String getGenero() {
-        return genero;
-    }
-
     public String getDirector() {
         return director;
     }
@@ -97,6 +94,14 @@ public class Pelicula implements Serializable {
         return poster;
     }
 
+    public ArrayList<Genero> getGeneros() {
+        if (generos == null) {
+            return new ArrayList<>();
+        }
+
+        return new ArrayList<>(generos);
+    }
+
     // SETTERS
     public void setTituloPelicula(String tituloPelicula) {
         if (tituloPelicula == null || tituloPelicula.isBlank()) {
@@ -114,20 +119,29 @@ public class Pelicula implements Serializable {
         this.anioEstreno = anioEstreno;
     }
 
-    public void setGenero(String genero) {
-        if (genero == null || genero.isBlank()) {
-            throw new IllegalArgumentException("El género no puede estar vacío");
-        }
-
-        this.genero = genero.trim();
-    }
-
     public void setDirector(String director) {
         if (director == null || director.isBlank()) {
             throw new IllegalArgumentException("El director no puede estar vacío");
         }
 
         this.director = director.trim();
+    }
+
+    public void setGeneros(ArrayList<Genero> generos) {
+
+        if (generos == null || generos.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Debés seleccionar al menos un género."
+            );
+        }
+
+        if (generos.contains(null)) {
+            throw new IllegalArgumentException(
+                    "Los géneros no pueden contener valores nulos."
+            );
+        }
+
+        this.generos = new ArrayList<>(generos);
     }
 
     public void setActores(String actores) {
