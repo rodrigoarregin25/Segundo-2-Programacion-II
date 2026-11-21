@@ -1,16 +1,15 @@
+
 package gestordecine;
+
+import java.io.*;
+import java.nio.file.*;
+import java.util.UUID;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
@@ -22,156 +21,30 @@ public class FormularioPeliculaController {
     private PrincipalController principalController;
     private Pelicula peliculaEnEdicion;
 
-    @FXML
-    private Label tituloFormulario;
-
-    @FXML
-    private TextField campoTitulo;
-
-    @FXML
-    private TextField campoDuracion;
-
-    @FXML
-    private Label mensajeError;
-
-    @FXML
-    private void cancelar() {
-        principalController.mostrarPeliculas();
-    }
-
-    @FXML
-    private Button botonGuardar;
-
-    @FXML
-    private TextField campoAnio;
-    @FXML
-    private TextField campoGenero;
-    @FXML
-    private TextField campoDirector;
-    @FXML
-    private TextField campoActores;
-    @FXML
-    private TextArea campoSinopsis;
-    @FXML
-    private TextField campoPuntuacion;
-    @FXML
-    private TextField campoClasificacion;
-    @FXML
-    private TextField campoPoster;
-    @FXML
-    private ImageView vistaPoster;
-
-    @FXML
-    private Label nombrePoster;
-
     private File archivoPosterSeleccionado;
 
-    @FXML
-    private void guardarPelicula() {
-        try {
-            String titulo = campoTitulo.getText().trim();
+    @FXML private Label tituloFormulario;
+    @FXML private Label mensajeError;
+    @FXML private Label nombrePoster;
 
-            if (peliculaEnEdicion != null) {
+    @FXML private TextField campoTitulo;
+    @FXML private TextField campoDuracion;
+    @FXML private TextField campoAnio;
+    @FXML private TextField campoGenero;
+    @FXML private TextField campoDirector;
+    @FXML private TextField campoActores;
+    @FXML private TextField campoPuntuacion;
+    @FXML private TextField campoClasificacion;
 
-                int anio = Integer.parseInt(campoAnio.getText().trim());
+    @FXML private TextArea campoSinopsis;
+    @FXML private Button botonGuardar;
+    @FXML private ImageView vistaPoster;
 
-                double puntuacion = Double.parseDouble(
-                        campoPuntuacion.getText().trim().replace(",", ".")
-                );
-
-                String poster = peliculaEnEdicion.getPoster();
-
-                // Si seleccionamos una imagen nueva, reemplazamos el póster
-                if (archivoPosterSeleccionado != null) {
-                    poster = guardarPoster(peliculaEnEdicion.getIdPelicula());
-                }
-
-                cine.editarPelicula(
-                        peliculaEnEdicion.getIdPelicula(),
-                        titulo,
-                        anio,
-                        campoGenero.getText(),
-                        campoDirector.getText(),
-                        campoActores.getText(),
-                        campoSinopsis.getText(),
-                        puntuacion,
-                        campoClasificacion.getText(),
-                        poster
-                );
-
-            } else {
-
-                // REGISTRAR NUEVA PELÍCULA
-                int id = cine.obtenerSiguienteIdPelicula();
-
-                int duracion = Integer.parseInt(
-                        campoDuracion.getText().trim()
-                );
-
-                int anio = Integer.parseInt(
-                        campoAnio.getText().trim()
-                );
-
-                double puntuacion = Double.parseDouble(
-                        campoPuntuacion.getText().trim().replace(",", ".")
-                );
-
-                // VALIDAR QUE SE HAYA SELECCIONADO UN PÓSTER
-                if (archivoPosterSeleccionado == null) {
-                    throw new IllegalArgumentException(
-                            "Debés seleccionar un póster para la película."
-                    );
-                }
-
-                String extension = archivoPosterSeleccionado.getName()
-                        .toLowerCase().endsWith(".png") ? ".png" : ".jpg";
-
-                String nombreArchivoPoster = "pelicula_" + id + extension;
-
-                // CREAR PELÍCULA
-                Pelicula pelicula = new Pelicula(
-                        id,
-                        titulo,
-                        duracion,
-                        anio,
-                        campoGenero.getText(),
-                        campoDirector.getText(),
-                        campoActores.getText(),
-                        campoSinopsis.getText(),
-                        puntuacion,
-                        campoClasificacion.getText(),
-                        nombreArchivoPoster
-                );
-
-                // COPIAR PÓSTER A LA CARPETA DEL PROYECTO
-                guardarPoster(id);
-
-                // REGISTRAR EN EL CINE
-                cine.registrarPelicula(pelicula);
-            }
-
-            // GUARDAR PERSISTENCIA
-            persistencia.guardar(cine);
-
-            // VOLVER AL LISTADO
-            principalController.mostrarPeliculas();
-
-        } catch (NumberFormatException e) {
-            mensajeError.setText(
-                    "Revisá los valores numéricos de duración, año y puntuación."
-            );
-
-        } catch (IllegalArgumentException e) {
-            mensajeError.setText(e.getMessage());
-
-        } catch (Exception e) {
-            mensajeError.setText("No se pudieron guardar los cambios.");
-            e.printStackTrace();
-        }
-    }
-
-    public void configurar(Cine cine, PersistenciaCine persistencia,
+    public void configurar(
+            Cine cine,
+            PersistenciaCine persistencia,
             PrincipalController principalController) {
+
         this.cine = cine;
         this.persistencia = persistencia;
         this.principalController = principalController;
@@ -185,7 +58,10 @@ public class FormularioPeliculaController {
         botonGuardar.setText("Guardar cambios");
 
         campoTitulo.setText(pelicula.getTituloPelicula());
-        campoDuracion.setText(String.valueOf(pelicula.getDuracionPelicula()));
+
+        campoDuracion.setText(
+                String.valueOf(pelicula.getDuracionPelicula())
+        );
         campoDuracion.setDisable(true);
 
         campoAnio.setText(String.valueOf(pelicula.getAnioEstreno()));
@@ -193,19 +69,30 @@ public class FormularioPeliculaController {
         campoDirector.setText(pelicula.getDirector());
         campoActores.setText(pelicula.getActores());
         campoSinopsis.setText(pelicula.getSinopsis());
-        campoPuntuacion.setText(String.valueOf(pelicula.getPuntuacion()));
+
+        campoPuntuacion.setText(
+                String.valueOf(pelicula.getPuntuacion())
+        );
+
         campoClasificacion.setText(pelicula.getClasificacion());
 
-        // Mostrar el póster actual
-        if (pelicula.getPoster() != null && !pelicula.getPoster().isBlank()) {
+        if (pelicula.getPoster() != null
+                && !pelicula.getPoster().isBlank()) {
 
             Path ruta = Paths.get("posters", pelicula.getPoster());
 
             if (Files.exists(ruta)) {
-                vistaPoster.setImage(new Image(ruta.toUri().toString()));
+                vistaPoster.setImage(
+                        new Image(ruta.toUri().toString())
+                );
                 nombrePoster.setText(pelicula.getPoster());
             }
         }
+    }
+
+    @FXML
+    private void cancelar() {
+        principalController.mostrarPeliculas();
     }
 
     @FXML
@@ -227,14 +114,161 @@ public class FormularioPeliculaController {
         );
 
         if (archivo != null) {
-
             archivoPosterSeleccionado = archivo;
 
             nombrePoster.setText(archivo.getName());
 
-            Image imagen = new Image(archivo.toURI().toString());
+            vistaPoster.setImage(
+                    new Image(archivo.toURI().toString())
+            );
+        }
+    }
 
-            vistaPoster.setImage(imagen);
+    @FXML
+    private void guardarPelicula() {
+
+        String nuevoPoster = null;
+        boolean guardadoCompleto = false;
+
+        try {
+            String titulo = campoTitulo.getText().trim();
+
+            int anio = Integer.parseInt(
+                    campoAnio.getText().trim()
+            );
+
+            double puntuacion = Double.parseDouble(
+                    campoPuntuacion.getText().trim().replace(",", ".")
+            );
+
+            // Trabajamos con una copia para no modificar
+            // el Cine original si falla la persistencia.
+
+            Cine cineTrabajo = copiarCine(cine);
+
+            if (peliculaEnEdicion != null) {
+
+                // EDITAR PELÍCULA
+
+                int id = peliculaEnEdicion.getIdPelicula();
+
+                Pelicula pelicula = cineTrabajo.buscarPeliculaPorId(id);
+
+                if (pelicula == null) {
+                    throw new IllegalArgumentException(
+                            "La película no existe."
+                    );
+                }
+
+                // Validamos y editamos primero sobre la copia.
+
+                cineTrabajo.editarPelicula(
+                        id,
+                        titulo,
+                        anio,
+                        campoGenero.getText(),
+                        campoDirector.getText(),
+                        campoActores.getText(),
+                        campoSinopsis.getText(),
+                        puntuacion,
+                        campoClasificacion.getText(),
+                        pelicula.getPoster()
+                );
+
+                // Copiamos el póster solamente si cambió.
+
+                if (archivoPosterSeleccionado != null) {
+                    nuevoPoster = guardarPoster(id);
+                    pelicula.setPoster(nuevoPoster);
+                }
+
+            } else {
+
+                // REGISTRAR PELÍCULA
+
+                int id = cineTrabajo.obtenerSiguienteIdPelicula();
+
+                int duracion = Integer.parseInt(
+                        campoDuracion.getText().trim()
+                );
+
+                if (archivoPosterSeleccionado == null) {
+                    throw new IllegalArgumentException(
+                            "Debés seleccionar un póster."
+                    );
+                }
+
+                // Primero validamos todos los datos.
+                // El nombre temporal es solo para validar.
+
+                Pelicula pelicula = new Pelicula(
+                        id,
+                        titulo,
+                        duracion,
+                        anio,
+                        campoGenero.getText(),
+                        campoDirector.getText(),
+                        campoActores.getText(),
+                        campoSinopsis.getText(),
+                        puntuacion,
+                        campoClasificacion.getText(),
+                        "poster_pendiente.jpg"
+                );
+
+                // Ahora copiamos el archivo real.
+
+                nuevoPoster = guardarPoster(id);
+
+                pelicula.setPoster(nuevoPoster);
+
+                cineTrabajo.registrarPelicula(pelicula);
+            }
+
+            // Persistimos antes de reemplazar el Cine activo.
+
+            persistencia.guardar(cineTrabajo);
+
+            guardadoCompleto = true;
+
+            principalController.actualizarCine(cineTrabajo);
+
+            principalController.mostrarPeliculas();
+
+        } catch (NumberFormatException e) {
+
+            mensajeError.setText(
+                    "Revisá duración, año y puntuación."
+            );
+
+        } catch (IllegalArgumentException e) {
+
+            mensajeError.setText(e.getMessage());
+
+        } catch (Exception e) {
+
+            mensajeError.setText(
+                    "No se pudieron guardar los cambios."
+            );
+
+            e.printStackTrace();
+
+        } finally {
+
+            // Si no se pudo guardar, eliminamos solamente
+            // la imagen nueva. La anterior queda intacta.
+
+            if (!guardadoCompleto && nuevoPoster != null) {
+                try {
+                    Files.deleteIfExists(
+                            Paths.get("posters", nuevoPoster)
+                    );
+                } catch (IOException e) {
+                    System.err.println(
+                            "No se pudo eliminar el póster temporal: "
+                            + e.getMessage()
+                    );
+                }
+            }
         }
     }
 
@@ -242,7 +276,7 @@ public class FormularioPeliculaController {
 
         if (archivoPosterSeleccionado == null) {
             throw new IllegalArgumentException(
-                    "Debés seleccionar un póster para la película."
+                    "Debés seleccionar un póster."
             );
         }
 
@@ -250,20 +284,50 @@ public class FormularioPeliculaController {
 
         Files.createDirectories(carpetaPosters);
 
-        String extension = archivoPosterSeleccionado.getName()
-                .toLowerCase()
-                .endsWith(".png") ? ".png" : ".jpg";
+        String nombreOriginal =
+                archivoPosterSeleccionado.getName().toLowerCase();
 
-        String nombreArchivo = "pelicula_" + idPelicula + extension;
+        String extension = nombreOriginal.endsWith(".png")
+                ? ".png" : ".jpg";
+
+        String nombreArchivo = "pelicula_" + idPelicula
+                + "_" + UUID.randomUUID() + extension;
 
         Path destino = carpetaPosters.resolve(nombreArchivo);
 
-        Files.copy(
-                archivoPosterSeleccionado.toPath(),
-                destino,
-                StandardCopyOption.REPLACE_EXISTING
-        );
+        try {
+            Files.copy(archivoPosterSeleccionado.toPath(), destino);
+        } catch (IOException e) {
+            Files.deleteIfExists(destino);
+            throw e;
+        }
 
         return nombreArchivo;
+    }
+
+    private Cine copiarCine(Cine original)
+            throws IOException, ClassNotFoundException {
+
+        // Serializamos el Cine en memoria.
+
+        ByteArrayOutputStream memoria = new ByteArrayOutputStream();
+
+        try (ObjectOutputStream salida =
+                new ObjectOutputStream(memoria)) {
+
+            salida.writeObject(original);
+        }
+
+        // Lo recuperamos como una instancia independiente.
+
+        try (ObjectInputStream entrada = new ObjectInputStream(
+                new ByteArrayInputStream(memoria.toByteArray()))) {
+
+            Cine copia = (Cine) entrada.readObject();
+
+            copia.getServicioDeReservas().recargarCodigos();
+
+            return copia;
+        }
     }
 }

@@ -12,7 +12,6 @@ public class Cine implements Serializable {
     private final ArrayList<Funcion> funciones;
     private final ServicioDeReservas servicioDeReservas;
     private static final long serialVersionUID = -7996707478867040710L;
-    
 
     public Cine() {
         this.peliculas = new ArrayList<>();
@@ -226,6 +225,20 @@ public class Cine implements Serializable {
         if (pelicula == null) {
             throw new IllegalArgumentException("La pelicula no existe");
         }
+
+        new Pelicula(
+                pelicula.getIdPelicula(),
+                titulo,
+                pelicula.getDuracionPelicula(),
+                anio,
+                genero,
+                director,
+                actores,
+                sinopsis,
+                puntuacion,
+                clasificacion,
+                poster
+        );
 
         pelicula.setTituloPelicula(titulo);
         pelicula.setAnioEstreno(anio);

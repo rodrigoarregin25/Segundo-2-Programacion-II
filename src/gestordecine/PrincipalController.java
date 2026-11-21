@@ -46,6 +46,15 @@ public class PrincipalController {
         this.persistencia = persistencia;
     }
 
+    public void actualizarCine(Cine cineActualizado) {
+        this.cine = cineActualizado;
+    }
+
+    public void recuperarCineGuardado() throws IOException, ClassNotFoundException {
+
+        this.cine = persistencia.cargarOCrear();
+    }
+
     public void mostrarFormularioPelicula() {
 
         try {
