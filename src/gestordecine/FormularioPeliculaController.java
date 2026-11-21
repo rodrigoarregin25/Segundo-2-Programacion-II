@@ -3,6 +3,7 @@ package gestordecine;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
 public class FormularioPeliculaController {
@@ -33,6 +34,23 @@ public class FormularioPeliculaController {
     private Button botonGuardar;
 
     @FXML
+    private TextField campoAnio;
+    @FXML
+    private TextField campoGenero;
+    @FXML
+    private TextField campoDirector;
+    @FXML
+    private TextField campoActores;
+    @FXML
+    private TextArea campoSinopsis;
+    @FXML
+    private TextField campoPuntuacion;
+    @FXML
+    private TextField campoClasificacion;
+    @FXML
+    private TextField campoPoster;
+
+    @FXML
     private void guardarPelicula() {
         try {
             String titulo = campoTitulo.getText().trim();
@@ -46,13 +64,35 @@ public class FormularioPeliculaController {
 
             } else {
 
+                int id = cine.obtenerSiguienteIdPelicula();
+
                 int duracion = Integer.parseInt(
                         campoDuracion.getText().trim()
                 );
 
-                int id = cine.obtenerSiguienteIdPelicula();
+                int anio = Integer.parseInt(
+                        campoAnio.getText().trim()
+                );
 
-                Pelicula pelicula = new Pelicula(id, titulo, duracion);
+                double puntuacion = Double.parseDouble(
+                        campoPuntuacion.getText().trim().replace(",", ".")
+                );
+
+                Pelicula pelicula = new Pelicula(
+                        id,
+                        titulo,
+                        duracion,
+                        anio,
+                        campoGenero.getText(),
+                        campoDirector.getText(),
+                        campoActores.getText(),
+                        campoSinopsis.getText(),
+                        puntuacion,
+                        campoClasificacion.getText(),
+                        campoPoster.getText()
+                );
+
+                cine.registrarPelicula(pelicula);
 
                 cine.registrarPelicula(pelicula);
             }
@@ -62,7 +102,7 @@ public class FormularioPeliculaController {
             principalController.mostrarPeliculas();
 
         } catch (NumberFormatException e) {
-            mensajeError.setText("La duración debe ser un número entero.");
+            mensajeError.setText("Revisá los valores numéricos de duración, año y puntuación.");
 
         } catch (IllegalArgumentException e) {
             mensajeError.setText(e.getMessage());
@@ -93,7 +133,7 @@ public class FormularioPeliculaController {
         );
 
         campoDuracion.setDisable(true);
-        
+
         botonGuardar.setText("Guardar cambios");
     }
 

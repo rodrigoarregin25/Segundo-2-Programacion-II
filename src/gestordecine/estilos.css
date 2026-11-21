@@ -203,7 +203,98 @@
     -fx-background-color: #A33D55;
 }
 
-.mensaje-error {
-    -fx-text-fill: #FF7B85;
+.scroll-formulario {
+    -fx-background-color: transparent;
+    -fx-background: #0D111B;
+    -fx-border-color: transparent;
+}
+
+.scroll-formulario > .viewport {
+    -fx-background-color: #0D111B;
+}
+
+
+/* =====================================
+   FORMULARIO DE PELICULAS - COMPACTO
+   ===================================== */
+
+.contenido-formulario-compacto {
+    -fx-padding: 25 35 35 35;
+    -fx-spacing: 18;
+    -fx-alignment: TOP_CENTER;
+}
+
+.tarjeta-formulario-compacto {
+    -fx-background-color: #151F30;
+    -fx-background-radius: 14;
+    -fx-padding: 24;
+    -fx-spacing: 15;
+    -fx-max-width: 850;
+}
+
+.tarjeta-formulario-compacto .titulo-seccion {
+    -fx-font-size: 17px;
+}
+
+.tarjeta-formulario-compacto .etiqueta-formulario {
+    -fx-font-size: 12px;
+}
+
+.tarjeta-formulario-compacto .campo-formulario {
+    -fx-padding: 9 12;
     -fx-font-size: 13px;
+}
+
+/* SCROLL OSCURO */
+
+.scroll-formulario {
+    -fx-background-color: #0D111B;
+    -fx-background: #0D111B;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+.scroll-formulario > .viewport {
+    -fx-background-color: #0D111B;
+}
+
+.scroll-formulario .scroll-bar:vertical {
+    -fx-background-color: #0D111B;
+}
+
+.scroll-formulario .scroll-bar:vertical .thumb {
+    -fx-background-color: #354B66;
+    -fx-background-radius: 8;
+}
+
+/* SINOPSIS - TEXTAREA */
+
+.campo-formulario.text-area {
+    -fx-background-color: #0D1625;
+    -fx-control-inner-background: #0D1625;
+    -fx-text-fill: #FFFFFF;
+    -fx-prompt-text-fill: #71849D;
+    -fx-border-color: #30415A;
+    -fx-border-radius: 9;
+    -fx-background-radius: 9;
+}
+
+.campo-formulario.text-area .scroll-pane {
+    -fx-background-color: #0D1625;
+}
+
+.campo-formulario.text-area .scroll-pane .viewport {
+    -fx-background-color: #0D1625;
+}
+
+.campo-formulario.text-area .content {
+    -fx-background-color: #0D1625;
+}
+
+.campo-formulario.text-area .text {
+    -fx-fill: #FFFFFF;
+}
+
+.campo-formulario.text-area:focused {
+    -fx-border-color: #2389F5;
 }
