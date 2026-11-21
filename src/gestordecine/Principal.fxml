@@ -27,7 +27,9 @@
             <Button text="Salas" 
                     styleClass="boton-menu"
                     onAction="#mostrarSalas"/>
-            <Button text="Funciones" styleClass="boton-menu"/>
+            <Button text="Funciones"
+                    styleClass="boton-menu"
+                    onAction="#mostrarFunciones"/>
 
         </VBox>
     </left>

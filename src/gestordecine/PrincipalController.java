@@ -118,6 +118,33 @@ public class PrincipalController {
             e.printStackTrace();
         }
     }
+    
+    /**
+     * Que hace: abre la pantalla de funciones en el centro de la ventana.
+     */
+    @FXML
+    public void mostrarFunciones() {
+
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("Funciones.fxml")
+            );
+
+            Parent pantalla = loader.load();
+
+            FuncionesController controlador = loader.getController();
+            controlador.configurar(cine, persistencia);
+            controlador.setPrincipalController(this);
+
+            contenedorPrincipal.setCenter(pantalla);
+
+        } catch (IOException e) {
+            System.out.println("Error al cargar la pantalla de funciones:");
+            e.printStackTrace();
+        }
+    }    
+    
+    
 
     public void mostrarFormularioSala() {
 
