@@ -118,7 +118,32 @@ public class PrincipalController {
             e.printStackTrace();
         }
     }
-    
+
+    /**
+     * Que hace: abre la pantalla para consultar y cancelar reservas.
+     */
+    @FXML
+    public void mostrarReservas() {
+
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("Reservas.fxml")
+            );
+
+            Parent pantalla = loader.load();
+
+            ReservasController controlador = loader.getController();
+            controlador.configurar(cine, persistencia);
+            controlador.setPrincipalController(this);
+
+            contenedorPrincipal.setCenter(pantalla);
+
+        } catch (IOException e) {
+            System.out.println("Error al cargar la pantalla de reservas:");
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Que hace: abre la pantalla para hacer una nueva reserva.
      */
@@ -143,6 +168,7 @@ public class PrincipalController {
             e.printStackTrace();
         }
     }
+
     /**
      * Que hace: abre la pantalla de funciones en el centro de la ventana.
      */
@@ -166,9 +192,7 @@ public class PrincipalController {
             System.out.println("Error al cargar la pantalla de funciones:");
             e.printStackTrace();
         }
-    }    
-    
-    
+    }
 
     public void mostrarFormularioSala() {
 
@@ -233,26 +257,27 @@ public class PrincipalController {
             e.printStackTrace();
         }
     }
-    
+
     public void mostrarDetallePelicula(Pelicula pelicula) {
 
-    try {
-        FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("DetallePelicula.fxml")
-        );
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("DetallePelicula.fxml")
+            );
 
-        Parent pantalla = loader.load();
+            Parent pantalla = loader.load();
 
-        DetallePeliculaController controlador = loader.getController();
+            DetallePeliculaController controlador = loader.getController();
 
-        controlador.setPrincipalController(this);
-        controlador.configurar(pelicula);
+            controlador.setPrincipalController(this);
+            controlador.configurar(pelicula);
 
-        contenedorPrincipal.setCenter(pantalla);
+            contenedorPrincipal.setCenter(pantalla);
 
-    } catch (IOException e) {
-        System.out.println("Error al cargar el detalle de película:");
-        e.printStackTrace();
+        } catch (IOException e) {
+            System.out.println("Error al cargar el detalle de película:");
+            e.printStackTrace();
+        }
     }
-}
+    
 }

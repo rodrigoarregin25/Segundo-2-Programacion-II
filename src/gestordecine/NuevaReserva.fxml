@@ -28,12 +28,15 @@
 
         <HBox spacing="25">
 
-            <!-- Izquierda: funcion, tipo de entrada y plano de butacas -->
+            <!-- Izquierda: funcion, cantidad, tipo de entrada y plano de butacas -->
             <VBox spacing="12" styleClass="tarjeta-contenido"
                   HBox.hgrow="ALWAYS">
 
                 <Label text="Función" style="-fx-text-fill: #CBD5E1;"/>
                 <ComboBox fx:id="comboFuncion" maxWidth="Infinity"/>
+
+                <Label text="Cantidad de entradas" style="-fx-text-fill: #CBD5E1;"/>
+                <ComboBox fx:id="comboCantidad" maxWidth="Infinity"/>
 
                 <Label text="Tipo de entrada para las próximas butacas"
                        style="-fx-text-fill: #CBD5E1;"/>
