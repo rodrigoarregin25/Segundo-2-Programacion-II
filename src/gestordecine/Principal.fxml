@@ -22,7 +22,7 @@
                     onAction="#mostrarCartelera"/>
             <Button text="Reservas"
                     styleClass="boton-menu"
-                    onAction="#mostrarNuevaReserva"/>
+                    onAction="#mostrarReservas"/>
             <Button text="Películas"
                     styleClass="boton-menu"
                     onAction="#mostrarPeliculas"/>
