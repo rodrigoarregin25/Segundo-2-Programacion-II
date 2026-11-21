@@ -31,7 +31,9 @@
 
     </HBox>
 
-    <VBox spacing="15" styleClass="tarjeta-contenido">
+    <VBox spacing="15" 
+          VBox.vgrow="ALWAYS"
+          styleClass="tarjeta-contenido">
 
         <HBox alignment="CENTER_LEFT" spacing="12">
 
@@ -50,11 +52,12 @@
         </HBox>
 
         <TableView fx:id="tablaPeliculas"
-                   prefHeight="400"
+                   VBox.vgrow="ALWAYS"  
                    styleClass="tabla-peliculas">
 
             <columns>
                 <TableColumn fx:id="colEstado"
+                             id="columna-estado"
                              text="Estado"
                              prefWidth="90"/>
                 
@@ -72,7 +75,19 @@
                 
                 <TableColumn fx:id="colGenero"
                              text="Genero"
-                             prefWidth="200"/>
+                             prefWidth="300"/>
+                
+                <TableColumn fx:id="colDirector"
+                             text="Director"
+                             prefWidth="180"/>
+
+                <TableColumn fx:id="colClasificacion"
+                             text="Clasificación"
+                             prefWidth="120"/>
+
+                <TableColumn fx:id="colPuntuacion"
+                             text="Puntuación"
+                             prefWidth="110"/>
 
                 
             </columns>
