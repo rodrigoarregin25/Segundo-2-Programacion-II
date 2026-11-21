@@ -23,6 +23,7 @@ public class GestorDeCine extends Application {
 
         PrincipalController controlador = loader.getController();
         controlador.configurar(cine, persistencia);
+        controlador.mostrarCartelera();
 
         Scene escena = new Scene(raiz, 1200, 750);
 

@@ -466,3 +466,49 @@
 .tarjeta-pelicula:hover {
     -fx-background-color: #1E2E46;
 }
+
+/* FILTROS DE CARTELERA */
+
+.filtros-cartelera {
+    -fx-padding: 5 0 5 0;
+}
+
+.campo-busqueda-cartelera {
+    -fx-background-color: #151F30;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #94A3B8;
+    -fx-border-color: #30415A;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 10;
+}
+
+.campo-busqueda-cartelera:focused {
+    -fx-border-color: #2389F5;
+}
+
+.contenedor-generos {
+    -fx-padding: 4 0 4 0;
+}
+
+.chip-genero {
+    -fx-background-color: #0D1625;
+    -fx-text-fill: #DCE6F3;
+    -fx-border-color: #30415A;
+    -fx-border-radius: 18;
+    -fx-background-radius: 18;
+    -fx-padding: 8 16;
+    -fx-font-size: 13px;
+    -fx-cursor: hand;
+}
+
+.chip-genero:hover {
+    -fx-background-color: #1A2740;
+    -fx-border-color: #3C5A7A;
+}
+
+.chip-genero:selected {
+    -fx-background-color: #2389F5;
+    -fx-text-fill: white;
+    -fx-border-color: #2389F5;
+}
