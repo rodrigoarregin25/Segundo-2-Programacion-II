@@ -97,8 +97,18 @@
           styleClass="tarjeta-contenido"
           VBox.vgrow="ALWAYS">
 
-        <Label text="Reservas encontradas"
-               styleClass="titulo-seccion"/>
+        <HBox alignment="CENTER_LEFT" spacing="12">
+
+            <Label text="Reservas encontradas"
+                   styleClass="titulo-seccion"/>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Button text="Exportar CSV"
+                    styleClass="boton-secundario"
+                    onAction="#exportarCSV"/>
+
+        </HBox>
 
         <ListView fx:id="listaReservas"
                   styleClass="lista-salas"

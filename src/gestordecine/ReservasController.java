@@ -18,6 +18,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import gestordecine.persistencia.ExportadorReservasCSV;
+
+import java.io.File;
+import javafx.stage.FileChooser;
 
 public class ReservasController {
 
@@ -40,8 +44,8 @@ public class ReservasController {
 
     /**
      * Que hace: carga los criterios de busqueda, indica como se dibuja cada
-     * reserva de la lista y avisa cuando se elige una.
-     * JavaFX lo llama solo al abrir la pantalla.
+     * reserva de la lista y avisa cuando se elige una. JavaFX lo llama solo al
+     * abrir la pantalla.
      */
     @FXML
     private void initialize() {
@@ -84,10 +88,9 @@ public class ReservasController {
 
     /**
      * Que hace: arma el estilo de una tarjeta: franja verde o roja a la
-     * izquierda segun el estado, y borde azul si esta seleccionada.
-     * Parametros: confirmada (true si la reserva esta confirmada),
-     *             seleccionada (true si es la fila elegida).
-     * Retorna: el texto de estilo (String).
+     * izquierda segun el estado, y borde azul si esta seleccionada. Parametros:
+     * confirmada (true si la reserva esta confirmada), seleccionada (true si es
+     * la fila elegida). Retorna: el texto de estilo (String).
      */
     private String estiloTarjeta(boolean confirmada, boolean seleccionada) {
         String fondo = confirmada ? "#131B2E" : "#2A1520";
@@ -104,8 +107,8 @@ public class ReservasController {
     /**
      * Que hace: arma la tarjeta visual de una reserva, con el codigo, la
      * pelicula con su fecha y sala, el cliente, el estado y el importe.
-     * Parametros: reserva (la reserva a dibujar).
-     * Retorna: el HBox con la tarjeta.
+     * Parametros: reserva (la reserva a dibujar). Retorna: el HBox con la
+     * tarjeta.
      */
     private HBox crearTarjeta(Reserva reserva) {
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
@@ -243,8 +246,8 @@ public class ReservasController {
     }
 
     /**
-     * Que hace: al elegir una reserva de la lista, habilita los botones.
-     * El boton de cancelar solo se habilita si la reserva esta confirmada.
+     * Que hace: al elegir una reserva de la lista, habilita los botones. El
+     * boton de cancelar solo se habilita si la reserva esta confirmada.
      * Parametros: reserva (la reserva elegida, null si no hay ninguna).
      */
     private void mostrarSeleccion(Reserva reserva) {
@@ -268,7 +271,8 @@ public class ReservasController {
 
     /**
      * Que hace: cancela la reserva seleccionada. La reserva no se borra: queda
-     * como cancelada y sus butacas se liberan. Se trabaja sobre una copia del cine.
+     * como cancelada y sus butacas se liberan. Se trabaja sobre una copia del
+     * cine.
      */
     @FXML
     private void cancelarReserva() {
@@ -321,5 +325,71 @@ public class ReservasController {
     private void ocultarError() {
         mensajeError.setVisible(false);
         mensajeError.setManaged(false);
+    }
+
+    /**
+     * Exporta todas las reservas registradas en el cine a un archivo CSV.
+     *
+     * Permite seleccionar el nombre y la ubicación del archivo. La exportación
+     * incluye reservas confirmadas y canceladas, independientemente del filtro
+     * aplicado en la pantalla.
+     *
+     * No modifica las reservas ni el archivo de persistencia del cine.
+     *
+     * @throws IOException Si ocurre un error al escribir el archivo, capturado
+     * e informado dentro del método.
+     */
+    @FXML
+    private void exportarCSV() {
+
+        ocultarError();
+
+        // Crear el selector de archivos.
+        FileChooser selector = new FileChooser();
+
+        selector.setTitle("Exportar reservas");
+        selector.setInitialFileName("reservas.csv");
+
+        // Permitir guardar archivos CSV.
+        selector.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter(
+                        "Archivos CSV (*.csv)", "*.csv"
+                )
+        );
+
+        // Abrir el selector de ubicación.
+        File archivo = selector.showSaveDialog(
+                listaReservas.getScene().getWindow()
+        );
+
+        // Si el usuario cancela, no se realiza ninguna operación.
+        if (archivo == null) {
+            return;
+        }
+
+        try {
+
+            // Exportar todas las reservas, no solamente las filtradas.
+            ExportadorReservasCSV.exportar(
+                    cine.getServicioDeReservas().getReservas(),
+                    archivo.toPath()
+            );
+
+            DialogoCinema.mostrarExito(
+                    listaReservas.getScene().getWindow(),
+                    "Exportación finalizada",
+                    "Las reservas se exportaron correctamente."
+            );
+
+        } catch (IOException e) {
+
+            DialogoCinema.mostrarError(
+                    listaReservas.getScene().getWindow(),
+                    "Error al exportar reservas",
+                    "No se pudo generar el archivo CSV: " + e.getMessage()
+            );
+
+            e.printStackTrace();
+        }
     }
 }
