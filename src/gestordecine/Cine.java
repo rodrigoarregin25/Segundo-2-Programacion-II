@@ -158,10 +158,9 @@ public class Cine implements Serializable {
             boolean funcionPendiente
                     = funcion.getFechaHoraFin().isAfter(LocalDateTime.now());
 
-            if (mismaSala && funcionPendiente) {
+            if (mismaSala && funcion.isActiva() && funcionPendiente) {
                 throw new IllegalStateException(
-                        "No se puede desactivar la sala porque tiene "
-                        + "funciones pendientes o en curso."
+                        "No se puede desactivar la sala porque tiene funciones pendientes o en curso."
                 );
             }
         }
@@ -576,9 +575,16 @@ public class Cine implements Serializable {
     }
 
     /**
-     * Que hace: desactiva una funcion (no se borra, las reservas quedan en el
-     * historial) Parametros: idFuncion (int) Lanza: IllegalArgumentException si
-     * la funcion no existe, IllegalStateException si ya estaba desactivada
+     * Desactiva una función sin eliminarla del sistema.
+     *
+     * Impide desactivar funciones en curso o funciones futuras que tengan
+     * reservas confirmadas. Las reservas existentes permanecen registradas en
+     * el historial.
+     *
+     * @param idFuncion Identificador de la función.
+     * @throws IllegalArgumentException Si la función no existe.
+     * @throws IllegalStateException Si la función ya está desactivada, está en
+     * curso o tiene reservas confirmadas pendientes.
      */
     public void desactivarFuncion(int idFuncion) {
 
@@ -592,8 +598,19 @@ public class Cine implements Serializable {
             throw new IllegalStateException("La función ya está desactivada");
         }
 
-        // Verificar si tiene reservas confirmadas para una función futura
-        if (funcion.getFechaHora().isAfter(LocalDateTime.now())) {
+        LocalDateTime ahora = LocalDateTime.now();
+
+        // Impedir desactivar funciones que están en curso.
+        if (!funcion.getFechaHora().isAfter(ahora)
+                && funcion.getFechaHoraFin().isAfter(ahora)) {
+
+            throw new IllegalStateException(
+                    "No se puede desactivar una función que está en curso"
+            );
+        }
+
+        // Verificar si tiene reservas confirmadas para una función futura.
+        if (funcion.getFechaHora().isAfter(ahora)) {
 
             for (Reserva reserva : servicioDeReservas.getReservas()) {
 

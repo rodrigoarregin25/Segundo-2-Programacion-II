@@ -123,32 +123,70 @@ public class NuevaReservaController {
     }
 
     /**
-     * Que hace: recibe el cine y la persistencia, carga las peliculas que
-     * tienen funciones futuras activas y muestra el estado de la sesion.
-     * Parametros: cine (el cine actual), persistencia (para guardar cambios).
+     * Configura la pantalla de nueva reserva.
+     *
+     * Carga únicamente las películas que tengan al menos una función futura,
+     * activa y con butacas disponibles.
+     *
+     * @param cine Cine que contiene las películas y funciones.
+     * @param persistencia Servicio encargado de guardar los datos.
      */
     public void configurar(Cine cine, PersistenciaCine persistencia) {
+
         this.cine = cine;
         this.persistencia = persistencia;
 
         peliculasDisponibles = new ArrayList<>();
+        funcionesFiltradas = new ArrayList<>();
+        funcionElegida = null;
+        butacasMarcadas.clear();
+
+        comboPelicula.getItems().clear();
+        comboFuncion.getItems().clear();
+
         for (Funcion funcion : cine.buscarFuncionesFuturas()) {
-            // las funciones desactivadas no se pueden reservar
+
+            // La función debe estar activa.
             if (!funcion.isActiva()) {
                 continue;
             }
+
+            // La sala y la película deben estar activas.
+            if (!funcion.getSala().isActiva()
+                    || !funcion.getPelicula().isActiva()) {
+                continue;
+            }
+
+            // La función debe tener al menos una butaca disponible.
+            if (cine.getServicioDeReservas()
+                    .obtenerButacasDisponibles(funcion) == 0) {
+                continue;
+            }
+
+            // Evitar agregar la misma película varias veces.
             boolean yaEsta = false;
+
             for (Pelicula pelicula : peliculasDisponibles) {
-                if (pelicula.getIdPelicula() == funcion.getPelicula().getIdPelicula()) {
+
+                if (pelicula.getIdPelicula()
+                        == funcion.getPelicula().getIdPelicula()) {
+
                     yaEsta = true;
+                    break;
                 }
             }
+
             if (!yaEsta) {
+
                 peliculasDisponibles.add(funcion.getPelicula());
-                comboPelicula.getItems().add(funcion.getPelicula().getTituloPelicula());
+
+                comboPelicula.getItems().add(
+                        funcion.getPelicula().getTituloPelicula()
+                );
             }
         }
 
+        // Seleccionar la primera película que tenga funciones disponibles.
         if (!peliculasDisponibles.isEmpty()) {
             comboPelicula.getSelectionModel().selectFirst();
         }
@@ -267,6 +305,11 @@ public class NuevaReservaController {
         for (Funcion funcion : cine.buscarFuncionesFuturas()) {
             // las funciones desactivadas no se pueden reservar
             if (!funcion.isActiva()) {
+                continue;
+            }
+            // No ofrecer funciones que no tengan butacas disponibles.
+            if (cine.getServicioDeReservas()
+                    .obtenerButacasDisponibles(funcion) == 0) {
                 continue;
             }
             if (funcion.getPelicula().getIdPelicula() == pelicula.getIdPelicula()) {
@@ -514,6 +557,23 @@ public class NuevaReservaController {
             Cine cineTrabajo = cine.copiar();
             ServicioDeReservas servicio = cineTrabajo.getServicioDeReservas();
             Funcion funcion = cineTrabajo.buscarFuncionPorId(funcionElegida.getIdFuncion());
+
+            // Verificar la disponibilidad actual antes de confirmar la compra.
+            int disponibles = servicio.obtenerButacasDisponibles(funcion);
+
+            if (disponibles == 0) {
+                throw new IllegalStateException(
+                        "La función está agotada. No quedan butacas disponibles."
+                );
+            }
+
+            if (obtenerTotalEntradas() > disponibles) {
+                throw new IllegalStateException(
+                        "Solo quedan " + disponibles
+                        + " butacas disponibles para esta función."
+                );
+            }
+
             Cliente cliente = servicio.buscarClientePorDni(
                     SesionCliente.getClienteActual().getDni()
             );
