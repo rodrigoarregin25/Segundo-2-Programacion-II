@@ -4,6 +4,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.Region?>
 
 <BorderPane fx:id="contenedorPrincipal"
             xmlns:fx="http://javafx.com/fxml"
@@ -12,35 +13,78 @@
             stylesheets="@estilos.css"
             styleClass="ventana-principal">
 
-    <left>
-        <VBox spacing="12" prefWidth="240" styleClass="menu-lateral">
 
-            <Label text="CINEMA" styleClass="logo-cine"/>
+    <left>
+        <VBox spacing="12"
+              prefWidth="240"
+              styleClass="menu-lateral">
+
+            <Label text="CINEMA"
+                   styleClass="logo-cine"/>
 
             <Button text="Cartelera"
                     styleClass="boton-menu"
                     onAction="#mostrarCartelera"/>
+
+            <Button fx:id="botonMisReservas"
+                    text="Mis reservas"
+                    styleClass="boton-menu"
+                    onAction="#mostrarMisReservas"
+                    visible="false"
+                    managed="false"/>
+
             <Button text="Reservas"
                     styleClass="boton-menu"
                     onAction="#mostrarReservas"/>
+
             <Button text="Películas"
                     styleClass="boton-menu"
                     onAction="#mostrarPeliculas"/>
-            <Button text="Salas" 
+
+            <Button text="Salas"
                     styleClass="boton-menu"
                     onAction="#mostrarSalas"/>
+
             <Button text="Funciones"
                     styleClass="boton-menu"
                     onAction="#mostrarFunciones"/>
 
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <VBox spacing="10"
+                  style="-fx-border-color: #334155 transparent transparent transparent; -fx-padding: 18 0 0 0;">
+
+                <Label fx:id="etiquetaSesion"
+                       text=""
+                       wrapText="true"
+                       visible="false"
+                       managed="false"
+                       style="-fx-text-fill: #94A3B8; -fx-font-size: 12px;"/>
+
+                <Button fx:id="botonIniciarSesion"
+                        text="Iniciar sesión"
+                        styleClass="boton-menu"
+                        onAction="#mostrarAcceso"/>
+
+                <Button fx:id="botonCerrarSesion"
+                        text="Cerrar sesión"
+                        styleClass="boton-menu"
+                        onAction="#cerrarSesion"
+                        visible="false"
+                        managed="false"/>
+
+            </VBox>
+
         </VBox>
     </left>
+
 
     <center>
         <VBox spacing="15" styleClass="contenido-principal">
             <Label fx:id="tituloPagina"
                    text="Cartelera"
                    styleClass="titulo-pagina"/>
+
             <Label text="Descubrí las próximas funciones disponibles"
                    styleClass="subtitulo-pagina"/>
         </VBox>

@@ -24,6 +24,7 @@ import javafx.stage.Window;
 import javafx.scene.paint.Color;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.Effect;
+import gestordecine.sesion.SesionCliente;
 
 public class NuevaReservaController {
 
@@ -32,9 +33,6 @@ public class NuevaReservaController {
     private static final double ANCHO_PASILLO = 26;
     private static final double ANCHO_ETIQUETA_FILA = 24;
     private static final int MAXIMO_POR_TIPO = 10;
-
-    // Cliente que inicio sesion. Es static para que siga igual al cambiar de pantalla
-    private static Cliente clienteActual;
 
     private Cine cine;
     private PersistenciaCine persistencia;
@@ -107,6 +105,15 @@ public class NuevaReservaController {
     private Label tituloAcceso;
 
     private Stage ventanaAcceso;
+
+    /**
+     * Obtiene el cliente que tiene una sesión iniciada.
+     *
+     * @return Cliente autenticado o null si no existe una sesión activa.
+     */
+    public static Cliente getClienteActual() {
+        return SesionCliente.getClienteActual();
+    }
 
     /**
      * Que hace: carga las cantidades (0 a 10) y avisa cuando se elige otra
@@ -194,7 +201,7 @@ public class NuevaReservaController {
     public void abrirAccesoDesdeCartelera() {
 
         // Si ya inició sesión, puede reservar directamente.
-        if (clienteActual != null) {
+        if (SesionCliente.haySesion()) {
             return;
         }
 
@@ -226,22 +233,32 @@ public class NuevaReservaController {
     }
 
     /**
-     * Que hace: muestra el cuadro de ingreso o los datos del cliente segun haya
-     * sesion iniciada, y bloquea la compra hasta que se ingrese.
+     * Actualiza la interfaz según el estado de la sesión.
+     *
+     * Si el cliente ya no existe en el cine, cierra su sesión. Bloquea las
+     * compras cuando no hay un cliente autenticado.
      */
     private void actualizarSesion() {
-        // si el cliente ya no existe en los datos, se cierra la sesion
+
+        Cliente clienteActual = SesionCliente.getClienteActual();
+
+        // Comprobar que el cliente siga registrado en el cine.
         if (clienteActual != null
-                && cine.getServicioDeReservas().buscarClientePorDni(clienteActual.getDni()) == null) {
+                && cine.getServicioDeReservas()
+                        .buscarClientePorDni(clienteActual.getDni()) == null) {
+
+            SesionCliente.cerrarSesion();
             clienteActual = null;
         }
 
         boolean conSesion = clienteActual != null;
+
         botonAbrirAcceso.setVisible(!conSesion);
         botonAbrirAcceso.setManaged(!conSesion);
 
         panelLogin.setVisible(!conSesion);
         panelLogin.setManaged(!conSesion);
+
         panelSesion.setVisible(conSesion);
         panelSesion.setManaged(conSesion);
 
@@ -249,8 +266,11 @@ public class NuevaReservaController {
         panelResumen.setDisable(!conSesion);
 
         if (conSesion) {
-            etiquetaCliente.setText("Cliente: " + clienteActual.getNombre() + " "
-                    + clienteActual.getApellido() + " (DNI " + clienteActual.getDni() + ")");
+            etiquetaCliente.setText(
+                    "Cliente: " + clienteActual.getNombre() + " "
+                    + clienteActual.getApellido()
+                    + " (DNI " + clienteActual.getDni() + ")"
+            );
         }
     }
 
@@ -348,7 +368,9 @@ public class NuevaReservaController {
                 }
             }
 
-            clienteActual = cliente;
+            // Registrar el cliente autenticado en la sesión centralizada.
+            SesionCliente.iniciarSesion(cliente);
+            principalController.actualizarMenuCuenta();
 
             campoDni.clear();
             campoNombre.clear();
@@ -374,11 +396,17 @@ public class NuevaReservaController {
     }
 
     /**
-     * Que hace: cierra la sesion y deja la compra bloqueada otra vez.
+     * Cierra la sesión del cliente y limpia los datos seleccionados para una
+     * posible compra.
+     *
+     * No elimina los clientes ni las reservas persistidas.
      */
     @FXML
     private void cerrarSesion() {
-        clienteActual = null;
+
+        SesionCliente.cerrarSesion();
+        principalController.actualizarMenuCuenta();
+
         butacasMarcadas.clear();
         ocultarError();
         dibujarButacas();
@@ -630,7 +658,7 @@ public class NuevaReservaController {
         ocultarError();
 
         try {
-            if (clienteActual == null) {
+            if (!SesionCliente.haySesion()) {
                 throw new IllegalArgumentException("Inicia sesion para reservar");
             }
             if (funcionElegida == null) {
@@ -648,7 +676,9 @@ public class NuevaReservaController {
             Cine cineTrabajo = cine.copiar();
             ServicioDeReservas servicio = cineTrabajo.getServicioDeReservas();
             Funcion funcion = cineTrabajo.buscarFuncionPorId(funcionElegida.getIdFuncion());
-            Cliente cliente = servicio.buscarClientePorDni(clienteActual.getDni());
+            Cliente cliente = servicio.buscarClientePorDni(
+                    SesionCliente.getClienteActual().getDni()
+            );
 
             Reserva reserva = cineTrabajo.confirmarReserva(
                     cliente, funcion, construirEntradas());
@@ -806,7 +836,7 @@ public class NuevaReservaController {
             principal.getScene().getRoot().setEffect(efectoAnterior);
 
             // Si vino desde Cartelera y canceló el acceso
-            if (volverCarteleraSiCancela && clienteActual == null) {
+            if (volverCarteleraSiCancela && !SesionCliente.haySesion()) {
                 principalController.mostrarCartelera();
             }
 

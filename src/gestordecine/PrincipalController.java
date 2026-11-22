@@ -5,6 +5,27 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.layout.BorderPane;
+import gestordecine.misreservas.MisReservasController;
+import gestordecine.sesion.AccesoController;
+import gestordecine.sesion.SesionCliente;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.stage.Window;
+import javafx.scene.effect.ColorAdjust;
+import javafx.scene.effect.Effect;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
+import javafx.scene.control.Button;
+import javafx.geometry.Pos;
+import javafx.geometry.Insets;
+import javafx.scene.layout.Priority;
+import javafx.scene.paint.Color;
 
 public class PrincipalController {
 
@@ -18,6 +39,18 @@ public class PrincipalController {
 
     @FXML
     private BorderPane contenedorPrincipal;
+
+    @FXML
+    private Button botonMisReservas;
+
+    @FXML
+    private Button botonIniciarSesion;
+
+    @FXML
+    private Button botonCerrarSesion;
+
+    @FXML
+    private Label etiquetaSesion;
 
     @FXML
     public void mostrarPeliculas() {
@@ -44,6 +77,7 @@ public class PrincipalController {
     public void configurar(Cine cine, PersistenciaCine persistencia) {
         this.cine = cine;
         this.persistencia = persistencia;
+        actualizarMenuCuenta();
     }
 
     public void actualizarCine(Cine cineActualizado) {
@@ -349,6 +383,209 @@ public class PrincipalController {
         } catch (IOException e) {
             System.out.println("Error al cargar Nueva reserva:");
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Abre la pantalla de reservas del cliente autenticado.
+     *
+     * Carga las reservas del cine actualizado y permite consultar únicamente
+     * las del cliente que inició sesión.
+     */
+    @FXML
+    public void mostrarMisReservas() {
+
+        if (!SesionCliente.haySesion()) {
+            mostrarCartelera();
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource(
+                            "/gestordecine/misreservas/MisReservas.fxml"
+                    )
+            );
+
+            Parent pantalla = loader.load();
+
+            // Identificar la pantalla para regresar a Cartelera al cerrar sesión.
+            pantalla.getProperties().put("pantalla", "misreservas");
+
+            MisReservasController controlador = loader.getController();
+            controlador.configurar(cine, persistencia, this);
+
+            contenedorPrincipal.setCenter(pantalla);
+
+        } catch (IOException e) {
+            System.out.println("Error al cargar Mis reservas:");
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Actualiza los controles del menú según la sesión del cliente.
+     *
+     * Mis reservas y Cerrar sesión solamente aparecen cuando hay un cliente
+     * autenticado.
+     */
+    public void actualizarMenuCuenta() {
+
+        boolean haySesion = SesionCliente.haySesion();
+
+        botonMisReservas.setVisible(haySesion);
+        botonMisReservas.setManaged(haySesion);
+
+        botonIniciarSesion.setVisible(!haySesion);
+        botonIniciarSesion.setManaged(!haySesion);
+
+        botonCerrarSesion.setVisible(haySesion);
+        botonCerrarSesion.setManaged(haySesion);
+
+        etiquetaSesion.setVisible(haySesion);
+        etiquetaSesion.setManaged(haySesion);
+
+        if (haySesion) {
+            Cliente cliente = SesionCliente.getClienteActual();
+
+            etiquetaSesion.setText(
+                    cliente.getNombre() + " " + cliente.getApellido()
+            );
+        } else {
+            etiquetaSesion.setText("");
+        }
+    }
+
+    /**
+     * Muestra el formulario de inicio de sesión y registro.
+     *
+     * Abre una ventana modal sin barra de título, centrada sobre CINEMA, y
+     * oscurece temporalmente el fondo.
+     */
+    @FXML
+    private void mostrarAcceso() {
+
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource(
+                            "/gestordecine/sesion/Acceso.fxml"
+                    )
+            );
+
+            Parent formulario = loader.load();
+
+            AccesoController controlador = loader.getController();
+            controlador.configurar(cine, persistencia, this);
+
+            Window principal = contenedorPrincipal.getScene().getWindow();
+
+            Stage ventana = new Stage();
+            ventana.initStyle(StageStyle.TRANSPARENT);
+            ventana.initOwner(principal);
+            ventana.initModality(Modality.WINDOW_MODAL);
+            ventana.setResizable(false);
+
+            // Botón de cierre integrado en el encabezado.
+            Button botonCerrar = new Button("✕");
+            botonCerrar.setStyle(
+                    "-fx-background-color: transparent;"
+                    + "-fx-text-fill: #94A3B8;"
+                    + "-fx-font-size: 16px;"
+                    + "-fx-cursor: hand;"
+            );
+
+            botonCerrar.setOnAction(evento -> ventana.close());
+
+            Region separador = new Region();
+            HBox.setHgrow(separador, Priority.ALWAYS);
+
+            HBox encabezado = new HBox(separador, botonCerrar);
+            encabezado.setAlignment(Pos.CENTER_RIGHT);
+
+            // El formulario original se incorpora al modal.
+            VBox contenido = new VBox(encabezado, formulario);
+            contenido.setStyle(
+                    "-fx-background-color: #151F30;"
+                    + "-fx-background-radius: 12;"
+                    + "-fx-border-color: #334155;"
+                    + "-fx-border-radius: 12;"
+                    + "-fx-border-width: 1;"
+            );
+
+            Scene escena = new Scene(contenido);
+            escena.setFill(Color.TRANSPARENT);
+
+            // Aplicar los estilos generales de CINEMA al formulario.
+            escena.getStylesheets().add(
+                    getClass().getResource("estilos.css").toExternalForm()
+            );
+
+            // Cerrar también con ESC.
+            escena.setOnKeyPressed(evento -> {
+                if (evento.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
+                    ventana.close();
+                }
+            });
+
+            ventana.setScene(escena);
+
+            // Oscurecer la aplicación mientras el modal está abierto.
+            Effect efectoAnterior = contenedorPrincipal.getEffect();
+
+            ColorAdjust oscurecer = new ColorAdjust();
+            oscurecer.setBrightness(-0.50);
+
+            contenedorPrincipal.setEffect(oscurecer);
+
+            // Restaurar el fondo al cerrar.
+            ventana.setOnHidden(evento
+                    -> contenedorPrincipal.setEffect(efectoAnterior)
+            );
+
+            // Centrar el modal al mostrarse.
+            ventana.setOnShown(evento -> {
+                ventana.setX(
+                        principal.getX()
+                        + (principal.getWidth() - ventana.getWidth()) / 2
+                );
+
+                ventana.setY(
+                        principal.getY()
+                        + (principal.getHeight() - ventana.getHeight()) / 2
+                );
+            });
+
+            ventana.showAndWait();
+
+        } catch (IOException e) {
+            System.out.println("Error al abrir Mi cuenta:");
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Finaliza la sesión del cliente.
+     *
+     * Oculta las opciones personales y, si el usuario estaba consultando Mis
+     * reservas, regresa a Cartelera.
+     *
+     * No modifica los datos persistidos del cine.
+     */
+    @FXML
+    private void cerrarSesion() {
+
+        SesionCliente.cerrarSesion();
+        actualizarMenuCuenta();
+
+        // Salir de Mis reservas si era la pantalla actual.
+        Node pantallaActual = contenedorPrincipal.getCenter();
+
+        if (pantallaActual != null
+                && "misreservas".equals(
+                        pantallaActual.getProperties().get("pantalla")
+                )) {
+
+            mostrarCartelera();
         }
     }
 

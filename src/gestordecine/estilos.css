@@ -777,3 +777,24 @@
     -fx-border-color: #3B82F6;
     -fx-border-width: 1.5;
 }
+
+/* CAMPOS DE ESCRITURA - CINEMA */
+
+.campo-cinema {
+    -fx-background-color: #151F30;
+    -fx-text-fill: #FFFFFF;
+    -fx-prompt-text-fill: #94A3B8;
+
+    -fx-border-color: #334155;
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+
+    -fx-font-size: 13px;
+    -fx-padding: 10 12;
+}
+
+.campo-cinema:focused {
+    -fx-border-color: #3B82F6;
+    -fx-background-color: #151F30;
+}
