@@ -16,9 +16,10 @@ import java.io.Serializable;
  * Tambien puede ser administrador, segun su rol.
  */
 public class Cliente implements Serializable {
-    
+
     // Numero de version para poder leer los archivos .dat guardados antes
     private static final long serialVersionUID = 8961938315294995730L;
+
     private int dni;
     private String nombre;
     private String apellido;
@@ -32,8 +33,9 @@ public class Cliente implements Serializable {
      * Que hace: crea un cliente validando sus datos. Siempre con rol CLIENTE.
      * Parametros: dni (int), nombre (String), apellido (String), email (String),
      *             contrasenia (String)
-     * Lanza: IllegalArgumentException si el dni es menor o igual a 0
-     *        o si el nombre, apellido, email o contrasenia son null o estan vacios
+     * Lanza: IllegalArgumentException si el dni es menor o igual a 0,
+     *        si el nombre, apellido, email o contrasenia son null o estan vacios,
+     *        o si el email no tiene un formato valido
      */
     public Cliente(int dni, String nombre, String apellido, String email, String contrasenia) {
 
@@ -54,6 +56,11 @@ public class Cliente implements Serializable {
             throw new IllegalArgumentException("El email no puede estar vacio");
         }
 
+        if (!esEmailValido(email)) {
+            throw new IllegalArgumentException(
+                    "El email no es valido (ejemplo: nombre@mail.com)");
+        }
+
         if (contrasenia == null || contrasenia.trim().equals("")) {
             throw new IllegalArgumentException("La contraseña no puede estar vacia");
         }
@@ -61,7 +68,7 @@ public class Cliente implements Serializable {
         this.dni = dni;
         this.nombre = nombre;
         this.apellido = apellido;
-        this.email = email;
+        this.email = email.trim();
         this.contrasenia = contrasenia;
         this.rol = Rol.CLIENTE;
     }
@@ -81,6 +88,40 @@ public class Cliente implements Serializable {
         }
 
         this.rol = rol;
+    }
+
+    /**
+     * Que hace: comprueba que un email tenga formato valido: sin espacios, una
+     * sola @ con texto antes, y un dominio con punto (ej: mail.com)
+     * Parametros: email (String) el email a revisar
+     * Retorna: true si el formato es valido, false si no
+     */
+    private static boolean esEmailValido(String email) {
+        String texto = email.trim();
+
+        if (texto.contains(" ")) {
+            return false;
+        }
+
+        // tiene que haber una sola arroba y algo antes de ella
+        int arroba = texto.indexOf('@');
+        if (arroba <= 0 || arroba != texto.lastIndexOf('@')) {
+            return false;
+        }
+
+        // el dominio (lo que sigue a la arroba) necesita un punto con texto a los lados
+        String dominio = texto.substring(arroba + 1);
+        int punto = dominio.lastIndexOf('.');
+
+        if (punto <= 0 || punto == dominio.length() - 1) {
+            return false;
+        }
+
+        if (dominio.startsWith(".") || dominio.contains("..")) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
