@@ -5,13 +5,20 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Locale;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 
 public class FuncionesController {
 
@@ -25,7 +32,7 @@ public class FuncionesController {
     private ArrayList<Sala> salasActivas;
 
     @FXML
-    private ListView<String> listaFunciones;
+    private ListView<Funcion> listaFunciones;
     @FXML
     private ComboBox<String> comboPelicula;
     @FXML
@@ -47,7 +54,8 @@ public class FuncionesController {
 
     /**
      * Que hace: carga los desplegables que no dependen del cine
-     * (formato, idioma, hora y minutos). JavaFX lo llama solo al abrir la pantalla.
+     * (formato, idioma, hora y minutos) y arma como se ve cada funcion
+     * en la lista. JavaFX lo llama solo al abrir la pantalla.
      */
     @FXML
     private void initialize() {
@@ -58,6 +66,31 @@ public class FuncionesController {
             comboHora.getItems().add(String.format("%02d", hora));
         }
         comboMinutos.getItems().addAll("00", "15", "30", "45");
+
+        // Cada fila de la lista se dibuja como una tarjeta
+        listaFunciones.setCellFactory(lista -> new ListCell<Funcion>() {
+            @Override
+            protected void updateItem(Funcion funcion, boolean vacia) {
+                super.updateItem(funcion, vacia);
+                if (vacia || funcion == null) {
+                    setGraphic(null);
+                    setText(null);
+                    setStyle("-fx-background-color: transparent;");
+                    return;
+                }
+                HBox tarjeta = crearTarjeta(funcion);
+                tarjeta.setStyle(estiloTarjeta(isSelected()));
+                tarjeta.prefWidthProperty().bind(
+                        getListView().widthProperty().subtract(40));
+                setGraphic(tarjeta);
+                setText(null);
+                setStyle("-fx-background-color: transparent; -fx-padding: 4 0 4 0;");
+            }
+        });
+
+        // Al elegir otra tarjeta, se repinta la lista para marcar la elegida
+        listaFunciones.getSelectionModel().selectedIndexProperty().addListener(
+                (observable, anterior, nuevo) -> listaFunciones.refresh());
     }
 
     /**
@@ -99,22 +132,74 @@ public class FuncionesController {
 
     /**
      * Que hace: muestra en la lista todas las funciones programadas.
-     * El texto de cada fila esta en la misma posicion que la funcion en el cine.
+     * La posicion de cada tarjeta coincide con la posicion de la funcion en el cine.
      */
     private void cargarLista() {
+        listaFunciones.setItems(FXCollections.observableArrayList(cine.getFunciones()));
+    }
+
+    /**
+     * Que hace: arma la tarjeta de una funcion (datos a la izquierda, precio a la derecha).
+     * Parametros: funcion (la funcion a mostrar).
+     * Retorna: la tarjeta lista para mostrar en la lista.
+     */
+    private HBox crearTarjeta(Funcion funcion) {
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-        ArrayList<String> textos = new ArrayList<>();
 
-        for (Funcion funcion : cine.getFunciones()) {
-            textos.add(funcion.getPelicula().getTituloPelicula()
-                    + " | " + funcion.getSala().getNombreSala()
-                    + " | " + funcion.getFechaHora().format(formato)
-                    + " | " + funcion.getFormatoPelicula()
-                    + " | " + funcion.getIdiomaPelicula()
-                    + " | $" + funcion.getPrecio());
+        Label titulo = new Label(funcion.getPelicula().getTituloPelicula());
+        titulo.setStyle("-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;");
+
+        Label detalle = new Label(funcion.getSala().getNombreSala()
+                + "  ·  " + funcion.getFechaHora().format(formato));
+        detalle.setStyle("-fx-text-fill: #94A3B8; -fx-font-size: 13px;");
+
+        HBox etiquetas = new HBox(8,
+                crearEtiqueta(funcion.getFormatoPelicula()),
+                crearEtiqueta(funcion.getIdiomaPelicula()));
+
+        VBox datos = new VBox(6, titulo, detalle, etiquetas);
+
+        Label precio = new Label(String.format(Locale.of("es", "AR"),
+                "$%,.2f", funcion.getPrecio()));
+        precio.setStyle("-fx-text-fill: #60A5FA; -fx-font-size: 20px; -fx-font-weight: bold;");
+        Label porEntrada = new Label("por entrada");
+        porEntrada.setStyle("-fx-text-fill: #64748B; -fx-font-size: 11px;");
+        VBox bloquePrecio = new VBox(2, precio, porEntrada);
+        bloquePrecio.setAlignment(Pos.CENTER_RIGHT);
+
+        Region espacio = new Region();
+        HBox.setHgrow(espacio, Priority.ALWAYS);
+
+        HBox tarjeta = new HBox(15, datos, espacio, bloquePrecio);
+        tarjeta.setAlignment(Pos.CENTER_LEFT);
+        return tarjeta;
+    }
+
+    /**
+     * Que hace: arma una etiqueta chica (por ejemplo el formato o el idioma).
+     * Parametros: texto (lo que dice la etiqueta).
+     * Retorna: el Label con estilo.
+     */
+    private Label crearEtiqueta(String texto) {
+        Label etiqueta = new Label(texto);
+        etiqueta.setStyle("-fx-background-color: #1E293B; -fx-text-fill: #CBD5E1;"
+                + " -fx-padding: 2 10 2 10; -fx-background-radius: 10; -fx-font-size: 11px;");
+        return etiqueta;
+    }
+
+    /**
+     * Que hace: devuelve el estilo de la tarjeta, con borde azul si esta elegida.
+     * Parametros: seleccionada (true si es la tarjeta elegida).
+     * Retorna: el estilo en texto.
+     */
+    private String estiloTarjeta(boolean seleccionada) {
+        String borde = "#334155";
+        if (seleccionada) {
+            borde = "#3B82F6";
         }
-
-        listaFunciones.setItems(FXCollections.observableArrayList(textos));
+        return "-fx-background-color: #111C30; -fx-background-radius: 10;"
+                + " -fx-border-color: " + borde + "; -fx-border-radius: 10;"
+                + " -fx-border-width: 1.5; -fx-padding: 14 18 14 18;";
     }
 
     /**

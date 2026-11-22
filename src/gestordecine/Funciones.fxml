@@ -43,6 +43,10 @@
                         styleClass="boton-peligro"
                         onAction="#eliminarFuncion"/>
             </HBox>
+
+            <Label fx:id="mensajeError" visible="false" managed="false"
+                   wrapText="true"
+                   style="-fx-text-fill: #EF4444;"/>
         </VBox>
 
         <!-- Formulario para programar una funcion -->
@@ -73,10 +77,6 @@
 
             <Label text="Idioma" style="-fx-text-fill: #CBD5E1;"/>
             <ComboBox fx:id="comboIdioma" maxWidth="Infinity"/>
-
-            <Label fx:id="mensajeError" visible="false" managed="false"
-                   wrapText="true"
-                   style="-fx-text-fill: #EF4444;"/>
 
             <Button text="Programar función"
                     styleClass="boton-primario"
