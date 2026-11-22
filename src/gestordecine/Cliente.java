@@ -1,4 +1,3 @@
-
 package gestordecine;
 
 import java.io.Serializable;
@@ -6,8 +5,8 @@ import java.io.Serializable;
 /**
  * Representa un usuario registrado en CINEMA.
  *
- * Cada usuario se identifica mediante su DNI y puede tener
- * el rol CLIENTE o ADMINISTRADOR.
+ * Cada usuario se identifica mediante su DNI y puede tener el rol CLIENTE o
+ * ADMINISTRADOR.
  */
 public class Cliente implements Serializable {
 
@@ -19,6 +18,7 @@ public class Cliente implements Serializable {
     private String apellido;
     private String email;
     private String contrasenia;
+    private Boolean activo;
 
     // Los usuarios antiguos pueden tener el rol en null.
     // En ese caso, se consideran clientes.
@@ -36,7 +36,7 @@ public class Cliente implements Serializable {
      * obligatorio está vacío o el correo no tiene un formato válido.
      */
     public Cliente(int dni, String nombre, String apellido,
-                   String email, String contrasenia) {
+            String email, String contrasenia) {
 
         if (dni <= 0) {
             throw new IllegalArgumentException(
@@ -80,6 +80,7 @@ public class Cliente implements Serializable {
         this.email = email.trim();
         this.contrasenia = contrasenia;
         this.rol = Rol.CLIENTE;
+        this.activo = true;
     }
 
     /**
@@ -91,11 +92,11 @@ public class Cliente implements Serializable {
      * @param email Correo electrónico del usuario.
      * @param contrasenia Contraseña de acceso.
      * @param rol Rol que se asignará al usuario.
-     * @throws IllegalArgumentException Si algún dato es inválido
-     * o el rol es nulo.
+     * @throws IllegalArgumentException Si algún dato es inválido o el rol es
+     * nulo.
      */
     public Cliente(int dni, String nombre, String apellido,
-                   String email, String contrasenia, Rol rol) {
+            String email, String contrasenia, Rol rol) {
 
         this(dni, nombre, apellido, email, contrasenia);
 
@@ -111,8 +112,8 @@ public class Cliente implements Serializable {
     /**
      * Comprueba que un correo electrónico tenga un formato válido.
      *
-     * Verifica que no tenga espacios, que exista una sola arroba
-     * y que el dominio contenga un punto con texto a ambos lados.
+     * Verifica que no tenga espacios, que exista una sola arroba y que el
+     * dominio contenga un punto con texto a ambos lados.
      *
      * @param email Correo electrónico que se desea validar.
      * @return true si tiene un formato válido, false en caso contrario.
@@ -195,8 +196,8 @@ public class Cliente implements Serializable {
     /**
      * Obtiene el rol asignado al usuario.
      *
-     * Los usuarios guardados antes de incorporar roles
-     * se consideran CLIENTE cuando su rol es null.
+     * Los usuarios guardados antes de incorporar roles se consideran CLIENTE
+     * cuando su rol es null.
      *
      * @return Rol del usuario.
      */
@@ -274,5 +275,87 @@ public class Cliente implements Serializable {
         }
 
         this.rol = nuevoRol;
+    }
+
+    /**
+     * Modifica el nombre del usuario.
+     *
+     * @param nombre Nuevo nombre.
+     * @throws IllegalArgumentException Si el nombre es nulo o está vacío.
+     */
+    public void setNombre(String nombre) {
+        if (nombre == null || nombre.isBlank()) {
+            throw new IllegalArgumentException("El nombre no puede estar vacío");
+        }
+
+        this.nombre = nombre.trim();
+    }
+
+    /**
+     * Modifica el apellido del usuario.
+     *
+     * @param apellido Nuevo apellido.
+     * @throws IllegalArgumentException Si el apellido es nulo o está vacío.
+     */
+    public void setApellido(String apellido) {
+        if (apellido == null || apellido.isBlank()) {
+            throw new IllegalArgumentException("El apellido no puede estar vacío");
+        }
+
+        this.apellido = apellido.trim();
+    }
+
+    /**
+     * Modifica el correo electrónico del usuario.
+     *
+     * @param email Nuevo correo electrónico.
+     * @throws IllegalArgumentException Si el correo no es válido.
+     */
+    public void setEmail(String email) {
+        if (email == null || !esEmailValido(email)) {
+            throw new IllegalArgumentException("El correo electrónico no es válido");
+        }
+
+        this.email = email.trim();
+    }
+
+    /**
+     * Modifica la contraseña del usuario.
+     *
+     * @param contrasenia Nueva contraseña.
+     * @throws IllegalArgumentException Si la contraseña es nula o está vacía.
+     */
+    public void setContrasenia(String contrasenia) {
+        if (contrasenia == null || contrasenia.isBlank()) {
+            throw new IllegalArgumentException("La contraseña no puede estar vacía");
+        }
+
+        this.contrasenia = contrasenia;
+    }
+
+    /**
+     * Indica si el usuario está habilitado para acceder a CINEMA.
+     *
+     * Los usuarios registrados antes de incorporar este atributo se consideran
+     * activos.
+     *
+     * @return true si el usuario está activo, false en caso contrario.
+     */
+    public boolean isActivo() {
+        return activo == null || activo;
+    }
+
+    /**
+     * Desactiva el usuario sin eliminar sus datos ni reservas.
+     */
+    public void desactivar() {
+        this.activo = false;
+    }
+
+    /**
+     * Reactiva un usuario previamente desactivado.
+     */
+    public void reactivar() {
+        this.activo = true;
     }
 }

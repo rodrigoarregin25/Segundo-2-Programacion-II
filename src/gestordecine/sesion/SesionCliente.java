@@ -6,8 +6,8 @@ import gestordecine.Rol;
 /**
  * Administra la sesión del cliente dentro de CINEMA.
  *
- * Permite iniciar sesión, consultar el cliente autenticado
- * y cerrar sesión sin modificar los datos persistidos.
+ * Permite iniciar sesión, consultar el cliente autenticado y cerrar sesión sin
+ * modificar los datos persistidos.
  *
  * @author Rodrigo Arregin
  */
@@ -22,19 +22,26 @@ public final class SesionCliente {
     }
 
     /**
-     * Establece el cliente que inició sesión.
+     * Establece el usuario que inició sesión.
      *
-     * Este método debe utilizarse únicamente después de
-     * validar las credenciales del cliente.
+     * Solo permite iniciar sesión a usuarios activos y con credenciales
+     * previamente validadas.
      *
-     * @param cliente Cliente que inició sesión correctamente.
-     * @throws IllegalArgumentException Si el cliente es nulo.
+     * @param cliente Usuario que desea iniciar sesión.
+     * @throws IllegalArgumentException Si el usuario es nulo.
+     * @throws IllegalStateException Si la cuenta está desactivada.
      */
     public static void iniciarSesion(Cliente cliente) {
 
         if (cliente == null) {
             throw new IllegalArgumentException(
                     "El cliente no puede ser nulo"
+            );
+        }
+
+        if (!cliente.isActivo()) {
+            throw new IllegalStateException(
+                    "No se puede iniciar sesión con una cuenta desactivada"
             );
         }
 
@@ -51,12 +58,12 @@ public final class SesionCliente {
     }
 
     /**
-     * Indica si existe una sesión iniciada.
+     * Comprueba si existe una sesión activa y habilitada.
      *
-     * @return true si hay un cliente autenticado; false en caso contrario.
+     * @return true si existe un usuario autenticado y activo.
      */
     public static boolean haySesion() {
-        return clienteActual != null;
+        return clienteActual != null && clienteActual.isActivo();
     }
 
     /**
@@ -84,7 +91,7 @@ public final class SesionCliente {
      * Retorna: true si hay sesion y es administrador, false si no
      */
     public static boolean esAdministrador() {
-        return clienteActual != null && clienteActual.esAdministrador();
+        return haySesion() && clienteActual.esAdministrador();
     }
 
     /**
@@ -92,13 +99,13 @@ public final class SesionCliente {
      * Retorna: true si hay sesion y es cliente, false si no
      */
     public static boolean esCliente() {
-        return clienteActual != null && clienteActual.esCliente();
+        return haySesion() && clienteActual.esCliente();
     }
 
     /**
      * Que hace: comprueba que quien tiene la sesion sea administrador. Se usa
-     * antes de abrir o ejecutar algo de administracion.
-     * Lanza: IllegalStateException si no hay sesion o no es administrador
+     * antes de abrir o ejecutar algo de administracion. Lanza:
+     * IllegalStateException si no hay sesion o no es administrador
      */
     public static void exigirAdministrador() {
         if (!esAdministrador()) {

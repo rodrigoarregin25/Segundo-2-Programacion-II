@@ -64,7 +64,9 @@
            visible="false"
            managed="false"
            wrapText="true"
-           style="-fx-text-fill: #F87171; -fx-font-size: 12px;"/>
+           minHeight="-1"
+           maxWidth="Infinity"
+           style="-fx-text-fill: #EF4444;"/>
 
     <Button fx:id="botonIngresar"
             text="Ingresar"

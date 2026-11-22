@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.ScrollPane?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="gestordecine.usuarios.FormularioUsuarioController"
+            fitToWidth="true"
+            style="-fx-background: transparent; -fx-background-color: transparent;">
+
+    <VBox spacing="25"
+          styleClass="contenido-principal">
+
+        <!-- ENCABEZADO -->
+        <HBox alignment="CENTER_LEFT" spacing="20">
+
+            <VBox spacing="8">
+
+                <Label fx:id="tituloFormulario"
+                       text="Editar usuario"
+                       styleClass="titulo-pagina"/>
+
+                <Label text="Modificá los datos y permisos del usuario"
+                       styleClass="subtitulo-pagina"/>
+
+            </VBox>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Button text="← Volver"
+                    prefWidth="150"
+                    prefHeight="40"
+                    styleClass="boton-secundario"
+                    onAction="#volver"/>
+
+        </HBox>
+
+        <!-- FORMULARIO -->
+        <VBox spacing="18"
+              maxWidth="650"
+              styleClass="tarjeta-contenido">
+
+            <Label text="Datos del usuario"
+                   styleClass="titulo-seccion"/>
+
+            <!-- DNI -->
+            <VBox spacing="6">
+                <Label text="DNI"
+                       styleClass="subtitulo-pagina"/>
+
+                <TextField fx:id="campoDni"
+                           editable="false"
+                           styleClass="campo-cinema"/>
+            </VBox>
+
+            <!-- NOMBRE Y APELLIDO -->
+            <HBox spacing="15">
+
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label text="Nombre"
+                           styleClass="subtitulo-pagina"/>
+
+                    <TextField fx:id="campoNombre"
+                               maxWidth="Infinity"
+                               styleClass="campo-cinema"/>
+                </VBox>
+
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label text="Apellido"
+                           styleClass="subtitulo-pagina"/>
+
+                    <TextField fx:id="campoApellido"
+                               maxWidth="Infinity"
+                               styleClass="campo-cinema"/>
+                </VBox>
+
+            </HBox>
+
+            <!-- CORREO -->
+            <VBox spacing="6">
+                <Label text="Correo electrónico"
+                       styleClass="subtitulo-pagina"/>
+
+                <TextField fx:id="campoEmail"
+                           styleClass="campo-cinema"/>
+            </VBox>
+
+            <!-- CONTRASEÑA -->
+            <VBox spacing="6">
+                <Label text="Nueva contraseña"
+                       styleClass="subtitulo-pagina"/>
+
+                <PasswordField fx:id="campoContrasenia"
+                               promptText="Dejar vacío para conservar la actual"
+                               styleClass="campo-cinema"/>
+            </VBox>
+
+            <!-- ROL -->
+            <VBox spacing="6">
+                <Label text="Rol del usuario"
+                       styleClass="subtitulo-pagina"/>
+
+                <ComboBox fx:id="comboRol"
+                          maxWidth="Infinity"/>
+            </VBox>
+
+            <!-- MENSAJES -->
+            <Label fx:id="mensajeError"
+                   visible="false"
+                   managed="false"
+                   wrapText="true"
+                   styleClass="mensaje-error"/>
+
+            <!-- ACCIONES -->
+            <HBox spacing="12" alignment="CENTER_RIGHT">
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <Button text="Cancelar"
+                        prefWidth="140"
+                        prefHeight="42"
+                        styleClass="boton-secundario"
+                        onAction="#volver"/>
+
+                <Button text="Guardar cambios"
+                        prefWidth="175"
+                        prefHeight="42"
+                        styleClass="boton-primario"
+                        onAction="#guardarUsuario"/>
+
+            </HBox>
+
+        </VBox>
+
+    </VBox>
+
+</ScrollPane>

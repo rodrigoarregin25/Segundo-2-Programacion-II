@@ -1,4 +1,3 @@
-
 package gestordecine.sesion;
 
 import gestordecine.Cine;
@@ -18,8 +17,8 @@ import javafx.stage.Stage;
 /**
  * Controlador del formulario de acceso de CINEMA.
  *
- * Permite iniciar sesión o registrar clientes desde
- * cualquier pantalla, utilizando una sesión centralizada.
+ * Permite iniciar sesión o registrar clientes desde cualquier pantalla,
+ * utilizando una sesión centralizada.
  *
  * @author Rodrigo Arregin
  */
@@ -69,7 +68,7 @@ public class AccesoController {
      * @param principalController Controlador de la ventana principal.
      */
     public void configurar(Cine cine, PersistenciaCine persistencia,
-                           PrincipalController principalController) {
+            PrincipalController principalController) {
 
         this.cine = cine;
         this.persistencia = persistencia;
@@ -97,8 +96,8 @@ public class AccesoController {
 
         botonAlternar.setText(
                 registrando
-                ? "Ya tengo cuenta, ingresar"
-                : "No tengo cuenta, registrarme"
+                        ? "Ya tengo cuenta, ingresar"
+                        : "No tengo cuenta, registrarme"
         );
 
         ocultarError();
@@ -111,8 +110,8 @@ public class AccesoController {
     /**
      * Valida las credenciales o registra un nuevo cliente.
      *
-     * Si el ingreso es correcto, inicia la sesión centralizada
-     * y actualiza el menú principal de CINEMA.
+     * Si el ingreso es correcto, inicia la sesión centralizada y actualiza el
+     * menú principal de CINEMA.
      */
     @FXML
     private void ingresar() {
@@ -163,6 +162,13 @@ public class AccesoController {
                 if (cliente == null) {
                     throw new IllegalArgumentException(
                             "No existe un cliente con ese DNI"
+                    );
+                }
+
+                // Impedir el acceso a usuarios desactivados.
+                if (!cliente.isActivo()) {
+                    throw new IllegalStateException(
+                            "Tu cuenta se encuentra desactivada. Contactá con un administrador."
                     );
                 }
 
@@ -230,14 +236,21 @@ public class AccesoController {
     }
 
     /**
-     * Muestra un mensaje de error dentro del formulario.
+     * Muestra un mensaje de error y ajusta la ventana para que pueda
+     * visualizarse completamente.
      *
      * @param mensaje Descripción del error.
      */
     private void mostrarError(String mensaje) {
+
         mensajeError.setText(mensaje);
         mensajeError.setVisible(true);
         mensajeError.setManaged(true);
+
+        javafx.application.Platform.runLater(() -> {
+            Stage ventana = (Stage) mensajeError.getScene().getWindow();
+            ventana.sizeToScene();
+        });
     }
 
     /**

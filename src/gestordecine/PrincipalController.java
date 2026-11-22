@@ -24,6 +24,7 @@ import javafx.geometry.Pos;
 import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import gestordecine.usuarios.UsuariosController;
+import gestordecine.usuarios.FormularioUsuarioController;
 
 public class PrincipalController {
 
@@ -113,8 +114,37 @@ public class PrincipalController {
         actualizarMenuCuenta();
     }
 
+    /**
+     * Actualiza la instancia principal del cine y sincroniza el usuario que
+     * tiene la sesión iniciada.
+     *
+     * Si la cuenta fue desactivada, finaliza su sesión.
+     *
+     * @param cineActualizado Cine con los últimos cambios guardados.
+     */
     public void actualizarCine(Cine cineActualizado) {
+
         this.cine = cineActualizado;
+
+        Cliente clienteActual = SesionCliente.getClienteActual();
+
+        if (clienteActual == null) {
+            return;
+        }
+
+        Cliente clienteActualizado = cineActualizado
+                .getServicioDeReservas()
+                .buscarClientePorDni(clienteActual.getDni());
+
+        if (clienteActualizado == null || !clienteActualizado.isActivo()) {
+            SesionCliente.cerrarSesion();
+            actualizarMenuCuenta();
+            mostrarCartelera();
+            return;
+        }
+
+        SesionCliente.iniciarSesion(clienteActualizado);
+        actualizarMenuCuenta();
     }
 
     /**
@@ -684,6 +714,71 @@ public class PrincipalController {
 
         } catch (IOException e) {
             System.out.println("Error al cargar la pantalla de usuarios:");
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Abre el formulario para editar un usuario registrado.
+     *
+     * @param usuario Usuario seleccionado en la administración.
+     */
+    public void mostrarFormularioEditarUsuario(Cliente usuario) {
+
+        if (sinPermisoAdministrador()) {
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource(
+                            "/gestordecine/usuarios/FormularioUsuario.fxml"
+                    )
+            );
+
+            Parent pantalla = loader.load();
+
+            FormularioUsuarioController controlador = loader.getController();
+
+            controlador.configurar(cine, persistencia, this, usuario);
+
+            contenedorPrincipal.setCenter(pantalla);
+
+        } catch (IOException e) {
+            System.out.println("Error al abrir el formulario de usuario:");
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Abre el formulario para registrar un nuevo usuario.
+     *
+     * Permite acceder únicamente a administradores autenticados.
+     */
+    public void mostrarFormularioNuevoUsuario() {
+
+        if (sinPermisoAdministrador()) {
+            return;
+        }
+
+        try {
+
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource(
+                            "/gestordecine/usuarios/FormularioUsuario.fxml"
+                    )
+            );
+
+            Parent pantalla = loader.load();
+
+            FormularioUsuarioController controlador = loader.getController();
+
+            controlador.configurarNuevo(cine, persistencia, this);
+
+            contenedorPrincipal.setCenter(pantalla);
+
+        } catch (IOException e) {
+            System.out.println("Error al abrir Nuevo usuario:");
             e.printStackTrace();
         }
     }

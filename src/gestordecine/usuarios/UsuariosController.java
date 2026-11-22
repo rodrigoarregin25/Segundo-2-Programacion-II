@@ -19,6 +19,8 @@ import gestordecine.Rol;
 import javafx.scene.control.ChoiceDialog;
 import java.io.IOException;
 import java.util.Optional;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableCell;
 
 public class UsuariosController {
 
@@ -53,6 +55,12 @@ public class UsuariosController {
     @FXML
     private Label etiquetaCantidad;
 
+    @FXML
+    private TableColumn<Cliente, String> columnaEstado;
+
+    @FXML
+    private Button botonEstado;
+
     private ArrayList<Cliente> usuariosRegistrados;
 
     /**
@@ -78,6 +86,39 @@ public class UsuariosController {
         this.principalController = principalController;
 
         this.principalController = principalController;
+
+        // Mostrar A para activo e I para inactivo.
+        columnaEstado.setCellValueFactory(datos
+                -> new SimpleStringProperty(
+                        datos.getValue().isActivo() ? "A" : "I"
+                )
+        );
+
+        // Aplicar colores y centrar el estado.
+        columnaEstado.setCellFactory(columna -> new TableCell<Cliente, String>() {
+
+            @Override
+            protected void updateItem(String estado, boolean vacio) {
+                super.updateItem(estado, vacio);
+
+                if (vacio || estado == null) {
+                    setText(null);
+                    setStyle("");
+                    return;
+                }
+
+                setText(estado);
+
+                String color = estado.equals("A") ? "#22C55E" : "#EF4444";
+
+                setStyle(
+                        "-fx-text-fill: " + color + ";"
+                        + "-fx-font-weight: bold;"
+                        + "-fx-font-size: 18px;"
+                        + "-fx-alignment: CENTER;"
+                );
+            }
+        });
 
         columnaDni.setCellValueFactory(datos
                 -> new SimpleIntegerProperty(
@@ -110,6 +151,12 @@ public class UsuariosController {
         );
 
         usuariosRegistrados = cine.getServicioDeReservas().getClientes();
+
+        // Actualizar el botón según el usuario seleccionado.
+        tablaUsuarios.getSelectionModel().selectedItemProperty()
+                .addListener((observable, anterior, nuevo) -> actualizarBotonEstado());
+
+        actualizarBotonEstado();
 
         filtroRol.getItems().addAll(
                 "Todos los roles",
@@ -181,6 +228,8 @@ public class UsuariosController {
         tablaUsuarios.setItems(
                 FXCollections.observableArrayList(resultados)
         );
+        // Forzar la actualización de las celdas de la tabla.
+        tablaUsuarios.refresh();
 
         etiquetaCantidad.setText(
                 resultados.size() + " de "
@@ -203,40 +252,71 @@ public class UsuariosController {
     }
 
     /**
-     * Permite modificar el rol del usuario seleccionado.
-     *
-     * Realiza la modificación sobre una copia del cine y guarda los cambios
-     * únicamente si la operación es válida. Luego actualiza el listado de
-     * usuarios.
+     * Abre el formulario de edición del usuario seleccionado.
      */
     @FXML
-    private void cambiarRol() {
+    private void editarUsuario() {
 
         Cliente seleccionado = tablaUsuarios.getSelectionModel().getSelectedItem();
 
         if (seleccionado == null) {
-            mostrarMensaje("Seleccioná un usuario de la tabla");
+            mostrarMensaje("Seleccioná un usuario para editar");
             return;
         }
 
-        ChoiceDialog<Rol> dialogo = new ChoiceDialog<>(
-                seleccionado.getRol(),
-                Rol.values()
-        );
+        principalController.mostrarFormularioEditarUsuario(seleccionado);
+    }
 
-        dialogo.setTitle("Cambiar rol");
-        dialogo.setHeaderText(
-                seleccionado.getNombre() + " " + seleccionado.getApellido()
-        );
-        dialogo.setContentText("Nuevo rol:");
+    /**
+     * Actualiza el botón de estado según el usuario seleccionado.
+     *
+     * Muestra Desactivar para usuarios activos y Restaurar para usuarios
+     * inactivos, manteniendo el mismo estilo.
+     */
+    private void actualizarBotonEstado() {
 
-        Optional<Rol> resultado = dialogo.showAndWait();
+        Cliente seleccionado = tablaUsuarios.getSelectionModel().getSelectedItem();
 
-        if (resultado.isEmpty()) {
+        // Mantener siempre el estilo rojo.
+        botonEstado.getStyleClass().remove("boton-primario");
+
+        if (!botonEstado.getStyleClass().contains("boton-peligro")) {
+            botonEstado.getStyleClass().add("boton-peligro");
+        }
+
+        if (seleccionado == null) {
+            botonEstado.setText("Eliminar usuario");
+            botonEstado.setDisable(true);
+            return;
+        }
+
+        botonEstado.setDisable(false);
+
+        if (seleccionado.isActivo()) {
+            botonEstado.setText("Eliminar usuario");
+        } else {
+            botonEstado.setText("Restaurar usuario");
+        }
+    }
+
+    /**
+     * Desactiva o reactiva el usuario seleccionado.
+     *
+     * Verifica los permisos mediante ServicioDeReservas y guarda los cambios
+     * sobre una copia del cine.
+     */
+    @FXML
+    private void cambiarEstadoUsuario() {
+
+        Cliente seleccionado = tablaUsuarios.getSelectionModel().getSelectedItem();
+
+        if (seleccionado == null) {
+            mostrarMensaje("Seleccioná un usuario");
             return;
         }
 
         try {
+
             Cine cineTrabajo = cine.copiar();
 
             Cliente administrador = cineTrabajo.getServicioDeReservas()
@@ -244,9 +324,8 @@ public class UsuariosController {
                             SesionCliente.getClienteActual().getDni()
                     );
 
-            cineTrabajo.getServicioDeReservas().cambiarRolUsuario(
+            cineTrabajo.getServicioDeReservas().cambiarEstadoUsuario(
                     seleccionado.getDni(),
-                    resultado.get(),
                     administrador
             );
 
@@ -258,7 +337,19 @@ public class UsuariosController {
 
             filtrarUsuarios();
 
-            mostrarMensaje("Rol actualizado correctamente");
+            Cliente usuarioActualizado = cineTrabajo.getServicioDeReservas()
+                    .buscarClientePorDni(seleccionado.getDni());
+
+            tablaUsuarios.getSelectionModel().select(usuarioActualizado);
+
+            // Actualizar todas las celdas después de cambiar el estado.
+            tablaUsuarios.refresh();
+
+            actualizarBotonEstado();
+
+            mensajeEstado.setText("");
+            mensajeEstado.setVisible(false);
+            mensajeEstado.setManaged(false);
 
         } catch (IOException | ClassNotFoundException e) {
             mostrarMensaje("Error al guardar: " + e.getMessage());
@@ -266,5 +357,13 @@ public class UsuariosController {
         } catch (Exception e) {
             mostrarMensaje(e.getMessage());
         }
+    }
+
+    /**
+     * Abre el formulario para registrar un nuevo usuario.
+     */
+    @FXML
+    private void nuevoUsuario() {
+        principalController.mostrarFormularioNuevoUsuario();
     }
 }

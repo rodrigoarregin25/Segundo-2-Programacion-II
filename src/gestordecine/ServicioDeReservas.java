@@ -453,4 +453,192 @@ public class ServicioDeReservas implements Serializable {
 
         usuario.setRol(nuevoRol);
     }
+
+    /**
+     * Modifica los datos de un usuario registrado.
+     *
+     * Solo los administradores pueden editar usuarios. El DNI permanece sin
+     * cambios porque identifica al usuario. Si la nueva contraseña está vacía,
+     * se conserva la actual.
+     *
+     * Impide que un administrador cambie su propio rol y que el sistema quede
+     * sin administradores.
+     *
+     * @param dniUsuario DNI del usuario que se desea modificar.
+     * @param nombre Nuevo nombre.
+     * @param apellido Nuevo apellido.
+     * @param email Nuevo correo electrónico.
+     * @param nuevaContrasenia Nueva contraseña o texto vacío para conservarla.
+     * @param nuevoRol Rol que se desea asignar.
+     * @param solicitante Administrador que realiza la modificación.
+     * @throws IllegalArgumentException Si los datos son inválidos.
+     * @throws IllegalStateException Si el solicitante no tiene permisos.
+     */
+    public void editarUsuario(int dniUsuario, String nombre, String apellido,
+            String email, String nuevaContrasenia, Rol nuevoRol,
+            Cliente solicitante) {
+
+        // VALIDAR PERMISOS
+        if (solicitante == null || !solicitante.esAdministrador()) {
+            throw new IllegalStateException(
+                    "No tiene permisos para editar usuarios"
+            );
+        }
+
+        // COMPROBAR QUE EL ADMINISTRADOR ESTÉ REGISTRADO
+        Cliente administrador = buscarClientePorDni(solicitante.getDni());
+
+        if (administrador == null || !administrador.esAdministrador()) {
+            throw new IllegalStateException(
+                    "El administrador no está registrado o no tiene permisos"
+            );
+        }
+
+        // BUSCAR EL USUARIO
+        Cliente usuario = buscarClientePorDni(dniUsuario);
+
+        if (usuario == null) {
+            throw new IllegalArgumentException(
+                    "El usuario seleccionado no existe"
+            );
+        }
+
+        if (nuevoRol == null) {
+            throw new IllegalArgumentException(
+                    "Debe seleccionar un rol válido"
+            );
+        }
+
+        // IMPEDIR QUE EL ADMINISTRADOR MODIFIQUE SU PROPIO ROL
+        if (usuario.getDni() == administrador.getDni()
+                && usuario.getRol() != nuevoRol) {
+
+            throw new IllegalStateException(
+                    "No puede modificar su propio rol"
+            );
+        }
+
+        // IMPEDIR QUITAR EL ÚLTIMO ADMINISTRADOR
+        if (usuario.esAdministrador() && nuevoRol == Rol.CLIENTE) {
+
+            int cantidadAdministradores = 0;
+
+            for (Cliente cliente : clientes) {
+                if (cliente.esAdministrador()) {
+                    cantidadAdministradores++;
+                }
+            }
+
+            if (cantidadAdministradores <= 1) {
+                throw new IllegalStateException(
+                        "No se puede quitar el rol al último administrador"
+                );
+            }
+        }
+
+        // VALIDAR TODOS LOS DATOS ANTES DE MODIFICAR EL USUARIO
+        // El constructor reutiliza las validaciones existentes.
+        new Cliente(
+                usuario.getDni(),
+                nombre,
+                apellido,
+                email,
+                nuevaContrasenia == null || nuevaContrasenia.isBlank()
+                ? usuario.getContrasenia()
+                : nuevaContrasenia,
+                nuevoRol
+        );
+
+        // APLICAR LOS CAMBIOS
+        usuario.setNombre(nombre);
+        usuario.setApellido(apellido);
+        usuario.setEmail(email);
+
+        if (nuevaContrasenia != null && !nuevaContrasenia.isBlank()) {
+            usuario.setContrasenia(nuevaContrasenia);
+        }
+
+        usuario.setRol(nuevoRol);
+    }
+
+    /**
+     * Cambia el estado de un usuario registrado.
+     *
+     * Permite desactivar o reactivar usuarios sin eliminarlos. Solo un
+     * administrador activo puede realizar esta operación. Impide desactivar la
+     * propia cuenta o al último administrador activo del sistema.
+     *
+     * @param dniUsuario DNI del usuario que se desea modificar.
+     * @param solicitante Administrador que realiza la operación.
+     * @throws IllegalArgumentException Si el usuario no existe.
+     * @throws IllegalStateException Si no tiene permisos o si la operación
+     * dejaría al sistema sin administradores activos.
+     */
+    public void cambiarEstadoUsuario(int dniUsuario, Cliente solicitante) {
+
+        // VALIDAR PERMISOS DEL ADMINISTRADOR
+        if (solicitante == null) {
+            throw new IllegalStateException(
+                    "Debe iniciar sesión como administrador"
+            );
+        }
+
+        Cliente administrador = buscarClientePorDni(solicitante.getDni());
+
+        if (administrador == null
+                || !administrador.esAdministrador()
+                || !administrador.isActivo()) {
+
+            throw new IllegalStateException(
+                    "No tiene permisos para administrar usuarios"
+            );
+        }
+
+        // BUSCAR EL USUARIO SELECCIONADO
+        Cliente usuario = buscarClientePorDni(dniUsuario);
+
+        if (usuario == null) {
+            throw new IllegalArgumentException(
+                    "El usuario seleccionado no existe"
+            );
+        }
+
+        // DESACTIVAR USUARIO
+        if (usuario.isActivo()) {
+
+            // Impedir desactivar la propia cuenta.
+            if (usuario.getDni() == administrador.getDni()) {
+                throw new IllegalStateException(
+                        "No puede desactivar su propia cuenta"
+                );
+            }
+
+            // Impedir desactivar al último administrador activo.
+            if (usuario.esAdministrador()) {
+
+                int administradoresActivos = 0;
+
+                for (Cliente cliente : clientes) {
+
+                    if (cliente.esAdministrador() && cliente.isActivo()) {
+                        administradoresActivos++;
+                    }
+                }
+
+                if (administradoresActivos <= 1) {
+                    throw new IllegalStateException(
+                            "No se puede desactivar al último administrador activo"
+                    );
+                }
+            }
+
+            usuario.desactivar();
+
+        } else {
+
+            // REACTIVAR USUARIO
+            usuario.reactivar();
+        }
+    }
+
 }
