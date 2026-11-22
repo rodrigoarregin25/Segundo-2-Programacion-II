@@ -798,3 +798,82 @@
     -fx-border-color: #3B82F6;
     -fx-background-color: #151F30;
 }
+
+
+/* FILTROS UNIFICADOS DE CARTELERA */
+
+.filtro-cartelera-unificado,
+.boton-limpiar-unificado {
+    -fx-background-color: #101827;
+    -fx-border-color: #294A80;
+    -fx-border-width: 1;
+    -fx-border-radius: 7;
+    -fx-background-radius: 7;
+    -fx-min-height: 40px;
+    -fx-pref-height: 40px;
+    -fx-max-height: 40px;
+}
+
+/* BUSCADOR */
+
+.text-field.filtro-cartelera-unificado {
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #94A3B8;
+    -fx-padding: 0 12px;
+}
+
+/* GENERO */
+
+.combo-box.filtro-cartelera-unificado {
+    -fx-padding: 0;
+}
+
+.combo-box.filtro-cartelera-unificado .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-padding: 0 12px;
+}
+
+.combo-box.filtro-cartelera-unificado .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.combo-box.filtro-cartelera-unificado .arrow {
+    -fx-background-color: #CBD5E1;
+}
+
+/* FECHA */
+
+.date-picker.filtro-cartelera-unificado {
+    -fx-padding: 0;
+}
+
+.date-picker.filtro-cartelera-unificado .text-field {
+    -fx-background-color: transparent;
+    -fx-control-inner-background: transparent;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #94A3B8;
+    -fx-border-color: transparent;
+    -fx-padding: 0 12px;
+}
+
+.date-picker.filtro-cartelera-unificado .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.date-picker.filtro-cartelera-unificado .arrow {
+    -fx-background-color: #CBD5E1;
+}
+
+/* PAPELERA */
+
+.boton-limpiar-unificado {
+    -fx-padding: 0;
+    -fx-alignment: CENTER;
+    -fx-content-display: GRAPHIC_ONLY;
+    -fx-cursor: hand;
+}
+
+.boton-limpiar-unificado:hover {
+    -fx-background-color: #1D3554;
+}

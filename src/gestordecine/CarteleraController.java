@@ -15,6 +15,10 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.Priority;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ComboBox;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.DateCell;
 
 public class CarteleraController {
 
@@ -26,6 +30,9 @@ public class CarteleraController {
     @FXML
     private ComboBox<String> filtroGenero;
 
+    @FXML
+    private DatePicker filtroFecha;
+
     private Cine cine;
     private PrincipalController principalController;
 
@@ -33,26 +40,20 @@ public class CarteleraController {
         this.principalController = principalController;
     }
 
+    /**
+     * Configura la cartelera, carga los géneros disponibles y registra los
+     * filtros de búsqueda por título, género y fecha.
+     *
+     * @param cine Cine que contiene las películas y funciones.
+     */
     public void configurar(Cine cine) {
         this.cine = cine;
 
         filtroGenero.getItems().clear();
         filtroGenero.getItems().add("Todos los géneros");
 
-        for (Pelicula pelicula : cine.getPeliculas()) {
-
-            if (!pelicula.isActiva()) {
-                continue;
-            }
-            filtroGenero.getItems().clear();
-            filtroGenero.getItems().add("Todos los géneros");
-
-            for (Genero genero : Genero.values()) {
-                filtroGenero.getItems().add(genero.toString());
-            }
-
-            filtroGenero.setValue("Todos los géneros");
-
+        for (Genero genero : Genero.values()) {
+            filtroGenero.getItems().add(genero.toString());
         }
 
         filtroGenero.setValue("Todos los géneros");
@@ -65,29 +66,54 @@ public class CarteleraController {
                 (observable, anterior, nuevo) -> mostrarPeliculas()
         );
 
+        filtroFecha.valueProperty().addListener(
+                (observable, anterior, nuevo) -> mostrarPeliculas()
+        );
+
+        // Impedir seleccionar fechas anteriores al día actual.
+        filtroFecha.setDayCellFactory(datePicker -> new DateCell() {
+
+            @Override
+            public void updateItem(LocalDate fecha, boolean vacio) {
+                super.updateItem(fecha, vacio);
+
+                if (vacio || fecha.isBefore(LocalDate.now())) {
+                    setDisable(true);
+                }
+            }
+        });
+
         mostrarPeliculas();
     }
 
+    /**
+     * Muestra las películas activas que cumplen con los filtros de título,
+     * género y fecha seleccionados.
+     *
+     * Si se selecciona una fecha, solamente muestra películas que tengan al
+     * menos una función futura y activa ese día, en una sala activa.
+     */
     private void mostrarPeliculas() {
 
         contenedorPeliculas.getChildren().clear();
-        Region espacio = new Region();
-        VBox.setVgrow(espacio, Priority.ALWAYS);
+
+        String busqueda = campoBusqueda.getText().trim().toLowerCase();
+        String generoSeleccionado = filtroGenero.getValue();
+        LocalDate fechaSeleccionada = filtroFecha.getValue();
 
         for (Pelicula pelicula : cine.getPeliculas()) {
 
+            // Mostrar solamente películas activas.
             if (!pelicula.isActiva()) {
                 continue;
             }
 
-            String busqueda = campoBusqueda.getText().trim().toLowerCase();
-
-            String generoSeleccionado = filtroGenero.getValue();
-
+            // FILTRO POR TÍTULO
             if (!pelicula.getTituloPelicula().toLowerCase().contains(busqueda)) {
                 continue;
             }
 
+            // FILTRO POR GÉNERO
             if (generoSeleccionado != null
                     && !generoSeleccionado.equals("Todos los géneros")) {
 
@@ -100,11 +126,44 @@ public class CarteleraController {
                         break;
                     }
                 }
+
                 if (!coincideGenero) {
                     continue;
                 }
             }
 
+            // FILTRO POR FECHA
+            if (fechaSeleccionada != null) {
+
+                boolean tieneFuncionDisponible = false;
+                LocalDateTime ahora = LocalDateTime.now();
+
+                for (Funcion funcion : cine.buscarFuncionesPorFecha(fechaSeleccionada)) {
+
+                    boolean mismaPelicula
+                            = funcion.getPelicula().getIdPelicula()
+                            == pelicula.getIdPelicula();
+
+                    boolean funcionActiva = funcion.isActiva();
+
+                    boolean salaActiva = funcion.getSala().isActiva();
+
+                    boolean funcionFutura = funcion.getFechaHora().isAfter(ahora);
+
+                    if (mismaPelicula && funcionActiva
+                            && salaActiva && funcionFutura) {
+
+                        tieneFuncionDisponible = true;
+                        break;
+                    }
+                }
+
+                if (!tieneFuncionDisponible) {
+                    continue;
+                }
+            }
+
+            // CREAR TARJETA DE PELÍCULA
             VBox tarjeta = new VBox(10);
             tarjeta.getStyleClass().add("tarjeta-pelicula");
 
@@ -112,6 +171,7 @@ public class CarteleraController {
                 principalController.mostrarDetallePelicula(pelicula);
             });
 
+            // PÓSTER
             ImageView imagenPoster = new ImageView();
             imagenPoster.setFitWidth(200);
             imagenPoster.setFitHeight(280);
@@ -120,6 +180,7 @@ public class CarteleraController {
             Path rutaPoster = Paths.get("posters", pelicula.getPoster());
 
             if (Files.exists(rutaPoster)) {
+
                 Image imagen = new Image(
                         rutaPoster.toUri().toString(),
                         true
@@ -128,6 +189,7 @@ public class CarteleraController {
                 imagenPoster.setImage(imagen);
             }
 
+            // TÍTULO
             Label titulo = new Label(pelicula.getTituloPelicula());
             titulo.getStyleClass().add("titulo-tarjeta-pelicula");
             titulo.setWrapText(true);
@@ -135,22 +197,29 @@ public class CarteleraController {
             titulo.setPrefHeight(45);
             titulo.setMaxHeight(45);
 
+            // INFORMACIÓN
             Label informacion = new Label(
                     formatearGeneros(pelicula)
                     + " · " + pelicula.getDuracionPelicula() + " min"
             );
-            
+
             informacion.getStyleClass().add("info-tarjeta-pelicula");
             informacion.setWrapText(true);
             informacion.setMinHeight(35);
             informacion.setPrefHeight(35);
             informacion.setMaxHeight(35);
 
+            // PUNTUACIÓN
             Label puntuacion = new Label(
                     "★ " + pelicula.getPuntuacion() + "/10"
             );
             puntuacion.getStyleClass().add("puntuacion-pelicula");
 
+            // ESPACIO FLEXIBLE INDIVIDUAL PARA CADA TARJETA
+            Region espacio = new Region();
+            VBox.setVgrow(espacio, Priority.ALWAYS);
+
+            // AGREGAR ELEMENTOS A LA TARJETA
             tarjeta.getChildren().addAll(
                     imagenPoster,
                     titulo,
@@ -159,6 +228,7 @@ public class CarteleraController {
                     puntuacion
             );
 
+            // AGREGAR TARJETA A LA CARTELERA
             contenedorPeliculas.getChildren().add(tarjeta);
         }
     }
@@ -174,5 +244,15 @@ public class CarteleraController {
         return generos.stream()
                 .map(Genero::toString)
                 .collect(Collectors.joining(", "));
+    }
+
+    /**
+     * Elimina el filtro de fecha y vuelve a mostrar las películas que cumplen
+     * con los demás filtros seleccionados.
+     */
+    @FXML
+    private void limpiarFecha() {
+        filtroFecha.setValue(null);
+        mostrarPeliculas();
     }
 }
