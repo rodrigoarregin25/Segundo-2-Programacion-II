@@ -22,6 +22,7 @@ public class DetallePeliculaController {
 
     private List<Funcion> funcionesDisponibles;
     private LocalDate fechaSeleccionada;
+    private ServicioDeReservas servicioDeReservas;
 
     @FXML
     private ImageView imagenPoster;
@@ -72,6 +73,7 @@ public class DetallePeliculaController {
 
     public void configurar(Pelicula pelicula, Cine cine) {
 
+        this.servicioDeReservas = cine.getServicioDeReservas();
         tituloPelicula.setText(pelicula.getTituloPelicula());
 
         informacionPelicula.setText(
@@ -127,8 +129,10 @@ public class DetallePeliculaController {
     }
 
     /**
-     * Que hace: muestra los horarios de la fecha elegida. Al hacer clic en un
-     * horario se abre Nueva reserva con esa funcion ya elegida.
+     * Muestra los horarios correspondientes a la fecha seleccionada.
+     *
+     * Indica la cantidad de butacas disponibles en cada función. Si una función
+     * está agotada, impide seleccionarla para reservar.
      */
     private void mostrarHorarios() {
 
@@ -147,9 +151,13 @@ public class DetallePeliculaController {
 
         for (Funcion funcion : funcionesDelDia) {
 
+            int disponibles
+                    = servicioDeReservas.obtenerButacasDisponibles(funcion);
+
+            boolean agotada = disponibles == 0;
+
             VBox tarjeta = new VBox(7);
             tarjeta.getStyleClass().add("tarjeta-horario");
-            tarjeta.setCursor(Cursor.HAND);
 
             Label hora = new Label(
                     funcion.getFechaHora().format(formatoHora)
@@ -168,15 +176,48 @@ public class DetallePeliculaController {
             sala.getStyleClass().add("detalle-horario");
 
             Label precio = new Label(
-                    String.format(Locale.of("es", "AR"), "$%,.2f", funcion.getPrecio())
+                    String.format(Locale.of("es", "AR"),
+                            "$%,.2f", funcion.getPrecio())
             );
             precio.getStyleClass().add("precio-horario");
 
-            tarjeta.getChildren().addAll(hora, formato, sala, precio);
+            Label disponibilidad = new Label();
 
-            // Al elegir el horario se va a Nueva reserva con esta funcion
-            tarjeta.setOnMouseClicked(evento
-                    -> principalController.mostrarNuevaReservaConFuncion(funcion));
+            if (agotada) {
+
+                disponibilidad.setText("AGOTADA");
+                disponibilidad.setStyle(
+                        "-fx-text-fill: #EF4444; -fx-font-weight: bold;"
+                );
+
+                tarjeta.setOpacity(0.65);
+                tarjeta.setCursor(Cursor.DEFAULT);
+
+            } else {
+
+                disponibilidad.setText(
+                        disponibles + " butacas disponibles"
+                );
+
+                disponibilidad.setStyle(
+                        "-fx-text-fill: #22C55E;"
+                );
+
+                tarjeta.setCursor(Cursor.HAND);
+
+                // Solo permite reservar funciones con lugares libres.
+                tarjeta.setOnMouseClicked(evento
+                        -> principalController.mostrarNuevaReservaConFuncion(funcion)
+                );
+            }
+
+            tarjeta.getChildren().addAll(
+                    hora,
+                    formato,
+                    sala,
+                    precio,
+                    disponibilidad
+            );
 
             contenedorFunciones.getChildren().add(tarjeta);
         }

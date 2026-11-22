@@ -295,4 +295,31 @@ public class ServicioDeReservas implements Serializable {
         return false;
     }
 
+    /**
+     * Calcula la cantidad de butacas disponibles para una función.
+     *
+     * Considera ocupadas únicamente las butacas pertenecientes a reservas
+     * confirmadas. Las reservas canceladas no ocupan lugar.
+     *
+     * @param funcion Función cuya disponibilidad se desea consultar.
+     * @return Cantidad de butacas libres.
+     * @throws IllegalArgumentException Si la función es nula.
+     */
+    public int obtenerButacasDisponibles(Funcion funcion) {
+
+        if (funcion == null) {
+            throw new IllegalArgumentException("La función no puede ser nula");
+        }
+
+        int disponibles = 0;
+
+        for (Butaca butaca : funcion.getSala().getButacas()) {
+
+            if (!estaOcupada(funcion, butaca)) {
+                disponibles++;
+            }
+        }
+
+        return disponibles;
+    }
 }
