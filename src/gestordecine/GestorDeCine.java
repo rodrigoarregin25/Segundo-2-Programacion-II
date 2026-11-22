@@ -28,6 +28,7 @@ public class GestorDeCine extends Application {
         Scene escena = new Scene(raiz, 1200, 750);
 
         stage.setTitle("CINEMA | Sistema de Reservas");
+        stage.setMaximized(true);
         stage.setScene(escena);
         stage.show();
     }

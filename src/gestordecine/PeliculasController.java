@@ -66,6 +66,15 @@ public class PeliculasController {
     private TableColumn<Pelicula, String> colEstado;
 
     @FXML
+    private TableColumn<Pelicula, String> colDirector;
+
+    @FXML
+    private TableColumn<Pelicula, String> colClasificacion;
+
+    @FXML
+    private TableColumn<Pelicula, String> colPuntuacion;
+
+    @FXML
     private Label mensajeEstado;
 
     @FXML
@@ -100,6 +109,23 @@ public class PeliculasController {
                         datos.getValue().isActiva() ? "Activa" : "Inactiva"
                 )
         );
+        colDirector.setCellValueFactory(
+                datos -> new SimpleStringProperty(
+                        datos.getValue().getDirector()
+                )
+        );
+
+        colClasificacion.setCellValueFactory(
+                datos -> new SimpleStringProperty(
+                        datos.getValue().getClasificacion()
+                )
+        );
+
+        colPuntuacion.setCellValueFactory(
+                datos -> new SimpleStringProperty(
+                        String.format("%.1f/10", datos.getValue().getPuntuacion())
+                )
+        );
 
         colEstado.setCellFactory(columna -> new TableCell<Pelicula, String>() {
 
@@ -115,7 +141,7 @@ public class PeliculasController {
 
                 boolean activa = estado.equals("Activa");
 
-                setText(activa ? "✓" : "✕");
+                setText(activa ? "A" : "✕");
 
                 getStyleClass().removeAll("estado-activo", "estado-inactivo");
 
@@ -159,6 +185,15 @@ public class PeliculasController {
                         botonEstado.setText("Restaurar Película");
                     }
                 });
+
+        colEstado.setStyle("-fx-alignment: CENTER;");
+        colTitulo.setStyle("-fx-alignment: CENTER-LEFT;");
+        colDuracion.setStyle("-fx-alignment: CENTER-LEFT;");
+        colFechaEstreno.setStyle("-fx-alignment: CENTER-LEFT;");
+        colGenero.setStyle("-fx-alignment: CENTER-LEFT;");
+        colDirector.setStyle("-fx-alignment: CENTER-LEFT;");
+        colClasificacion.setStyle("-fx-alignment: CENTER-LEFT;");
+        colPuntuacion.setStyle("-fx-alignment: CENTER-LEFT;");
     }
 
     @FXML

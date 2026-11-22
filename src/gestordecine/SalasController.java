@@ -4,8 +4,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.control.Label;
@@ -17,6 +15,14 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
 import javafx.scene.shape.ArcType;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TableColumn;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.geometry.Pos;
 
 public class SalasController {
 
@@ -25,6 +31,7 @@ public class SalasController {
     private PersistenciaCine persistencia;
 
     public void configurar(Cine cine, PersistenciaCine persistencia) {
+
         this.cine = cine;
         this.persistencia = persistencia;
 
@@ -34,7 +41,7 @@ public class SalasController {
         FilteredList<Sala> salasFiltradas
                 = new FilteredList<>(salas);
 
-        listaSalas.setItems(salasFiltradas);
+        tablaSalas.setItems(salasFiltradas);
 
         filtroEstado.valueProperty().addListener((observable, anterior, nuevo) -> {
 
@@ -51,17 +58,22 @@ public class SalasController {
                 return true;
             });
 
-            // Seleccionar automáticamente la primera sala visible
+            // Seleccionar la primera sala del nuevo filtro
             if (!salasFiltradas.isEmpty()) {
-                listaSalas.getSelectionModel().selectFirst();
+                tablaSalas.getSelectionModel().selectFirst();
+            } else {
+                tablaSalas.getSelectionModel().clearSelection();
+                contenedorButacas.getChildren().clear();
+                nombreSalaSeleccionada.setText("No hay salas disponibles.");
+                cantidadButacas.setText("");
             }
         });
 
+        // Mostrar inicialmente las salas activas
         salasFiltradas.setPredicate(Sala::isActiva);
 
-        // Primera selección al abrir la pantalla
         if (!salasFiltradas.isEmpty()) {
-            listaSalas.getSelectionModel().selectFirst();
+            tablaSalas.getSelectionModel().selectFirst();
         }
     }
 
@@ -171,42 +183,51 @@ public class SalasController {
     @FXML
     private void initialize() {
 
-        listaSalas.setCellFactory(lista -> new ListCell<Sala>() {
+        // COLUMNA ESTADO
+        columnaEstado.setCellValueFactory(datos
+                -> new SimpleStringProperty(
+                        datos.getValue().isActiva() ? "A" : "I"
+                )
+        );
+
+        columnaEstado.setCellFactory(columna -> new TableCell<Sala, String>() {
 
             @Override
-            protected void updateItem(Sala sala, boolean empty) {
-                super.updateItem(sala, empty);
+            protected void updateItem(String estado, boolean empty) {
+                super.updateItem(estado, empty);
 
-                setText(null);
-
-                if (empty || sala == null) {
-                    setGraphic(null);
+                if (empty || estado == null) {
+                    setText(null);
+                    setStyle("");
                     return;
                 }
 
-                Label estado = new Label(sala.isActiva() ? "A" : "I");
+                setText(estado);
 
-                estado.setStyle(
-                        sala.isActiva()
-                        ? "-fx-text-fill: #22C55E; -fx-font-weight: bold;"
-                        : "-fx-text-fill: #EF4444; -fx-font-weight: bold;"
+                setStyle(
+                        estado.equals("A")
+                        ? "-fx-text-fill: #22C55E; -fx-font-weight: bold; -fx-alignment: CENTER;"
+                        : "-fx-text-fill: #EF4444; -fx-font-weight: bold; -fx-alignment: CENTER;"
                 );
-
-                estado.setMinWidth(65);
-                estado.setPrefWidth(65);
-                estado.setMaxWidth(65);
-
-                Label nombre = new Label(sala.getNombreSala());
-                nombre.setStyle("-fx-text-fill: white;");
-
-                HBox contenido = new HBox(10, estado, nombre);
-                contenido.setAlignment(Pos.CENTER_LEFT);
-
-                setGraphic(contenido);
             }
         });
 
-        listaSalas.getSelectionModel().selectedItemProperty()
+        // COLUMNA NOMBRE
+        columnaNombre.setCellValueFactory(datos
+                -> new SimpleStringProperty(
+                        datos.getValue().getNombreSala()
+                )
+        );
+
+        columnaNombre.setStyle("-fx-alignment: CENTER-LEFT;");
+
+        // AJUSTE DE ANCHO
+        tablaSalas.setColumnResizePolicy(
+                TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN
+        );
+
+        // SELECCIÓN DE SALA
+        tablaSalas.getSelectionModel().selectedItemProperty()
                 .addListener((observable, anterior, seleccionada) -> {
 
                     if (seleccionada == null) {
@@ -218,7 +239,7 @@ public class SalasController {
                     // Mostrar la distribución de butacas
                     mostrarDistribucion(seleccionada);
 
-                    // Actualizar el botón según el estado
+                    // Actualizar botón según estado
                     botonEstado.setDisable(false);
 
                     if (seleccionada.isActiva()) {
@@ -228,10 +249,14 @@ public class SalasController {
                     }
                 });
 
+        // DISTRIBUCIÓN DE BUTACAS
         contenedorButacas.setAlignment(Pos.TOP_CENTER);
 
+        // FILTRO DE ESTADO
         filtroEstado.getItems().addAll("Activas", "Inactivas", "Todas");
         filtroEstado.setValue("Activas");
+
+        // ESTADO INICIAL
         botonEstado.setDisable(true);
     }
 
@@ -273,7 +298,13 @@ public class SalasController {
     }
 
     @FXML
-    private ListView<Sala> listaSalas;
+    private TableView<Sala> tablaSalas;
+
+    @FXML
+    private TableColumn<Sala, String> columnaEstado;
+
+    @FXML
+    private TableColumn<Sala, String> columnaNombre;
 
     @FXML
     private Label nombreSalaSeleccionada;
@@ -302,8 +333,8 @@ public class SalasController {
     @FXML
     private void editarSala() {
 
-        Sala seleccionada = listaSalas.getSelectionModel().getSelectedItem();
-
+        Sala seleccionada = tablaSalas.getSelectionModel().getSelectedItem();
+        
         if (seleccionada == null) {
             System.out.println("Seleccioná una sala para editar.");
             return;
@@ -315,7 +346,7 @@ public class SalasController {
     @FXML
     private void cambiarEstadoSala() {
 
-        Sala seleccionada = listaSalas.getSelectionModel().getSelectedItem();
+        Sala seleccionada = tablaSalas.getSelectionModel().getSelectedItem();
 
         if (seleccionada == null) {
             return;

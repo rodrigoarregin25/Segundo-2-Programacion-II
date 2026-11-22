@@ -14,7 +14,8 @@ public enum Genero {
     ROMANCE("Romance"),
     DOCUMENTAL("Documental"),
     MUSICAL("Musical"),
-    CRIMEN("Crimen");
+    CRIMEN("Crimen"),
+    INFANTIL("Infantil");
 
     private final String descripcion;
 
