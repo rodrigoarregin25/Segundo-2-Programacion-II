@@ -8,7 +8,6 @@ import javafx.scene.layout.BorderPane;
 import gestordecine.misreservas.MisReservasController;
 import gestordecine.sesion.AccesoController;
 import gestordecine.sesion.SesionCliente;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -21,9 +20,7 @@ import javafx.scene.effect.Effect;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
-import javafx.scene.control.Button;
 import javafx.geometry.Pos;
-import javafx.geometry.Insets;
 import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 
@@ -43,6 +40,19 @@ public class PrincipalController {
     @FXML
     private Button botonMisReservas;
 
+    // Botones del menu que solo ve el administrador
+    @FXML
+    private Button botonReservas;
+
+    @FXML
+    private Button botonPeliculas;
+
+    @FXML
+    private Button botonSalas;
+
+    @FXML
+    private Button botonFunciones;
+
     @FXML
     private Button botonIniciarSesion;
 
@@ -52,8 +62,27 @@ public class PrincipalController {
     @FXML
     private Label etiquetaSesion;
 
+    /**
+     * Que hace: comprueba que el usuario con sesion sea administrador. Si no
+     * lo es, lo manda a la Cartelera. Se usa al principio de cada pantalla de
+     * administracion, ademas de ocultar los botones del menu.
+     * Retorna: true si NO tiene permisos (hay que cortar), false si es admin
+     */
+    private boolean sinPermisoAdministrador() {
+        if (SesionCliente.esAdministrador()) {
+            return false;
+        }
+
+        mostrarCartelera();
+        return true;
+    }
+
     @FXML
     public void mostrarPeliculas() {
+
+        if (sinPermisoAdministrador()) {
+            return;
+        }
 
         try {
             FXMLLoader loader = new FXMLLoader(
@@ -84,12 +113,24 @@ public class PrincipalController {
         this.cine = cineActualizado;
     }
 
+    /**
+     * Que hace: devuelve el cine actual, con los ultimos cambios guardados
+     * Retorna: el cine (Cine)
+     */
+    public Cine obtenerCineActual() {
+        return cine;
+    }
+
     public void recuperarCineGuardado() throws IOException, ClassNotFoundException {
 
         this.cine = persistencia.cargarOCrear();
     }
 
     public void mostrarFormularioPelicula() {
+
+        if (sinPermisoAdministrador()) {
+            return;
+        }
 
         try {
             FXMLLoader loader = new FXMLLoader(
@@ -111,6 +152,10 @@ public class PrincipalController {
     }
 
     public void mostrarFormularioEditarPelicula(Pelicula pelicula) {
+
+        if (sinPermisoAdministrador()) {
+            return;
+        }
 
         try {
             FXMLLoader loader = new FXMLLoader(
@@ -135,6 +180,10 @@ public class PrincipalController {
     @FXML
     public void mostrarSalas() {
 
+        if (sinPermisoAdministrador()) {
+            return;
+        }
+
         try {
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("Salas.fxml")
@@ -158,6 +207,10 @@ public class PrincipalController {
      */
     @FXML
     public void mostrarReservas() {
+
+        if (sinPermisoAdministrador()) {
+            return;
+        }
 
         try {
             FXMLLoader loader = new FXMLLoader(
@@ -184,6 +237,10 @@ public class PrincipalController {
     @FXML
     public void mostrarFunciones() {
 
+        if (sinPermisoAdministrador()) {
+            return;
+        }
+
         try {
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("Funciones.fxml")
@@ -207,6 +264,10 @@ public class PrincipalController {
      * Que hace: abre el formulario para programar una funcion nueva.
      */
     public void mostrarFormularioFuncion() {
+
+        if (sinPermisoAdministrador()) {
+            return;
+        }
 
         try {
             FXMLLoader loader = new FXMLLoader(
@@ -233,6 +294,10 @@ public class PrincipalController {
      */
     public void mostrarFormularioEditarFuncion(Funcion funcion) {
 
+        if (sinPermisoAdministrador()) {
+            return;
+        }
+
         try {
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("FormularioFuncion.fxml")
@@ -255,6 +320,10 @@ public class PrincipalController {
 
     public void mostrarFormularioSala() {
 
+        if (sinPermisoAdministrador()) {
+            return;
+        }
+
         try {
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("FormularioSala.fxml")
@@ -275,6 +344,10 @@ public class PrincipalController {
     }
 
     public void mostrarFormularioEditarSala(Sala sala) {
+
+        if (sinPermisoAdministrador()) {
+            return;
+        }
 
         try {
             FXMLLoader loader = new FXMLLoader(
@@ -427,14 +500,29 @@ public class PrincipalController {
      * Actualiza los controles del menú según la sesión del cliente.
      *
      * Mis reservas y Cerrar sesión solamente aparecen cuando hay un cliente
-     * autenticado.
+     * autenticado. Reservas, Películas, Salas y Funciones solo las ve el
+     * administrador.
      */
     public void actualizarMenuCuenta() {
 
         boolean haySesion = SesionCliente.haySesion();
+        boolean esAdministrador = SesionCliente.esAdministrador();
 
         botonMisReservas.setVisible(haySesion);
         botonMisReservas.setManaged(haySesion);
+
+        // Opciones de administracion
+        botonReservas.setVisible(esAdministrador);
+        botonReservas.setManaged(esAdministrador);
+
+        botonPeliculas.setVisible(esAdministrador);
+        botonPeliculas.setManaged(esAdministrador);
+
+        botonSalas.setVisible(esAdministrador);
+        botonSalas.setManaged(esAdministrador);
+
+        botonFunciones.setVisible(esAdministrador);
+        botonFunciones.setManaged(esAdministrador);
 
         botonIniciarSesion.setVisible(!haySesion);
         botonIniciarSesion.setManaged(!haySesion);
@@ -566,8 +654,8 @@ public class PrincipalController {
     /**
      * Finaliza la sesión del cliente.
      *
-     * Oculta las opciones personales y, si el usuario estaba consultando Mis
-     * reservas, regresa a Cartelera.
+     * Oculta las opciones personales y de administracion, y vuelve siempre a
+     * Cartelera para no quedar en una pantalla que ya no corresponde.
      *
      * No modifica los datos persistidos del cine.
      */
@@ -576,17 +664,7 @@ public class PrincipalController {
 
         SesionCliente.cerrarSesion();
         actualizarMenuCuenta();
-
-        // Salir de Mis reservas si era la pantalla actual.
-        Node pantallaActual = contenedorPrincipal.getCenter();
-
-        if (pantallaActual != null
-                && "misreservas".equals(
-                        pantallaActual.getProperties().get("pantalla")
-                )) {
-
-            mostrarCartelera();
-        }
+        mostrarCartelera();
     }
 
     /**
@@ -599,12 +677,4 @@ public class PrincipalController {
         mostrarCartelera();
     }
 
-    /**
-     * Obtiene la instancia actualizada del cine.
-     *
-     * @return Cine que utiliza actualmente la aplicación.
-     */
-    public Cine obtenerCineActual() {
-        return cine;
-    }
 }
