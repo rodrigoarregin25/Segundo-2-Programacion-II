@@ -1,7 +1,7 @@
-
 package gestordecine.sesion;
 
 import gestordecine.Cliente;
+import gestordecine.Rol;
 
 /**
  * Administra la sesión del cliente dentro de CINEMA.
@@ -66,5 +66,44 @@ public final class SesionCliente {
      */
     public static void cerrarSesion() {
         clienteActual = null;
+    }
+
+    /**
+     * Que hace: devuelve el rol del usuario que tiene la sesion iniciada
+     * Retorna: el rol (Rol), o null si no hay sesion
+     */
+    public static Rol getRolActual() {
+        if (clienteActual == null) {
+            return null;
+        }
+        return clienteActual.getRol();
+    }
+
+    /**
+     * Que hace: dice si el usuario con sesion iniciada es administrador
+     * Retorna: true si hay sesion y es administrador, false si no
+     */
+    public static boolean esAdministrador() {
+        return clienteActual != null && clienteActual.esAdministrador();
+    }
+
+    /**
+     * Que hace: dice si el usuario con sesion iniciada es un cliente comun
+     * Retorna: true si hay sesion y es cliente, false si no
+     */
+    public static boolean esCliente() {
+        return clienteActual != null && clienteActual.esCliente();
+    }
+
+    /**
+     * Que hace: comprueba que quien tiene la sesion sea administrador. Se usa
+     * antes de abrir o ejecutar algo de administracion.
+     * Lanza: IllegalStateException si no hay sesion o no es administrador
+     */
+    public static void exigirAdministrador() {
+        if (!esAdministrador()) {
+            throw new IllegalStateException(
+                    "Acceso restringido: se requieren permisos de administrador");
+        }
     }
 }

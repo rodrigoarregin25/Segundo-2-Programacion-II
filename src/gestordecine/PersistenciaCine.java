@@ -19,13 +19,28 @@ public class PersistenciaCine {
         return archivo.isFile();
     }
 
+    /**
+     * Que hace: carga el cine guardado, o crea uno nuevo si no hay archivo.
+     * Despues se asegura de que exista la cuenta administradora; si la tuvo
+     * que crear, guarda el cine para que quede en el archivo.
+     * Retorna: el cine listo para usar (Cine)
+     */
     public Cine cargarOCrear() throws IOException, ClassNotFoundException {
 
+        Cine cine;
+
         if (existeArchivo()) {
-            return cargar();
+            cine = cargar();
+        } else {
+            cine = new Cine();
         }
 
-        return new Cine();
+        // Si todavia no hay administrador, se crea la cuenta inicial
+        if (cine.getServicioDeReservas().asegurarAdministrador()) {
+            guardar(cine);
+        }
+
+        return cine;
     }
 
     public void guardar(Cine cine) throws IOException {

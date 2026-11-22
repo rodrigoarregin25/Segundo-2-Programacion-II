@@ -14,6 +14,10 @@ public class ServicioDeReservas implements Serializable {
     // Numero de version para poder leer los archivos .dat guardados antes
     private static final long serialVersionUID = -7137724024555080719L;
 
+    // Cuenta del administrador inicial
+    public static final int DNI_ADMINISTRADOR = 1;
+    public static final String CONTRASENIA_ADMINISTRADOR = "admin1234";
+
     private ArrayList<Reserva> reservas;
     private ArrayList<Cliente> clientes;
 
@@ -90,21 +94,82 @@ public class ServicioDeReservas implements Serializable {
     }
 
     /**
-     * Valida y confirma una reserva para una función del cine.
-     *
-     * Comprueba que el cliente esté registrado, que la función no haya
-     * comenzado y que tanto la función como la sala estén activas.
-     *
-     * Verifica que las entradas sean válidas, que sus butacas pertenezcan a la
-     * sala y que no estén repetidas ni ocupadas.
-     *
-     * @param cliente Cliente que realiza la reserva.
-     * @param funcion Función para la que se realiza la reserva.
-     * @param entradas Entradas seleccionadas por el cliente.
-     * @return Reserva creada y confirmada.
-     * @throws IllegalArgumentException Si algún dato o entrada es inválido.
-     * @throws IllegalStateException Si la función o la sala no están
-     * disponibles para recibir reservas.
+     * Que hace: se asegura de que exista al menos un administrador. Si no hay
+     * ninguno, crea la cuenta inicial (DNI y contrasenia de las constantes).
+     * Si ese DNI ya lo usa otro cliente, no toca nada.
+     * Retorna: true si creo el administrador (hay que guardar los datos),
+     * false si no hizo falta
+     */
+    public boolean asegurarAdministrador() {
+        for (Cliente cliente : clientes) {
+            if (cliente.esAdministrador()) {
+                return false;
+            }
+        }
+
+        if (buscarClientePorDni(DNI_ADMINISTRADOR) != null) {
+            return false;
+        }
+
+        clientes.add(new Cliente(DNI_ADMINISTRADOR, "Administrador", "Cinema",
+                "admin@cinema.com", CONTRASENIA_ADMINISTRADOR, Rol.ADMINISTRADOR));
+        return true;
+    }
+
+    /**
+     * Que hace: devuelve las reservas que puede consultar un usuario. El
+     * administrador ve todas; el cliente solo las propias.
+     * Parametros: solicitante (Cliente que consulta)
+     * Retorna: las reservas visibles (ArrayList de Reserva)
+     * Lanza: IllegalArgumentException si el solicitante es nulo
+     */
+    public ArrayList<Reserva> buscarReservasVisibles(Cliente solicitante) {
+        if (solicitante == null) {
+            throw new IllegalArgumentException("Debe iniciar sesion para ver reservas");
+        }
+
+        if (solicitante.esAdministrador()) {
+            return getReservas();
+        }
+
+        return buscarPorDni(solicitante.getDni());
+    }
+
+    /**
+     * Que hace: cancela una reserva comprobando los permisos. El administrador
+     * puede cancelar cualquiera; el cliente solo las suyas.
+     * Parametros: codigo (String), solicitante (Cliente que pide cancelar)
+     * Lanza: IllegalArgumentException si no hay sesion o la reserva no existe,
+     * IllegalStateException si el cliente intenta cancelar una reserva ajena
+     */
+    public void cancelarReserva(String codigo, Cliente solicitante) {
+        if (solicitante == null) {
+            throw new IllegalArgumentException("Debe iniciar sesion para cancelar una reserva");
+        }
+
+        Reserva reserva = buscarPorCodigo(codigo);
+
+        if (reserva != null
+                && !solicitante.esAdministrador()
+                && reserva.getCliente().getDni() != solicitante.getDni()) {
+            throw new IllegalStateException(
+                    "No tiene permisos para cancelar una reserva de otro cliente");
+        }
+
+        // el resto de las reglas (existe, ya cancelada, funcion comenzada) las controla la otra version
+        cancelarReserva(codigo);
+    }
+
+    /**
+     * Que hace: valida y confirma una reserva. Comprueba que el cliente este
+     * registrado, que la funcion y la sala esten activas y que la funcion no
+     * haya comenzado. Tambien que las butacas sean de la sala, no esten
+     * repetidas ni ocupadas, y que el precio coincida con el de la funcion.
+     * Parametros: cliente (Cliente), funcion (Funcion), entradas (ArrayList
+     * de Entrada)
+     * Retorna: la reserva creada y confirmada (Reserva)
+     * Lanza: IllegalArgumentException si algun dato o entrada es invalido,
+     * IllegalStateException si la funcion o la sala no estan disponibles
      */
     public Reserva confirmarReserva(Cliente cliente, Funcion funcion, ArrayList<Entrada> entradas) {
 
