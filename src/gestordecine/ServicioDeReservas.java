@@ -95,10 +95,9 @@ public class ServicioDeReservas implements Serializable {
 
     /**
      * Que hace: se asegura de que exista al menos un administrador. Si no hay
-     * ninguno, crea la cuenta inicial (DNI y contrasenia de las constantes).
-     * Si ese DNI ya lo usa otro cliente, no toca nada.
-     * Retorna: true si creo el administrador (hay que guardar los datos),
-     * false si no hizo falta
+     * ninguno, crea la cuenta inicial (DNI y contrasenia de las constantes). Si
+     * ese DNI ya lo usa otro cliente, no toca nada. Retorna: true si creo el
+     * administrador (hay que guardar los datos), false si no hizo falta
      */
     public boolean asegurarAdministrador() {
         for (Cliente cliente : clientes) {
@@ -118,10 +117,10 @@ public class ServicioDeReservas implements Serializable {
 
     /**
      * Que hace: devuelve las reservas que puede consultar un usuario. El
-     * administrador ve todas; el cliente solo las propias.
-     * Parametros: solicitante (Cliente que consulta)
-     * Retorna: las reservas visibles (ArrayList de Reserva)
-     * Lanza: IllegalArgumentException si el solicitante es nulo
+     * administrador ve todas; el cliente solo las propias. Parametros:
+     * solicitante (Cliente que consulta) Retorna: las reservas visibles
+     * (ArrayList de Reserva) Lanza: IllegalArgumentException si el solicitante
+     * es nulo
      */
     public ArrayList<Reserva> buscarReservasVisibles(Cliente solicitante) {
         if (solicitante == null) {
@@ -137,9 +136,9 @@ public class ServicioDeReservas implements Serializable {
 
     /**
      * Que hace: cancela una reserva comprobando los permisos. El administrador
-     * puede cancelar cualquiera; el cliente solo las suyas.
-     * Parametros: codigo (String), solicitante (Cliente que pide cancelar)
-     * Lanza: IllegalArgumentException si no hay sesion o la reserva no existe,
+     * puede cancelar cualquiera; el cliente solo las suyas. Parametros: codigo
+     * (String), solicitante (Cliente que pide cancelar) Lanza:
+     * IllegalArgumentException si no hay sesion o la reserva no existe,
      * IllegalStateException si el cliente intenta cancelar una reserva ajena
      */
     public void cancelarReserva(String codigo, Cliente solicitante) {
@@ -165,10 +164,9 @@ public class ServicioDeReservas implements Serializable {
      * registrado, que la funcion y la sala esten activas y que la funcion no
      * haya comenzado. Tambien que las butacas sean de la sala, no esten
      * repetidas ni ocupadas, y que el precio coincida con el de la funcion.
-     * Parametros: cliente (Cliente), funcion (Funcion), entradas (ArrayList
-     * de Entrada)
-     * Retorna: la reserva creada y confirmada (Reserva)
-     * Lanza: IllegalArgumentException si algun dato o entrada es invalido,
+     * Parametros: cliente (Cliente), funcion (Funcion), entradas (ArrayList de
+     * Entrada) Retorna: la reserva creada y confirmada (Reserva) Lanza:
+     * IllegalArgumentException si algun dato o entrada es invalido,
      * IllegalStateException si la funcion o la sala no estan disponibles
      */
     public Reserva confirmarReserva(Cliente cliente, Funcion funcion, ArrayList<Entrada> entradas) {
@@ -386,5 +384,73 @@ public class ServicioDeReservas implements Serializable {
         }
 
         return disponibles;
+    }
+
+    /**
+     * Cambia el rol de un usuario registrado.
+     *
+     * Solo permite realizar la operación a un administrador. Impide que un
+     * administrador modifique su propio rol y evita que el sistema se quede sin
+     * administradores.
+     *
+     * @param dniUsuario DNI del usuario que se desea modificar.
+     * @param nuevoRol Rol que se asignará al usuario.
+     * @param solicitante Administrador que realiza la modificación.
+     * @throws IllegalArgumentException Si el usuario no existe o el rol es
+     * nulo.
+     * @throws IllegalStateException Si el solicitante no tiene permisos o
+     * intenta modificar su propio rol.
+     */
+    public void cambiarRolUsuario(int dniUsuario, Rol nuevoRol, Cliente solicitante) {
+
+        // Validar permisos.
+        if (solicitante == null || !solicitante.esAdministrador()) {
+            throw new IllegalStateException(
+                    "No tiene permisos para modificar roles"
+            );
+        }
+
+        // Validar el nuevo rol.
+        if (nuevoRol == null) {
+            throw new IllegalArgumentException(
+                    "Debe seleccionar un rol válido"
+            );
+        }
+
+        // Buscar al usuario.
+        Cliente usuario = buscarClientePorDni(dniUsuario);
+
+        if (usuario == null) {
+            throw new IllegalArgumentException(
+                    "El usuario seleccionado no existe"
+            );
+        }
+
+        // Impedir que el administrador cambie su propio rol.
+        if (usuario.getDni() == solicitante.getDni()) {
+            throw new IllegalStateException(
+                    "No puede modificar su propio rol"
+            );
+        }
+
+        // Verificar que exista otro administrador si se quitan permisos.
+        if (usuario.esAdministrador() && nuevoRol == Rol.CLIENTE) {
+
+            int cantidadAdministradores = 0;
+
+            for (Cliente cliente : clientes) {
+                if (cliente.esAdministrador()) {
+                    cantidadAdministradores++;
+                }
+            }
+
+            if (cantidadAdministradores <= 1) {
+                throw new IllegalStateException(
+                        "No se puede quitar el rol al último administrador"
+                );
+            }
+        }
+
+        usuario.setRol(nuevoRol);
     }
 }

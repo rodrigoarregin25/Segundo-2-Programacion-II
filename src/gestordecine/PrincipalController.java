@@ -23,6 +23,7 @@ import javafx.scene.layout.Region;
 import javafx.geometry.Pos;
 import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
+import gestordecine.usuarios.UsuariosController;
 
 public class PrincipalController {
 
@@ -62,11 +63,14 @@ public class PrincipalController {
     @FXML
     private Label etiquetaSesion;
 
+    @FXML
+    private Button botonUsuarios;
+
     /**
-     * Que hace: comprueba que el usuario con sesion sea administrador. Si no
-     * lo es, lo manda a la Cartelera. Se usa al principio de cada pantalla de
-     * administracion, ademas de ocultar los botones del menu.
-     * Retorna: true si NO tiene permisos (hay que cortar), false si es admin
+     * Que hace: comprueba que el usuario con sesion sea administrador. Si no lo
+     * es, lo manda a la Cartelera. Se usa al principio de cada pantalla de
+     * administracion, ademas de ocultar los botones del menu. Retorna: true si
+     * NO tiene permisos (hay que cortar), false si es admin
      */
     private boolean sinPermisoAdministrador() {
         if (SesionCliente.esAdministrador()) {
@@ -533,6 +537,9 @@ public class PrincipalController {
         etiquetaSesion.setVisible(haySesion);
         etiquetaSesion.setManaged(haySesion);
 
+        botonUsuarios.setVisible(esAdministrador);
+        botonUsuarios.setManaged(esAdministrador);
+
         if (haySesion) {
             Cliente cliente = SesionCliente.getClienteActual();
 
@@ -647,6 +654,36 @@ public class PrincipalController {
 
         } catch (IOException e) {
             System.out.println("Error al abrir Mi cuenta:");
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Abre la pantalla de administración de usuarios.
+     *
+     * Solo permite el acceso a usuarios con rol ADMINISTRADOR.
+     */
+    @FXML
+    public void mostrarUsuarios() {
+
+        if (sinPermisoAdministrador()) {
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/gestordecine/usuarios/Usuarios.fxml")
+            );
+
+            Parent pantalla = loader.load();
+
+            UsuariosController controlador = loader.getController();
+            controlador.configurar(cine, persistencia, this);
+
+            contenedorPrincipal.setCenter(pantalla);
+
+        } catch (IOException e) {
+            System.out.println("Error al cargar la pantalla de usuarios:");
             e.printStackTrace();
         }
     }

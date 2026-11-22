@@ -60,6 +60,11 @@
                     onAction="#mostrarFunciones"
                     visible="false"
                     managed="false"/>
+            
+            <Button fx:id="botonUsuarios"
+                    text="Usuarios"
+                    styleClass="boton-menu"
+                    onAction="#mostrarUsuarios"/>
 
             <Region VBox.vgrow="ALWAYS"/>
 
