@@ -33,21 +33,33 @@
                     visible="false"
                     managed="false"/>
 
-            <Button text="Reservas"
+            <Button fx:id="botonReservas"
+                    text="Reservas"
                     styleClass="boton-menu"
-                    onAction="#mostrarReservas"/>
+                    onAction="#mostrarReservas"
+                    visible="false"
+                    managed="false"/>
 
-            <Button text="Películas"
+            <Button fx:id="botonPeliculas"
+                    text="Películas"
                     styleClass="boton-menu"
-                    onAction="#mostrarPeliculas"/>
+                    onAction="#mostrarPeliculas"
+                    visible="false"
+                    managed="false"/>
 
-            <Button text="Salas"
+            <Button fx:id="botonSalas"
+                    text="Salas"
                     styleClass="boton-menu"
-                    onAction="#mostrarSalas"/>
+                    onAction="#mostrarSalas"
+                    visible="false"
+                    managed="false"/>
 
-            <Button text="Funciones"
+            <Button fx:id="botonFunciones"
+                    text="Funciones"
                     styleClass="boton-menu"
-                    onAction="#mostrarFunciones"/>
+                    onAction="#mostrarFunciones"
+                    visible="false"
+                    managed="false"/>
 
             <Region VBox.vgrow="ALWAYS"/>
 
