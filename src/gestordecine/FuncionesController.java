@@ -99,6 +99,7 @@ public class FuncionesController {
 
     /**
      * Que hace: muestra en la lista todas las funciones programadas.
+     * El texto de cada fila esta en la misma posicion que la funcion en el cine.
      */
     private void cargarLista() {
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
@@ -182,6 +183,75 @@ public class FuncionesController {
             mostrarError("Error al guardar los datos: " + e.getMessage());
         } catch (Exception e) {
             // Error de reglas de negocio: horario ocupado, fecha pasada, etc.
+            mostrarError(e.getMessage());
+        }
+    }
+
+    /**
+     * Que hace: cambia el precio de la funcion elegida en la lista.
+     * El precio nuevo se escribe en el campo Precio. Las reservas ya hechas
+     * conservan su importe, porque cada entrada guarda el precio que se pago.
+     */
+    @FXML
+    private void editarPrecio() {
+        ocultarError();
+
+        try {
+            int posicion = listaFunciones.getSelectionModel().getSelectedIndex();
+            if (posicion < 0) {
+                throw new IllegalArgumentException("Seleccione una funcion de la lista");
+            }
+
+            double precio;
+            try {
+                precio = Double.parseDouble(campoPrecio.getText().trim());
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Escriba el precio nuevo en el campo Precio");
+            }
+
+            // El ID de la funcion elegida; despues se busca dentro de la copia
+            int idFuncion = cine.getFunciones().get(posicion).getIdFuncion();
+
+            Cine cineTrabajo = cine.copiar();
+            cineTrabajo.editarPrecioFuncion(idFuncion, precio);
+
+            persistencia.guardar(cineTrabajo);
+            principalController.actualizarCine(cineTrabajo);
+            principalController.mostrarFunciones();
+
+        } catch (IOException | ClassNotFoundException e) {
+            mostrarError("Error al guardar los datos: " + e.getMessage());
+        } catch (Exception e) {
+            mostrarError(e.getMessage());
+        }
+    }
+
+    /**
+     * Que hace: elimina la funcion elegida en la lista.
+     * Si la funcion tiene reservas, Cine avisa con un error y no se borra.
+     */
+    @FXML
+    private void eliminarFuncion() {
+        ocultarError();
+
+        try {
+            int posicion = listaFunciones.getSelectionModel().getSelectedIndex();
+            if (posicion < 0) {
+                throw new IllegalArgumentException("Seleccione una funcion de la lista");
+            }
+
+            int idFuncion = cine.getFunciones().get(posicion).getIdFuncion();
+
+            Cine cineTrabajo = cine.copiar();
+            cineTrabajo.eliminarFuncion(idFuncion);
+
+            persistencia.guardar(cineTrabajo);
+            principalController.actualizarCine(cineTrabajo);
+            principalController.mostrarFunciones();
+
+        } catch (IOException | ClassNotFoundException e) {
+            mostrarError("Error al guardar los datos: " + e.getMessage());
+        } catch (Exception e) {
             mostrarError(e.getMessage());
         }
     }

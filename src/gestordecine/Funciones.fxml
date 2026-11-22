@@ -30,6 +30,19 @@
             <Label text="Funciones programadas" styleClass="titulo-seccion"/>
             <ListView fx:id="listaFunciones" styleClass="lista-salas"
                       VBox.vgrow="ALWAYS"/>
+
+            <Label text="Elegí una función de la lista. Para cambiar el precio, escribí el nuevo en el campo Precio."
+                   wrapText="true"
+                   style="-fx-text-fill: #94A3B8;"/>
+
+            <HBox spacing="10">
+                <Button text="Editar precio"
+                        styleClass="boton-secundario"
+                        onAction="#editarPrecio"/>
+                <Button text="Eliminar"
+                        styleClass="boton-peligro"
+                        onAction="#eliminarFuncion"/>
+            </HBox>
         </VBox>
 
         <!-- Formulario para programar una funcion -->

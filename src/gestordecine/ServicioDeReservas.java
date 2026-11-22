@@ -11,6 +11,9 @@ import java.util.ArrayList;
  */
 public class ServicioDeReservas implements Serializable {
 
+    // Numero de version para poder leer los archivos .dat guardados antes
+    private static final long serialVersionUID = -7137724024555080719L;
+
     private ArrayList<Reserva> reservas;
     private ArrayList<Cliente> clientes;
 
@@ -23,16 +26,16 @@ public class ServicioDeReservas implements Serializable {
     }
 
     /**
-     * Que hace: devuelve una copia de la lista de reservas Retorna: las
-     * reservas (ArrayList de Reserva)
+     * Que hace: devuelve una copia de la lista de reservas
+     * Retorna: las reservas (ArrayList de Reserva)
      */
     public ArrayList<Reserva> getReservas() {
         return new ArrayList<>(reservas);
     }
 
     /**
-     * Que hace: devuelve una copia de la lista de clientes Retorna: los
-     * clientes (ArrayList de Cliente)
+     * Que hace: devuelve una copia de la lista de clientes
+     * Retorna: los clientes (ArrayList de Cliente)
      */
     public ArrayList<Cliente> getClientes() {
         return new ArrayList<>(clientes);
@@ -40,7 +43,8 @@ public class ServicioDeReservas implements Serializable {
 
     /**
      * Que hace: dice si una butaca ya esta ocupada en una funcion por una
-     * reserva confirmada Parametros: funcion (Funcion), butaca (Butaca)
+     * reserva confirmada
+     * Parametros: funcion (Funcion), butaca (Butaca)
      * Retorna: true si esta ocupada, false si esta libre
      */
     public boolean estaOcupada(Funcion funcion, Butaca butaca) {
@@ -59,9 +63,10 @@ public class ServicioDeReservas implements Serializable {
     }
 
     /**
-     * Que hace: registra un cliente nuevo Parametros: cliente (Cliente) Lanza:
-     * IllegalArgumentException si el cliente es nulo o ya existe uno con ese
-     * DNI
+     * Que hace: registra un cliente nuevo
+     * Parametros: cliente (Cliente)
+     * Lanza: IllegalArgumentException si el cliente es nulo o ya existe uno
+     * con ese DNI
      */
     public void registrarCliente(Cliente cliente) {
         if (cliente == null) {
@@ -74,8 +79,9 @@ public class ServicioDeReservas implements Serializable {
     }
 
     /**
-     * Que hace: busca un cliente por su DNI Parametros: dni (int) Retorna: el
-     * cliente, o null si no existe ninguno con ese DNI
+     * Que hace: busca un cliente por su DNI
+     * Parametros: dni (int)
+     * Retorna: el cliente, o null si no existe ninguno con ese DNI
      */
     public Cliente buscarClientePorDni(int dni) {
         for (Cliente cliente : clientes) {
@@ -89,10 +95,11 @@ public class ServicioDeReservas implements Serializable {
     /**
      * Que hace: valida y confirma una reserva con sus entradas, y la guarda
      * Parametros: cliente (Cliente), funcion (Funcion), entradas (ArrayList de
-     * Entrada) Retorna: la reserva creada (Reserva) Lanza:
-     * IllegalArgumentException si el cliente no esta registrado, si no hay
-     * entradas, si alguna butaca no es de la sala de la funcion o si ya esta
-     * ocupada
+     * Entrada)
+     * Retorna: la reserva creada (Reserva)
+     * Lanza: IllegalArgumentException si el cliente no esta registrado, si no
+     * hay entradas, si alguna butaca no es de la sala de la funcion o si ya
+     * esta ocupada
      */
     public Reserva confirmarReserva(Cliente cliente, Funcion funcion, ArrayList<Entrada> entradas) {
 
@@ -151,7 +158,8 @@ public class ServicioDeReservas implements Serializable {
     }
 
     /**
-     * Que hace: busca una reserva por su codigo Parametros: codigo (String)
+     * Que hace: busca una reserva por su codigo
+     * Parametros: codigo (String)
      * Retorna: la reserva, o null si no existe ninguna con ese codigo
      */
     public Reserva buscarPorCodigo(String codigo) {
@@ -164,9 +172,10 @@ public class ServicioDeReservas implements Serializable {
     }
 
     /**
-     * Que hace: busca todas las reservas de un cliente por su DNI Parametros:
-     * dni (int) Retorna: las reservas del cliente (ArrayList de Reserva), vacia
-     * si no tiene
+     * Que hace: busca todas las reservas de un cliente por su DNI
+     * Parametros: dni (int)
+     * Retorna: las reservas del cliente (ArrayList de Reserva), vacia si no
+     * tiene
      */
     public ArrayList<Reserva> buscarPorDni(int dni) {
         ArrayList<Reserva> encontradas = new ArrayList<>();
@@ -181,8 +190,9 @@ public class ServicioDeReservas implements Serializable {
     /**
      * Que hace: cancela la reserva con ese codigo, lo que libera sus butacas.
      * No se puede cancelar si la funcion ya comenzo.
-     * Parametros: codigo (String) Lanza: IllegalArgumentException si no existe
-     * la reserva, si ya estaba cancelada o si la funcion ya comenzo
+     * Parametros: codigo (String)
+     * Lanza: IllegalArgumentException si no existe la reserva, si ya estaba
+     * cancelada o si la funcion ya comenzo
      */
     public void cancelarReserva(String codigo) {
         Reserva reserva = buscarPorCodigo(codigo);
@@ -200,7 +210,8 @@ public class ServicioDeReservas implements Serializable {
 
     /**
      * Que hace: arma el comprobante de una reserva con todos sus datos
-     * Parametros: reserva (Reserva) Retorna: el texto del comprobante (String)
+     * Parametros: reserva (Reserva)
+     * Retorna: el texto del comprobante (String)
      * Lanza: IllegalArgumentException si la reserva es nula
      */
     public String generarComprobante(Reserva reserva) {
@@ -241,6 +252,20 @@ public class ServicioDeReservas implements Serializable {
      */
     public void recargarCodigos() {
         Reserva.recargarCodigos(reservas);
+    }
+
+    /**
+     * Que hace: dice si una funcion tiene alguna reserva, confirmada o cancelada
+     * Parametros: funcion (Funcion)
+     * Retorna: true si tiene al menos una reserva, false si no tiene ninguna
+     */
+    public boolean tieneReservas(Funcion funcion) {
+        for (Reserva reserva : reservas) {
+            if (reserva.getFuncion().getIdFuncion() == funcion.getIdFuncion()) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

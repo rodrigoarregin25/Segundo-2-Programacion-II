@@ -396,5 +396,40 @@ public class Cine implements Serializable {
 
         sala.setNombreSala(nuevoNombre);
     }
+    /**
+     * Que hace: cambia el precio de una funcion. Las reservas que ya existen
+     * conservan su importe.
+     * Parametros: idFuncion (int), nuevoPrecio (double)
+     * Lanza: IllegalArgumentException si la funcion no existe o el precio no es valido
+     */
+    public void editarPrecioFuncion(int idFuncion, double nuevoPrecio) {
+        Funcion funcion = buscarFuncionPorId(idFuncion);
+
+        if (funcion == null) {
+            throw new IllegalArgumentException("La funcion no existe");
+        }
+
+        funcion.setPrecio(nuevoPrecio);
+    }
+
+    /**
+     * Que hace: elimina una funcion, solo si no tiene reservas
+     * Parametros: idFuncion (int)
+     * Lanza: IllegalArgumentException si la funcion no existe o tiene reservas
+     */
+    public void eliminarFuncion(int idFuncion) {
+        Funcion funcion = buscarFuncionPorId(idFuncion);
+
+        if (funcion == null) {
+            throw new IllegalArgumentException("La funcion no existe");
+        }
+
+        if (servicioDeReservas.tieneReservas(funcion)) {
+            throw new IllegalArgumentException(
+                    "No se puede eliminar: la funcion tiene reservas");
+        }
+
+        funciones.remove(funcion);
+    }
 
 }
