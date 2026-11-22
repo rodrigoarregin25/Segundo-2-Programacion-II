@@ -436,9 +436,9 @@ public class Cine implements Serializable {
 
     /**
      * Que hace: cambia el precio de una funcion. Las reservas que ya existen
-     * conservan su importe.
-     * Parametros: idFuncion (int), nuevoPrecio (double)
-     * Lanza: IllegalArgumentException si la funcion no existe o el precio no es valido
+     * conservan su importe. Parametros: idFuncion (int), nuevoPrecio (double)
+     * Lanza: IllegalArgumentException si la funcion no existe o el precio no es
+     * valido
      */
     public void editarPrecioFuncion(int idFuncion, double nuevoPrecio) {
         Funcion funcion = buscarFuncionPorId(idFuncion);
@@ -451,9 +451,9 @@ public class Cine implements Serializable {
     }
 
     /**
-     * Que hace: elimina una funcion, solo si no tiene reservas
-     * Parametros: idFuncion (int)
-     * Lanza: IllegalArgumentException si la funcion no existe o tiene reservas
+     * Que hace: elimina una funcion, solo si no tiene reservas Parametros:
+     * idFuncion (int) Lanza: IllegalArgumentException si la funcion no existe o
+     * tiene reservas
      */
     public void eliminarFuncion(int idFuncion) {
         Funcion funcion = buscarFuncionPorId(idFuncion);
@@ -471,42 +471,110 @@ public class Cine implements Serializable {
     }
 
     /**
-     * Que hace: desactiva una funcion (no se borra, las reservas quedan en el historial)
-     * Parametros: idFuncion (int)
-     * Lanza: IllegalArgumentException si la funcion no existe,
-     * IllegalStateException si ya estaba desactivada
+     * Que hace: desactiva una funcion (no se borra, las reservas quedan en el
+     * historial) Parametros: idFuncion (int) Lanza: IllegalArgumentException si
+     * la funcion no existe, IllegalStateException si ya estaba desactivada
      */
     public void desactivarFuncion(int idFuncion) {
+
         Funcion funcion = buscarFuncionPorId(idFuncion);
 
         if (funcion == null) {
-            throw new IllegalArgumentException("La funcion no existe");
+            throw new IllegalArgumentException("La función no existe");
         }
 
         if (!funcion.isActiva()) {
-            throw new IllegalStateException("La funcion ya esta desactivada");
+            throw new IllegalStateException("La función ya está desactivada");
+        }
+
+        // Verificar si tiene reservas confirmadas para una función futura
+        if (funcion.getFechaHora().isAfter(LocalDateTime.now())) {
+
+            for (Reserva reserva : servicioDeReservas.getReservas()) {
+
+                boolean mismaFuncion
+                        = reserva.getFuncion().getIdFuncion() == idFuncion;
+
+                boolean reservaConfirmada = reserva.isConfirmada();
+
+                if (mismaFuncion && reservaConfirmada) {
+                    throw new IllegalStateException(
+                            "No se puede desactivar la función porque "
+                            + "tiene reservas confirmadas."
+                    );
+                }
+            }
         }
 
         funcion.desactivar();
     }
 
     /**
-     * Que hace: vuelve a activar una funcion desactivada
-     * Parametros: idFuncion (int)
-     * Lanza: IllegalArgumentException si la funcion no existe,
+     * Que hace: vuelve a activar una funcion desactivada Parametros: idFuncion
+     * (int) Lanza: IllegalArgumentException si la funcion no existe,
      * IllegalStateException si ya estaba activa
      */
     public void reactivarFuncion(int idFuncion) {
+
         Funcion funcion = buscarFuncionPorId(idFuncion);
 
         if (funcion == null) {
-            throw new IllegalArgumentException("La funcion no existe");
+            throw new IllegalArgumentException("La función no existe");
         }
 
         if (funcion.isActiva()) {
-            throw new IllegalStateException("La funcion ya esta activa");
+            throw new IllegalStateException("La función ya está activa");
         }
 
+        // Validar que la función todavía sea futura
+        if (!funcion.getFechaHora().isAfter(LocalDateTime.now())) {
+            throw new IllegalStateException(
+                    "No se puede reactivar una función que ya comenzó"
+            );
+        }
+
+        // Validar que la sala esté activa
+        if (!funcion.getSala().isActiva()) {
+            throw new IllegalStateException(
+                    "No se puede reactivar la función porque la sala está inactiva"
+            );
+        }
+
+        // Validar que la película esté activa
+        if (!funcion.getPelicula().isActiva()) {
+            throw new IllegalStateException(
+                    "No se puede reactivar la función porque la película está inactiva"
+            );
+        }
+
+        // Comprobar que no existan funciones superpuestas
+        for (Funcion existente : funciones) {
+
+            if (existente.getIdFuncion() == idFuncion) {
+                continue;
+            }
+
+            if (!existente.isActiva()) {
+                continue;
+            }
+
+            boolean mismaSala
+                    = existente.getSala().getIdSala()
+                    == funcion.getSala().getIdSala();
+
+            boolean horariosSuperpuestos
+                    = funcion.getFechaHora().isBefore(existente.getFechaHoraFin())
+                    && funcion.getFechaHoraFin().isAfter(existente.getFechaHora());
+
+            if (mismaSala && horariosSuperpuestos) {
+                throw new IllegalStateException(
+                        "No se puede reactivar la función porque "
+                        + "ya existe otra función programada en ese horario."
+                );
+            }
+        }
+
+        // Reactivar solamente si todas las validaciones fueron exitosas
         funcion.reactivar();
     }
 

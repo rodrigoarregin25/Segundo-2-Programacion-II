@@ -33,8 +33,8 @@ public class FuncionesController {
     private Label mensajeError;
 
     /**
-     * Que hace: prepara el filtro de estado, la forma de las tarjetas y el boton
-     * de estado. JavaFX lo llama solo al abrir la pantalla.
+     * Que hace: prepara el filtro de estado, la forma de las tarjetas y el
+     * boton de estado. JavaFX lo llama solo al abrir la pantalla.
      */
     @FXML
     private void initialize() {
@@ -85,8 +85,9 @@ public class FuncionesController {
     }
 
     /**
-     * Que hace: recibe el cine y la persistencia, y muestra las funciones segun el filtro.
-     * Parametros: cine (el cine actual), persistencia (para guardar los cambios).
+     * Que hace: recibe el cine y la persistencia, y muestra las funciones segun
+     * el filtro. Parametros: cine (el cine actual), persistencia (para guardar
+     * los cambios).
      */
     public void configurar(Cine cine, PersistenciaCine persistencia) {
         this.cine = cine;
@@ -122,9 +123,9 @@ public class FuncionesController {
     }
 
     /**
-     * Que hace: arma la tarjeta de una funcion (datos a la izquierda, precio a la derecha).
-     * Parametros: funcion (la funcion a mostrar).
-     * Retorna: la tarjeta lista para mostrar en la lista.
+     * Que hace: arma la tarjeta de una funcion (datos a la izquierda, precio a
+     * la derecha). Parametros: funcion (la funcion a mostrar). Retorna: la
+     * tarjeta lista para mostrar en la lista.
      */
     private HBox crearTarjeta(Funcion funcion) {
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
@@ -171,8 +172,8 @@ public class FuncionesController {
 
     /**
      * Que hace: arma una etiqueta chica (por ejemplo el formato o el idioma).
-     * Parametros: texto (lo que dice la etiqueta).
-     * Retorna: el Label con estilo.
+     * Parametros: texto (lo que dice la etiqueta). Retorna: el Label con
+     * estilo.
      */
     private Label crearEtiqueta(String texto) {
         Label etiqueta = new Label(texto);
@@ -183,9 +184,9 @@ public class FuncionesController {
 
     /**
      * Que hace: devuelve el estilo de la tarjeta: borde azul si esta elegida,
-     * rojo si esta desactivada, gris si no.
-     * Parametros: seleccionada (true si es la elegida), activa (true si esta activa).
-     * Retorna: el estilo en texto.
+     * rojo si esta desactivada, gris si no. Parametros: seleccionada (true si
+     * es la elegida), activa (true si esta activa). Retorna: el estilo en
+     * texto.
      */
     private String estiloTarjeta(boolean seleccionada, boolean activa) {
         String borde = "#334155";
@@ -226,8 +227,9 @@ public class FuncionesController {
     }
 
     /**
-     * Que hace: desactiva la funcion elegida, o la restaura si estaba desactivada.
-     * No se borra nada: las reservas de la funcion quedan en el historial.
+     * Que hace: desactiva la funcion elegida, o la restaura si estaba
+     * desactivada. No se borra nada: las reservas de la funcion quedan en el
+     * historial.
      */
     @FXML
     private void cambiarEstadoFuncion() {
@@ -253,8 +255,27 @@ public class FuncionesController {
             principalController.actualizarCine(cineTrabajo);
             principalController.mostrarFunciones();
 
+        } catch (IllegalStateException e) {
+
+            String titulo = seleccionada.isActiva()
+                    ? "No se puede desactivar la función"
+                    : "No se puede reactivar la función";
+
+            DialogoCinema.mostrarError(
+                    listaFunciones.getScene().getWindow(),
+                    titulo,
+                    e.getMessage()
+            );
+
         } catch (Exception e) {
-            mostrarError("Error al cambiar el estado de la funcion: " + e.getMessage());
+
+            DialogoCinema.mostrarError(
+                    listaFunciones.getScene().getWindow(),
+                    "Error al modificar la función",
+                    e.getMessage()
+            );
+
+            e.printStackTrace();
         }
     }
 
