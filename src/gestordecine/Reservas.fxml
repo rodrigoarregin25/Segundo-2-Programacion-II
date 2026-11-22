@@ -3,7 +3,6 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.Priority?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ListView?>
@@ -15,49 +14,102 @@
       spacing="25"
       styleClass="contenido-principal">
 
-    <!-- Encabezado -->
-    <HBox alignment="CENTER_LEFT">
-        <VBox spacing="5">
-            <Label text="Reservas" styleClass="titulo-pagina"/>
+    <!-- ENCABEZADO PRINCIPAL -->
+    <VBox spacing="16">
+
+        <!-- PRIMERA FILA: TITULO Y BOTONES -->
+        <HBox alignment="CENTER_LEFT" spacing="20">
+
+            <Label text="Reservas"
+                   styleClass="titulo-pagina"/>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <HBox alignment="CENTER_RIGHT" spacing="12">
+
+                <Button fx:id="botonComprobante"
+                        text="Ver comprobante"
+                        prefWidth="145"
+                        minWidth="145"
+                        maxWidth="145"
+                        prefHeight="45"
+                        styleClass="boton-secundario"
+                        onAction="#verComprobante"/>
+
+                <Button fx:id="botonCancelar"
+                        text="Cancelar reserva"
+                        prefWidth="160"
+                        minWidth="160"
+                        maxWidth="160"
+                        prefHeight="45"
+                        styleClass="boton-peligro"
+                        onAction="#cancelarReserva"/>
+
+                <Button text="+ Nueva reserva"
+                        prefWidth="150"
+                        minWidth="150"
+                        maxWidth="150"
+                        prefHeight="45"
+                        styleClass="boton-primario"
+                        onAction="#nuevaReserva"/>
+
+            </HBox>
+
+        </HBox>
+
+        <!-- SEGUNDA FILA: SUBTITULO -->
+        <HBox alignment="CENTER_LEFT">
+
             <Label text="Consultá, revisá el comprobante o cancelá una reserva"
                    styleClass="subtitulo-pagina"/>
-        </VBox>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Button text="+ Nueva reserva"
-                styleClass="boton-primario"
-                onAction="#nuevaReserva"/>
-    </HBox>
 
-    <!-- Busqueda -->
-    <HBox spacing="10" alignment="CENTER_LEFT" styleClass="tarjeta-contenido">
-        <Label text="Buscar por" style="-fx-text-fill: #CBD5E1;"/>
-        <ComboBox fx:id="comboCriterio" prefWidth="140"/>
-        <TextField fx:id="campoBusqueda" prefWidth="260"
+        </HBox>
+
+    </VBox>
+
+    <!-- BUSQUEDA -->
+    <HBox spacing="10"
+          alignment="CENTER_LEFT"
+          styleClass="tarjeta-contenido">
+
+        <Label text="Buscar por"
+               style="-fx-text-fill: #CBD5E1;"/>
+
+        <ComboBox fx:id="comboCriterio"
+                  prefWidth="140"/>
+
+        <TextField fx:id="campoBusqueda"
+                   prefWidth="260"
                    promptText="Dejalo vacío para ver todas"/>
-        <Button text="Buscar" styleClass="boton-secundario"
+
+        <Button text="Buscar"
+                styleClass="boton-secundario"
                 onAction="#buscar"/>
-        <Button text="Ver todas" styleClass="boton-secundario"
+
+        <Button text="Ver todas"
+                styleClass="boton-secundario"
                 onAction="#verTodas"/>
+
     </HBox>
 
-    <!-- Lista de reservas (cada una como tarjeta) y acciones -->
-    <VBox spacing="12" styleClass="tarjeta-contenido" VBox.vgrow="ALWAYS">
-        <Label text="Reservas encontradas" styleClass="titulo-seccion"/>
-        <ListView fx:id="listaReservas" styleClass="lista-salas"
+    <!-- LISTADO DE RESERVAS -->
+    <VBox spacing="12"
+          styleClass="tarjeta-contenido"
+          VBox.vgrow="ALWAYS">
+
+        <Label text="Reservas encontradas"
+               styleClass="titulo-seccion"/>
+
+        <ListView fx:id="listaReservas"
+                  styleClass="lista-salas"
                   VBox.vgrow="ALWAYS"/>
 
-        <Label fx:id="mensajeError" visible="false" managed="false"
+        <Label fx:id="mensajeError"
+               visible="false"
+               managed="false"
                wrapText="true"
                style="-fx-text-fill: #EF4444;"/>
 
-        <HBox spacing="10">
-            <Button fx:id="botonComprobante" text="Ver comprobante"
-                    styleClass="boton-secundario"
-                    onAction="#verComprobante"/>
-            <Button fx:id="botonCancelar" text="Cancelar reserva"
-                    styleClass="boton-peligro"
-                    onAction="#cancelarReserva"/>
-        </HBox>
     </VBox>
 
 </VBox>

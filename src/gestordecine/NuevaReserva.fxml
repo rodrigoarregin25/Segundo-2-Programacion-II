@@ -79,8 +79,19 @@
             <VBox spacing="18" styleClass="tarjeta-contenido" prefWidth="360">
 
                 <!-- Ingresar o registrarse -->
-                <VBox fx:id="panelLogin" spacing="10">
-                    <Label text="Ingresar" styleClass="titulo-seccion"/>
+                
+                <Button fx:id="botonAbrirAcceso"
+                        text="Ingresar / Registrarse"
+                        styleClass="boton-primario"
+                        maxWidth="Infinity"
+                        onAction="#abrirAcceso"/>
+                <VBox fx:id="panelLogin"
+                      spacing="10"
+                      visible="false"
+                      managed="false">
+                    <Label fx:id="tituloAcceso"
+       text="Ingresar"
+       styleClass="titulo-seccion"/>
 
                     <Label text="DNI" style="-fx-text-fill: #CBD5E1;"/>
                     <TextField fx:id="campoDni"/>

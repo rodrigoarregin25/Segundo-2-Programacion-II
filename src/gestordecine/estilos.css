@@ -710,3 +710,70 @@
 .boton-alerta-cinema:hover {
     -fx-background-color: #3B82F6;
 }
+
+/* INGRESAR / REGISTRARSE */
+
+.acceso-cinema .text-field,
+.acceso-cinema .password-field {
+    -fx-background-color: #0D1728;
+    -fx-text-fill: #FFFFFF;
+    -fx-prompt-text-fill: #64748B;
+    -fx-border-color: #334155;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 10 12;
+}
+
+.acceso-cinema .text-field:focused,
+.acceso-cinema .password-field:focused {
+    -fx-border-color: #3B82F6;
+    -fx-border-width: 1.5;
+}
+
+/* BOTONES DE ENCABEZADO UNIFICADOS */
+
+.boton-encabezado-editar {
+    -fx-pref-width: 145px;
+    -fx-min-width: 145px;
+    -fx-max-width: 145px;
+    -fx-pref-height: 45px;
+    -fx-min-height: 45px;
+}
+
+.boton-encabezado-desactivar {
+    -fx-pref-width: 160px;
+    -fx-min-width: 160px;
+    -fx-max-width: 160px;
+    -fx-pref-height: 45px;
+    -fx-min-height: 45px;
+}
+
+.boton-encabezado-nuevo {
+    -fx-pref-width: 150px;
+    -fx-min-width: 150px;
+    -fx-max-width: 150px;
+    -fx-pref-height: 45px;
+    -fx-min-height: 45px;
+}
+
+/* CAMPOS DE TEXTO - ESTILO CINEMA */
+
+.text-field,
+.password-field {
+    -fx-background-color: #151F30;
+    -fx-text-fill: #FFFFFF;
+    -fx-prompt-text-fill: #94A3B8;
+
+    -fx-border-color: #334B6E;
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+
+    -fx-padding: 10 12;
+}
+
+.text-field:focused,
+.password-field:focused {
+    -fx-border-color: #3B82F6;
+    -fx-border-width: 1.5;
+}

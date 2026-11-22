@@ -3,10 +3,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.Priority?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TableColumn?>
@@ -16,57 +14,55 @@
       spacing="25"
       styleClass="contenido-principal">
 
-    <!-- ENCABEZADO -->
+    <!-- ENCABEZADO PRINCIPAL -->
+    <VBox spacing="16">
 
-    <VBox spacing="15">
+        <!-- TITULO Y BOTONES -->
+        <HBox alignment="CENTER_LEFT" spacing="20">
 
-        <!-- Fila superior: título y botones -->
-        <HBox alignment="CENTER_RIGHT" spacing="12">
+            <Label text="Administración de salas"
+                   styleClass="titulo-pagina"/>
 
-            <Button text="Editar sala"
-                    prefWidth="145"
-                    minWidth="145"
-                    maxWidth="145"
-                    prefHeight="45"
-                    styleClass="boton-secundario"
-                    onAction="#editarSala"/>
+            <Region HBox.hgrow="ALWAYS"/>
 
-            <Button fx:id="botonEstado"
-                    text="Desactivar sala"
-                    prefWidth="160"
-                    minWidth="160"
-                    maxWidth="160"
-                    prefHeight="45"
-                    styleClass="boton-peligro"
-                    onAction="#cambiarEstadoSala"/>
+            <HBox alignment="CENTER_RIGHT" spacing="12">
 
-            <Button text="+ Nueva sala"
-                    prefWidth="150"
-                    minWidth="150"
-                    maxWidth="150"
-                    prefHeight="45"
-                    styleClass="boton-primario"
-                    onAction="#nuevaSala"/>
+                <Button text="Editar sala"
+                        prefWidth="145"
+                        minWidth="145"
+                        maxWidth="145"
+                        prefHeight="45"
+                        styleClass="boton-secundario"
+                        onAction="#editarSala"/>
 
-        </HBox>
+                <Button fx:id="botonEstado"
+                        text="Desactivar sala"
+                        prefWidth="160"
+                        minWidth="160"
+                        maxWidth="160"
+                        prefHeight="45"
+                        styleClass="boton-peligro"
+                        onAction="#cambiarEstadoSala"/>
 
-        <HBox alignment="CENTER_LEFT" spacing="8">
+                <Button text="+ Nueva sala"
+                        prefWidth="150"
+                        minWidth="150"
+                        maxWidth="150"
+                        prefHeight="45"
+                        styleClass="boton-primario"
+                        onAction="#nuevaSala"/>
 
-            <Label text="Gestioná las salas y su distribución de butacas"
-                   styleClass="subtitulo-pagina"/>
-
-            <Region minWidth="50" prefWidth="35"/>
-
-            <Label text="Estado:"
-                   styleClass="subtitulo-pagina"/>
-
-            <ComboBox fx:id="filtroEstado"
-                      prefWidth="130"
-                      styleClass="filtro-estado"/>
+            </HBox>
 
         </HBox>
+
+        <!-- SUBTITULO -->
+        <Label text="Gestioná las salas y su distribución de butacas"
+               styleClass="subtitulo-pagina"/>
+
     </VBox>
-    
+
+    <!-- MENSAJE DE ERROR -->
     <Label fx:id="mensajeError"
            text=""
            visible="false"
@@ -74,28 +70,40 @@
            wrapText="true"
            styleClass="mensaje-error"/>
 
-    <!-- CONTENIDO -->
-
+    <!-- CONTENIDO PRINCIPAL -->
     <HBox spacing="20" VBox.vgrow="ALWAYS">
 
         <!-- LISTADO DE SALAS -->
-
         <VBox spacing="15"
               prefWidth="420"
+              minWidth="420"
               styleClass="tarjeta-contenido">
 
-            <VBox spacing="8">
+            <!-- TITULO Y FILTRO -->
+            <HBox alignment="CENTER_LEFT" spacing="8">
 
                 <Label text="Salas registradas"
                        styleClass="titulo-seccion"/>
 
-            </VBox>
-            
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <Label text="Estado:"
+                       styleClass="subtitulo-pagina"/>
+
+                <ComboBox fx:id="filtroEstado"
+                          prefWidth="110"
+                          minWidth="110"
+                          styleClass="filtro-estado"/>
+
+            </HBox>
+
+            <!-- TABLA -->
             <TableView fx:id="tablaSalas"
                        VBox.vgrow="ALWAYS"
                        styleClass="tabla-peliculas">
 
                 <columns>
+
                     <TableColumn fx:id="columnaId"
                                  text="ID"
                                  prefWidth="45"/>
@@ -111,6 +119,7 @@
                     <TableColumn fx:id="columnaCapacidad"
                                  text="Capacidad"
                                  prefWidth="95"/>
+
                 </columns>
 
             </TableView>
@@ -118,7 +127,6 @@
         </VBox>
 
         <!-- DISTRIBUCION DE BUTACAS -->
-
         <VBox spacing="20"
               HBox.hgrow="ALWAYS"
               styleClass="tarjeta-contenido">

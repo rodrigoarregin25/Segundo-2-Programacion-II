@@ -15,6 +15,15 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.Scene;
+import javafx.scene.layout.Priority;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.stage.Modality;
+import javafx.stage.Window;
+import javafx.scene.paint.Color;
+import javafx.scene.effect.ColorAdjust;
+import javafx.scene.effect.Effect;
 
 public class NuevaReservaController {
 
@@ -30,6 +39,7 @@ public class NuevaReservaController {
     private Cine cine;
     private PersistenciaCine persistencia;
     private PrincipalController principalController;
+    private boolean volverCarteleraSiCancela = false;
 
     // true cuando el cuadro de ingreso esta en modo "registrarme"
     private boolean registrando = false;
@@ -91,11 +101,17 @@ public class NuevaReservaController {
     private Button botonAlternar;
     @FXML
     private Button botonConfirmar;
+    @FXML
+    private Button botonAbrirAcceso;
+    @FXML
+    private Label tituloAcceso;
+
+    private Stage ventanaAcceso;
 
     /**
      * Que hace: carga las cantidades (0 a 10) y avisa cuando se elige otra
-     * pelicula, otra funcion o se cambia una cantidad. JavaFX lo llama solo
-     * al abrir la pantalla.
+     * pelicula, otra funcion o se cambia una cantidad. JavaFX lo llama solo al
+     * abrir la pantalla.
      */
     @FXML
     private void initialize() {
@@ -131,6 +147,10 @@ public class NuevaReservaController {
                         elegirFuncion(funcionesFiltradas.get(posicion));
                     }
                 });
+        // Retirar el formulario de acceso del panel lateral.
+        // Se mostrará únicamente dentro de la ventana emergente.
+        VBox contenedorOriginal = (VBox) panelLogin.getParent();
+        contenedorOriginal.getChildren().remove(panelLogin);
     }
 
     /**
@@ -171,10 +191,24 @@ public class NuevaReservaController {
         this.principalController = principalController;
     }
 
+    public void abrirAccesoDesdeCartelera() {
+
+        // Si ya inició sesión, puede reservar directamente.
+        if (clienteActual != null) {
+            return;
+        }
+
+        // Si cancela este acceso, debe regresar a Cartelera.
+        volverCarteleraSiCancela = true;
+
+        abrirAcceso();
+    }
+
     /**
-     * Que hace: deja elegidas la pelicula y la funcion que se pasan, por ejemplo
-     * cuando se llega desde el detalle de una pelicula. Se llama despues de configurar.
-     * Parametros: funcion (la funcion que se quiere reservar).
+     * Que hace: deja elegidas la pelicula y la funcion que se pasan, por
+     * ejemplo cuando se llega desde el detalle de una pelicula. Se llama
+     * despues de configurar. Parametros: funcion (la funcion que se quiere
+     * reservar).
      */
     public void preseleccionarFuncion(Funcion funcion) {
         for (int i = 0; i < peliculasDisponibles.size(); i++) {
@@ -203,6 +237,8 @@ public class NuevaReservaController {
         }
 
         boolean conSesion = clienteActual != null;
+        botonAbrirAcceso.setVisible(!conSesion);
+        botonAbrirAcceso.setManaged(!conSesion);
 
         panelLogin.setVisible(!conSesion);
         panelLogin.setManaged(!conSesion);
@@ -223,6 +259,7 @@ public class NuevaReservaController {
      */
     @FXML
     private void alternarRegistro() {
+
         registrando = !registrando;
         ocultarErrorLogin();
 
@@ -230,17 +267,45 @@ public class NuevaReservaController {
         panelRegistro.setManaged(registrando);
 
         if (registrando) {
+
+            tituloAcceso.setText("Crear cuenta");
             botonIngresar.setText("Crear cuenta");
             botonAlternar.setText("Ya tengo cuenta, ingresar");
+
         } else {
+
+            tituloAcceso.setText("Ingresar");
             botonIngresar.setText("Ingresar");
             botonAlternar.setText("No tengo cuenta, registrarme");
+        }
+
+        // Adaptar la altura del emergente según los campos visibles
+        if (ventanaAcceso != null && ventanaAcceso.isShowing()) {
+
+            javafx.application.Platform.runLater(() -> {
+
+                ventanaAcceso.sizeToScene();
+
+                // Mantener la ventana centrada sobre CINEMA
+                Window principal = ventanaAcceso.getOwner();
+
+                ventanaAcceso.setX(
+                        principal.getX()
+                        + (principal.getWidth() - ventanaAcceso.getWidth()) / 2
+                );
+
+                ventanaAcceso.setY(
+                        principal.getY()
+                        + (principal.getHeight() - ventanaAcceso.getHeight()) / 2
+                );
+            });
         }
     }
 
     /**
      * Que hace: inicia sesion con DNI y contrasenia. Si se esta registrando,
-     * valida los datos y crea el cliente nuevo (se guarda sobre una copia del cine).
+     * valida los datos y crea el cliente nuevo (se guarda sobre una copia del
+     * cine).
      */
     @FXML
     private void ingresar() {
@@ -268,6 +333,10 @@ public class NuevaReservaController {
                 persistencia.guardar(cineTrabajo);
                 principalController.actualizarCine(cineTrabajo);
                 this.cine = cineTrabajo;
+
+                if (ventanaAcceso != null) {
+                    ventanaAcceso.close();
+                }
             } else {
                 cliente = cine.getServicioDeReservas().buscarClientePorDni(dni);
                 if (cliente == null) {
@@ -290,6 +359,9 @@ public class NuevaReservaController {
                 alternarRegistro();
             }
 
+            if (ventanaAcceso != null) {
+                ventanaAcceso.close();
+            }
             actualizarSesion();
 
         } catch (IOException | ClassNotFoundException e) {
@@ -315,8 +387,8 @@ public class NuevaReservaController {
     }
 
     /**
-     * Que hace: carga en el desplegable las funciones futuras y activas de una pelicula.
-     * Parametros: pelicula (la pelicula elegida).
+     * Que hace: carga en el desplegable las funciones futuras y activas de una
+     * pelicula. Parametros: pelicula (la pelicula elegida).
      */
     private void cargarFunciones(Pelicula pelicula) {
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
@@ -362,8 +434,8 @@ public class NuevaReservaController {
     }
 
     /**
-     * Que hace: suma las entradas de los tres tipos.
-     * Retorna: la cantidad total de entradas elegida.
+     * Que hace: suma las entradas de los tres tipos. Retorna: la cantidad total
+     * de entradas elegida.
      */
     private int obtenerTotalEntradas() {
         return comboGeneral.getSelectionModel().getSelectedIndex()
@@ -447,10 +519,10 @@ public class NuevaReservaController {
     }
 
     /**
-     * Que hace: crea el cuadradito de una butaca. Gris si esta ocupada,
-     * verde si esta seleccionada, y al hacer clic la marca o la desmarca.
-     * Parametros: butaca (la butaca), numero (el numero que se muestra).
-     * Retorna: el Label que representa la butaca.
+     * Que hace: crea el cuadradito de una butaca. Gris si esta ocupada, verde
+     * si esta seleccionada, y al hacer clic la marca o la desmarca. Parametros:
+     * butaca (la butaca), numero (el numero que se muestra). Retorna: el Label
+     * que representa la butaca.
      */
     private Label crearButacaVisual(Butaca butaca, int numero) {
         Label etiqueta = new Label(String.valueOf(numero));
@@ -473,9 +545,8 @@ public class NuevaReservaController {
 
     /**
      * Que hace: marca la butaca o la desmarca si ya estaba marcada. Las
-     * ocupadas no se pueden marcar, y tampoco mas butacas que la cantidad
-     * total de entradas elegida.
-     * Parametros: butaca (la butaca donde se hizo clic).
+     * ocupadas no se pueden marcar, y tampoco mas butacas que la cantidad total
+     * de entradas elegida. Parametros: butaca (la butaca donde se hizo clic).
      */
     private void alternarButaca(Butaca butaca) {
         ocultarError();
@@ -502,9 +573,9 @@ public class NuevaReservaController {
 
     /**
      * Que hace: arma las entradas a partir de las butacas marcadas. Las
-     * primeras son generales, despues estudiantes y al final jubilados,
-     * segun las cantidades elegidas.
-     * Retorna: la lista de entradas (ArrayList de Entrada).
+     * primeras son generales, despues estudiantes y al final jubilados, segun
+     * las cantidades elegidas. Retorna: la lista de entradas (ArrayList de
+     * Entrada).
      */
     private ArrayList<Entrada> construirEntradas() {
         ArrayList<Entrada> entradas = new ArrayList<>();
@@ -550,8 +621,9 @@ public class NuevaReservaController {
 
     /**
      * Que hace: confirma la reserva con las butacas marcadas para el cliente
-     * que inicio sesion. Muestra el comprobante en una ventana y limpia la pantalla.
-     * Se trabaja sobre una copia del cine: si algo falla, no se guarda nada.
+     * que inicio sesion. Muestra el comprobante en una ventana y limpia la
+     * pantalla. Se trabaja sobre una copia del cine: si algo falla, no se
+     * guarda nada.
      */
     @FXML
     private void confirmarReserva() {
@@ -619,8 +691,8 @@ public class NuevaReservaController {
     }
 
     /**
-     * Que hace: deja la compra como nueva: borra las butacas marcadas y
-     * vuelve la cantidad a 1 entrada general. La sesion sigue iniciada.
+     * Que hace: deja la compra como nueva: borra las butacas marcadas y vuelve
+     * la cantidad a 1 entrada general. La sesion sigue iniciada.
      */
     private void limpiarPantalla() {
         butacasMarcadas.clear();
@@ -631,6 +703,117 @@ public class NuevaReservaController {
         ocultarError();
         dibujarButacas();
         actualizarResumen();
+    }
+
+    @FXML
+    private void abrirAcceso() {
+
+        if (ventanaAcceso == null) {
+
+            ventanaAcceso = new Stage();
+            ventanaAcceso.initStyle(StageStyle.TRANSPARENT);
+            ventanaAcceso.initModality(Modality.WINDOW_MODAL);
+
+            Window principal = botonAbrirAcceso.getScene().getWindow();
+            ventanaAcceso.initOwner(principal);
+
+            // El formulario que ya desarrolló Gimena
+            panelLogin.setVisible(true);
+            panelLogin.setManaged(true);
+
+            // Botón para cerrar
+            Button botonCerrar = new Button("✕");
+            botonCerrar.setStyle(
+                    "-fx-background-color: transparent;"
+                    + "-fx-text-fill: #94A3B8;"
+                    + "-fx-font-size: 17px;"
+                    + "-fx-cursor: hand;"
+            );
+
+            botonCerrar.setOnAction(evento -> ventanaAcceso.close());
+
+            // Retirar el título de su posición original
+            panelLogin.getChildren().remove(tituloAcceso);
+
+// Encabezado: título a la izquierda y X a la derecha
+            Region separador = new Region();
+            HBox.setHgrow(separador, Priority.ALWAYS);
+
+            HBox encabezado = new HBox(10, tituloAcceso, separador, botonCerrar);
+            encabezado.setAlignment(Pos.CENTER_LEFT);
+
+            // Contenedor personalizado
+            VBox contenido = new VBox(16, encabezado, panelLogin);
+            contenido.setPadding(new javafx.geometry.Insets(24));
+            contenido.setPrefWidth(390);
+
+            contenido.setStyle(
+                    "-fx-background-color: #151F30;"
+                    + "-fx-background-radius: 12;"
+                    + "-fx-border-color: #334155;"
+                    + "-fx-border-radius: 12;"
+                    + "-fx-border-width: 1;"
+            );
+
+            contenido.getStyleClass().add("acceso-cinema");
+
+            contenido.setPrefWidth(420);
+
+            Scene escena = new Scene(contenido);
+            escena.setFill(Color.TRANSPARENT);
+
+            escena.getStylesheets().add(
+                    getClass().getResource("estilos.css").toExternalForm()
+            );
+
+            escena.setOnKeyPressed(evento -> {
+                if (evento.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
+                    ventanaAcceso.close();
+                }
+            });
+
+            ventanaAcceso.setScene(escena);
+
+            ventanaAcceso.setOnShown(evento -> {
+                ventanaAcceso.setX(
+                        principal.getX()
+                        + (principal.getWidth() - ventanaAcceso.getWidth()) / 2
+                );
+
+                ventanaAcceso.setY(
+                        principal.getY()
+                        + (principal.getHeight() - ventanaAcceso.getHeight()) / 2
+                );
+            });
+        }
+
+        // Obtener la ventana principal de CINEMA
+        Window principal = botonAbrirAcceso.getScene().getWindow();
+
+// Guardar el efecto anterior para restaurarlo después
+        Effect efectoAnterior = principal.getScene().getRoot().getEffect();
+
+// Oscurecer el fondo mientras está abierto el ingreso
+        ColorAdjust oscurecer = new ColorAdjust();
+        oscurecer.setBrightness(-0.50);
+
+        principal.getScene().getRoot().setEffect(oscurecer);
+
+// Al cerrar el emergente
+        ventanaAcceso.setOnHidden(evento -> {
+
+            // Recuperar el aspecto normal de CINEMA
+            principal.getScene().getRoot().setEffect(efectoAnterior);
+
+            // Si vino desde Cartelera y canceló el acceso
+            if (volverCarteleraSiCancela && clienteActual == null) {
+                principalController.mostrarCartelera();
+            }
+
+            volverCarteleraSiCancela = false;
+        });
+
+        ventanaAcceso.showAndWait();
     }
 
     private void mostrarError(String mensaje) {
