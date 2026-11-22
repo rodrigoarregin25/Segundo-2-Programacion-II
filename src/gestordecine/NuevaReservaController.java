@@ -6,13 +6,11 @@ import java.util.ArrayList;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
@@ -559,10 +557,8 @@ public class NuevaReservaController {
             principalController.actualizarCine(cineTrabajo);
             this.cine = cineTrabajo;
 
-            String comprobante = servicio.generarComprobante(reserva);
-
             limpiarPantalla();
-            mostrarComprobante(comprobante);
+            VentanaComprobante.mostrar(reserva);
 
         } catch (IOException | ClassNotFoundException e) {
             // Error de datos (archivo / copia), distinto de un error de reglas
@@ -607,24 +603,6 @@ public class NuevaReservaController {
         ocultarError();
         dibujarButacas();
         actualizarResumen();
-    }
-
-    /**
-     * Que hace: muestra el comprobante en una ventana emergente.
-     * Parametros: comprobante (el texto del comprobante).
-     */
-    private void mostrarComprobante(String comprobante) {
-        TextArea area = new TextArea(comprobante);
-        area.setEditable(false);
-        area.setPrefRowCount(14);
-        area.setPrefColumnCount(42);
-        area.setStyle("-fx-font-family: monospace;");
-
-        Alert ventana = new Alert(Alert.AlertType.INFORMATION);
-        ventana.setTitle("Reserva confirmada");
-        ventana.setHeaderText("Tu reserva se confirmo");
-        ventana.getDialogPane().setContent(area);
-        ventana.showAndWait();
     }
 
     private void mostrarError(String mensaje) {
