@@ -9,6 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import gestordecine.repositorios.Repositorio;
 
 public class Cine implements Serializable {
 
@@ -63,35 +64,78 @@ public class Cine implements Serializable {
         }
     }
 
-    public void registrarPelicula(Pelicula pelicula) throws RegistroDuplicadoException {
+    /**
+     * Registra una película en el cine, comprobando que su ID no se encuentre
+     * asociado a otra película.
+     *
+     * @param pelicula Película que se desea registrar.
+     * @throws IllegalArgumentException Si la película es nula.
+     * @throws RegistroDuplicadoException Si ya existe una película con el mismo
+     * identificador.
+     */
+    public void registrarPelicula(Pelicula pelicula)
+            throws RegistroDuplicadoException {
 
         if (pelicula == null) {
             throw new IllegalArgumentException("La pelicula no puede ser nula");
         }
 
-        for (Pelicula existente : peliculas) {
-            if (existente.getIdPelicula() == pelicula.getIdPelicula()) {
-                throw new RegistroDuplicadoException("Ya existe una película con ese ID");
-            }
+        Repositorio<Pelicula> repositorio = new Repositorio<>(peliculas);
+
+        Pelicula existente = repositorio.buscar(
+                p -> p.getIdPelicula() == pelicula.getIdPelicula()
+        );
+
+        if (existente != null) {
+            throw new RegistroDuplicadoException(
+                    "Ya existe una película con ese ID"
+            );
         }
-        peliculas.add(pelicula);
+
+        repositorio.agregar(pelicula);
     }
 
+    /**
+     * Registra una sala en el cine. Verifica que no exista otra sala con el
+     * mismo ID o nombre.
+     *
+     * @param sala Sala que se desea registrar.
+     * @throws IllegalArgumentException Si la sala es nula.
+     * @throws RegistroDuplicadoException Si existe una sala con el mismo
+     * identificador o nombre.
+     */
     public void registrarSala(Sala sala) throws RegistroDuplicadoException {
+
         if (sala == null) {
             throw new IllegalArgumentException("La sala no puede ser nula");
         }
 
-        for (Sala existente : salas) {
-            if (existente.getIdSala() == sala.getIdSala()) {
-                throw new RegistroDuplicadoException("Ya existe una sala con ese ID");
-            }
-            if (existente.getNombreSala().equalsIgnoreCase(sala.getNombreSala())) {
-                throw new RegistroDuplicadoException("Ya existe una sala con ese nombre");
-            }
+        Repositorio<Sala> repositorio = new Repositorio<>(salas);
+
+        // Verificar si existe una sala con el mismo identificador.
+        Sala salaMismoId = repositorio.buscar(
+                s -> s.getIdSala() == sala.getIdSala()
+        );
+
+        if (salaMismoId != null) {
+            throw new RegistroDuplicadoException(
+                    "Ya existe una sala con ese ID"
+            );
         }
 
-        salas.add(sala);
+        // Verificar si existe una sala con el mismo nombre.
+        Sala salaMismoNombre = repositorio.buscar(
+                s -> s.getNombreSala().equalsIgnoreCase(sala.getNombreSala())
+        );
+
+        if (salaMismoNombre != null) {
+            throw new RegistroDuplicadoException(
+                    "Ya existe una sala con ese nombre"
+            );
+        }
+
+        // Registrar la sala una vez superadas las validaciones.
+        repositorio.agregar(sala);
     }
 
     public void desactivarSala(int idSala) {
@@ -140,54 +184,115 @@ public class Cine implements Serializable {
         sala.reactivar();
     }
 
-    public void programarFuncion(Funcion funcion) throws RegistroDuplicadoException {
+    /**
+     * Programa una nueva función en el cine.
+     *
+     * Verifica que la sala y la película estén registradas y activas, que no
+     * exista otra función con el mismo ID y que no haya superposición de
+     * horarios en la misma sala.
+     *
+     * Las funciones desactivadas no ocupan horarios.
+     *
+     * @param funcion Función que se desea programar.
+     * @throws IllegalArgumentException Si la función es nula, si la sala o
+     * película no están registradas o activas, o si existe una superposición de
+     * horarios.
+     * @throws RegistroDuplicadoException Si ya existe una función con el mismo
+     * identificador.
+     */
+    public void programarFuncion(Funcion funcion)
+            throws RegistroDuplicadoException {
 
         if (funcion == null) {
-            throw new IllegalArgumentException("La funcion no puede ser nula");
+            throw new IllegalArgumentException("La función no puede ser nula");
         }
 
+        // Verificar que la sala pertenezca al cine.
         boolean salaEncontrada = false;
-        for (Sala existeSala : salas) {
-            if (existeSala == funcion.getSala()) {
+
+        for (Sala sala : salas) {
+            if (sala == funcion.getSala()) {
                 salaEncontrada = true;
                 break;
             }
         }
+
         if (!salaEncontrada) {
-            throw new IllegalArgumentException("La sala no está registrada en el cine");
+            throw new IllegalArgumentException(
+                    "La sala no está registrada en el cine"
+            );
         }
 
+        // Verificar que la sala esté activa.
+        if (!funcion.getSala().isActiva()) {
+            throw new IllegalArgumentException(
+                    "No se puede programar una función en una sala inactiva"
+            );
+        }
+
+        // Verificar que la película pertenezca al cine.
         boolean peliculaEncontrada = false;
-        for (Pelicula existePelicula : peliculas) {
-            if (existePelicula == funcion.getPelicula()) {
+
+        for (Pelicula pelicula : peliculas) {
+            if (pelicula == funcion.getPelicula()) {
                 peliculaEncontrada = true;
                 break;
             }
         }
+
         if (!peliculaEncontrada) {
-            throw new IllegalArgumentException("La pelicula no esta registrada en el cine");
-
+            throw new IllegalArgumentException(
+                    "La película no está registrada en el cine"
+            );
         }
 
-        for (Funcion existente : funciones) {
-            if (existente.getIdFuncion() == funcion.getIdFuncion()) {
-                throw new RegistroDuplicadoException("Ya existe una funcion con ese ID");
-            }
-
-            // una funcion desactivada no ocupa el horario de la sala
-            if (existente.isActiva() && existente.getSala() == funcion.getSala()) {
-
-                if (funcion.getFechaHora().isBefore(existente.getFechaHoraFin()) && funcion.getFechaHoraFin().isAfter(existente.getFechaHora())) {
-                    throw new IllegalArgumentException("Ya existe una funcion programada en ese horario");
-                }
-            }
-        }
-
+        // Verificar que la película esté activa.
         if (!funcion.getPelicula().isActiva()) {
-            throw new IllegalArgumentException("No se puede programar una función de una película inactiva");
+            throw new IllegalArgumentException(
+                    "No se puede programar una función de una película inactiva"
+            );
         }
 
-        funciones.add(funcion);
+        // Crear un repositorio sobre la lista de funciones existente.
+        Repositorio<Funcion> repositorio = new Repositorio<>(funciones);
+
+        // Verificar que el identificador no esté repetido.
+        Funcion funcionDuplicada = repositorio.buscar(
+                f -> f.getIdFuncion() == funcion.getIdFuncion()
+        );
+
+        if (funcionDuplicada != null) {
+            throw new RegistroDuplicadoException(
+                    "Ya existe una función con ese ID"
+            );
+        }
+
+        // Verificar que no existan funciones superpuestas.
+        for (Funcion existente : repositorio.listar()) {
+
+            // Las funciones desactivadas no ocupan horarios.
+            if (!existente.isActiva()) {
+                continue;
+            }
+
+            // Solo interesa comparar funciones de la misma sala.
+            if (existente.getSala() != funcion.getSala()) {
+                continue;
+            }
+
+            boolean superposicion
+                    = funcion.getFechaHora().isBefore(existente.getFechaHoraFin())
+                    && funcion.getFechaHoraFin().isAfter(existente.getFechaHora());
+
+            if (superposicion) {
+                throw new IllegalArgumentException(
+                        "Ya existe una función programada en ese horario"
+                );
+            }
+        }
+
+        // Registrar la función después de superar todas las validaciones.
+        repositorio.agregar(funcion);
     }
 
     public Pelicula buscarPeliculaPorId(int id) {
