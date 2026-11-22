@@ -170,6 +170,33 @@ public class PrincipalController {
     }
 
     /**
+     * Que hace: abre la pantalla de nueva reserva con una funcion ya elegida,
+     * por ejemplo cuando se llega desde el detalle de una pelicula.
+     * Parametros: funcion (la funcion que se quiere reservar).
+     */
+    public void mostrarNuevaReservaConFuncion(Funcion funcion) {
+
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("NuevaReserva.fxml")
+            );
+
+            Parent pantalla = loader.load();
+
+            NuevaReservaController controlador = loader.getController();
+            controlador.configurar(cine, persistencia);
+            controlador.setPrincipalController(this);
+            controlador.preseleccionarFuncion(funcion);
+
+            contenedorPrincipal.setCenter(pantalla);
+
+        } catch (IOException e) {
+            System.out.println("Error al cargar la pantalla de nueva reserva:");
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Que hace: abre la pantalla de funciones en el centro de la ventana.
      */
     @FXML
@@ -190,6 +217,56 @@ public class PrincipalController {
 
         } catch (IOException e) {
             System.out.println("Error al cargar la pantalla de funciones:");
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Que hace: abre el formulario para programar una funcion nueva.
+     */
+    public void mostrarFormularioFuncion() {
+
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("FormularioFuncion.fxml")
+            );
+
+            Parent pantalla = loader.load();
+
+            FormularioFuncionController controlador = loader.getController();
+
+            controlador.configurar(cine, persistencia, this);
+
+            contenedorPrincipal.setCenter(pantalla);
+
+        } catch (IOException e) {
+            System.out.println("Error al cargar el formulario de funcion:");
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Que hace: abre el formulario para editar el precio de una funcion existente.
+     * Parametros: funcion (la funcion a editar).
+     */
+    public void mostrarFormularioEditarFuncion(Funcion funcion) {
+
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("FormularioFuncion.fxml")
+            );
+
+            Parent pantalla = loader.load();
+
+            FormularioFuncionController controlador = loader.getController();
+
+            controlador.configurar(cine, persistencia, this);
+            controlador.configurarEdicion(funcion);
+
+            contenedorPrincipal.setCenter(pantalla);
+
+        } catch (IOException e) {
+            System.out.println("Error al cargar el formulario de edición de funcion:");
             e.printStackTrace();
         }
     }
@@ -279,5 +356,5 @@ public class PrincipalController {
             e.printStackTrace();
         }
     }
-    
+
 }

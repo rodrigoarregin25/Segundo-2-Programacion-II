@@ -1,20 +1,17 @@
 package gestordecine;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Locale;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -26,46 +23,23 @@ public class FuncionesController {
     private PersistenciaCine persistencia;
     private PrincipalController principalController;
 
-    // Copias de las listas que se muestran en los desplegables.
-    // La posicion elegida en el desplegable coincide con la posicion en la lista.
-    private ArrayList<Pelicula> peliculasActivas;
-    private ArrayList<Sala> salasActivas;
-
     @FXML
     private ListView<Funcion> listaFunciones;
     @FXML
-    private ComboBox<String> comboPelicula;
+    private ComboBox<String> filtroEstado;
     @FXML
-    private ComboBox<String> comboSala;
-    @FXML
-    private DatePicker selectorFecha;
-    @FXML
-    private ComboBox<String> comboHora;
-    @FXML
-    private ComboBox<String> comboMinutos;
-    @FXML
-    private TextField campoPrecio;
-    @FXML
-    private ComboBox<String> comboFormato;
-    @FXML
-    private ComboBox<String> comboIdioma;
+    private Button botonEstado;
     @FXML
     private Label mensajeError;
 
     /**
-     * Que hace: carga los desplegables que no dependen del cine
-     * (formato, idioma, hora y minutos) y arma como se ve cada funcion
-     * en la lista. JavaFX lo llama solo al abrir la pantalla.
+     * Que hace: prepara el filtro de estado, la forma de las tarjetas y el boton
+     * de estado. JavaFX lo llama solo al abrir la pantalla.
      */
     @FXML
     private void initialize() {
-        comboFormato.getItems().addAll("2D", "3D", "D-BOX", "4D");
-        comboIdioma.getItems().addAll("INGLES", "CASTELLANO", "INGLES(SUBTITULADA)");
-
-        for (int hora = 0; hora < 24; hora++) {
-            comboHora.getItems().add(String.format("%02d", hora));
-        }
-        comboMinutos.getItems().addAll("00", "15", "30", "45");
+        filtroEstado.getItems().addAll("Activas", "Inactivas", "Todas");
+        filtroEstado.setValue("Activas");
 
         // Cada fila de la lista se dibuja como una tarjeta
         listaFunciones.setCellFactory(lista -> new ListCell<Funcion>() {
@@ -79,7 +53,7 @@ public class FuncionesController {
                     return;
                 }
                 HBox tarjeta = crearTarjeta(funcion);
-                tarjeta.setStyle(estiloTarjeta(isSelected()));
+                tarjeta.setStyle(estiloTarjeta(isSelected(), funcion.isActiva()));
                 tarjeta.prefWidthProperty().bind(
                         getListView().widthProperty().subtract(40));
                 setGraphic(tarjeta);
@@ -88,54 +62,63 @@ public class FuncionesController {
             }
         });
 
-        // Al elegir otra tarjeta, se repinta la lista para marcar la elegida
-        listaFunciones.getSelectionModel().selectedIndexProperty().addListener(
-                (observable, anterior, nuevo) -> listaFunciones.refresh());
+        // Al elegir una funcion se repinta la lista y se actualiza el boton de estado
+        listaFunciones.getSelectionModel().selectedItemProperty()
+                .addListener((observable, anterior, seleccionada) -> {
+                    listaFunciones.refresh();
+
+                    if (seleccionada == null) {
+                        botonEstado.setText("Desactivar función");
+                        botonEstado.setDisable(true);
+                        return;
+                    }
+
+                    botonEstado.setDisable(false);
+                    if (seleccionada.isActiva()) {
+                        botonEstado.setText("Desactivar función");
+                    } else {
+                        botonEstado.setText("Restaurar función");
+                    }
+                });
+
+        botonEstado.setDisable(true);
     }
 
     /**
-     * Que hace: recibe el cine y la persistencia, y muestra los datos.
+     * Que hace: recibe el cine y la persistencia, y muestra las funciones segun el filtro.
      * Parametros: cine (el cine actual), persistencia (para guardar los cambios).
      */
     public void configurar(Cine cine, PersistenciaCine persistencia) {
         this.cine = cine;
         this.persistencia = persistencia;
 
-        cargarDesplegables();
-        cargarLista();
+        ObservableList<Funcion> funciones
+                = FXCollections.observableArrayList(cine.getFunciones());
+
+        FilteredList<Funcion> funcionesFiltradas = new FilteredList<>(funciones);
+        listaFunciones.setItems(funcionesFiltradas);
+
+        filtroEstado.valueProperty().addListener((observable, anterior, nuevo) -> {
+
+            funcionesFiltradas.setPredicate(funcion -> {
+                if ("Activas".equals(nuevo)) {
+                    return funcion.isActiva();
+                }
+                if ("Inactivas".equals(nuevo)) {
+                    return !funcion.isActiva();
+                }
+                return true;
+            });
+
+            listaFunciones.getSelectionModel().clearSelection();
+        });
+
+        // Al abrir se muestran las funciones activas
+        funcionesFiltradas.setPredicate(Funcion::isActiva);
     }
 
     public void setPrincipalController(PrincipalController principalController) {
         this.principalController = principalController;
-    }
-
-    /**
-     * Que hace: llena los desplegables de pelicula y sala solo con las activas.
-     */
-    private void cargarDesplegables() {
-        peliculasActivas = new ArrayList<>();
-        for (Pelicula pelicula : cine.getPeliculas()) {
-            if (pelicula.isActiva()) {
-                peliculasActivas.add(pelicula);
-                comboPelicula.getItems().add(pelicula.getTituloPelicula());
-            }
-        }
-
-        salasActivas = new ArrayList<>();
-        for (Sala sala : cine.getSalas()) {
-            if (sala.isActiva()) {
-                salasActivas.add(sala);
-                comboSala.getItems().add(sala.getNombreSala());
-            }
-        }
-    }
-
-    /**
-     * Que hace: muestra en la lista todas las funciones programadas.
-     * La posicion de cada tarjeta coincide con la posicion de la funcion en el cine.
-     */
-    private void cargarLista() {
-        listaFunciones.setItems(FXCollections.observableArrayList(cine.getFunciones()));
     }
 
     /**
@@ -157,6 +140,13 @@ public class FuncionesController {
                 crearEtiqueta(funcion.getFormatoPelicula()),
                 crearEtiqueta(funcion.getIdiomaPelicula()));
 
+        if (!funcion.isActiva()) {
+            Label inactiva = crearEtiqueta("DESACTIVADA");
+            inactiva.setStyle(inactiva.getStyle()
+                    + " -fx-text-fill: #FCA5A5; -fx-background-color: #3B1D24;");
+            etiquetas.getChildren().add(inactiva);
+        }
+
         VBox datos = new VBox(6, titulo, detalle, etiquetas);
 
         Label precio = new Label(String.format(Locale.of("es", "AR"),
@@ -172,6 +162,10 @@ public class FuncionesController {
 
         HBox tarjeta = new HBox(15, datos, espacio, bloquePrecio);
         tarjeta.setAlignment(Pos.CENTER_LEFT);
+
+        if (!funcion.isActiva()) {
+            tarjeta.setOpacity(0.65);
+        }
         return tarjeta;
     }
 
@@ -188,171 +182,80 @@ public class FuncionesController {
     }
 
     /**
-     * Que hace: devuelve el estilo de la tarjeta, con borde azul si esta elegida.
-     * Parametros: seleccionada (true si es la tarjeta elegida).
+     * Que hace: devuelve el estilo de la tarjeta: borde azul si esta elegida,
+     * rojo si esta desactivada, gris si no.
+     * Parametros: seleccionada (true si es la elegida), activa (true si esta activa).
      * Retorna: el estilo en texto.
      */
-    private String estiloTarjeta(boolean seleccionada) {
+    private String estiloTarjeta(boolean seleccionada, boolean activa) {
         String borde = "#334155";
         if (seleccionada) {
             borde = "#3B82F6";
+        } else if (!activa) {
+            borde = "#EF4444";
         }
         return "-fx-background-color: #111C30; -fx-background-radius: 10;"
                 + " -fx-border-color: " + borde + "; -fx-border-radius: 10;"
                 + " -fx-border-width: 1.5; -fx-padding: 14 18 14 18;";
     }
 
+    @FXML
+    private void nuevaFuncion() {
+        principalController.mostrarFormularioFuncion();
+    }
+
     /**
-     * Que hace: lee el formulario, crea la funcion y la programa en el cine.
-     * Las reglas (horarios superpuestos, ID repetido, etc.) las valida Cine y Funcion;
-     * aca solo se muestran los errores en pantalla.
+     * Que hace: abre el formulario para editar el precio de la funcion elegida.
      */
     @FXML
-    private void programarFuncion() {
+    private void editarFuncion() {
         ocultarError();
 
+        Funcion seleccionada = listaFunciones.getSelectionModel().getSelectedItem();
+
+        if (seleccionada == null) {
+            mostrarError("Seleccione una funcion para editar");
+            return;
+        }
+        if (!seleccionada.isActiva()) {
+            mostrarError("Restaure la funcion para poder editarla");
+            return;
+        }
+
+        principalController.mostrarFormularioEditarFuncion(seleccionada);
+    }
+
+    /**
+     * Que hace: desactiva la funcion elegida, o la restaura si estaba desactivada.
+     * No se borra nada: las reservas de la funcion quedan en el historial.
+     */
+    @FXML
+    private void cambiarEstadoFuncion() {
+        ocultarError();
+
+        Funcion seleccionada = listaFunciones.getSelectionModel().getSelectedItem();
+
+        if (seleccionada == null) {
+            return;
+        }
+
         try {
-            int posPelicula = comboPelicula.getSelectionModel().getSelectedIndex();
-            int posSala = comboSala.getSelectionModel().getSelectedIndex();
-            LocalDate fecha = selectorFecha.getValue();
-
-            if (posPelicula < 0) {
-                throw new IllegalArgumentException("Seleccione una pelicula");
-            }
-            if (posSala < 0) {
-                throw new IllegalArgumentException("Seleccione una sala");
-            }
-            if (fecha == null) {
-                throw new IllegalArgumentException("Seleccione una fecha");
-            }
-            if (comboHora.getValue() == null || comboMinutos.getValue() == null) {
-                throw new IllegalArgumentException("Seleccione la hora de inicio");
-            }
-            if (comboFormato.getValue() == null) {
-                throw new IllegalArgumentException("Seleccione un formato");
-            }
-            if (comboIdioma.getValue() == null) {
-                throw new IllegalArgumentException("Seleccione un idioma");
-            }
-
-            double precio;
-            try {
-                precio = Double.parseDouble(campoPrecio.getText().trim());
-            } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("El precio debe ser un numero");
-            }
-
-            int hora = Integer.parseInt(comboHora.getValue());
-            int minutos = Integer.parseInt(comboMinutos.getValue());
-            LocalDateTime fechaHora = fecha.atTime(hora, minutos);
-
-            // Se trabaja sobre una copia, igual que en Salas. La pelicula y la sala
-            // se buscan DENTRO de la copia, porque Cine las compara por identidad.
+            // Se trabaja sobre una copia, igual que en Salas
             Cine cineTrabajo = cine.copiar();
-            Pelicula pelicula = cineTrabajo.buscarPeliculaPorId(
-                    peliculasActivas.get(posPelicula).getIdPelicula());
-            Sala sala = cineTrabajo.buscarSalaPorId(
-                    salasActivas.get(posSala).getIdSala());
 
-            Funcion funcion = new Funcion(obtenerSiguienteId(cineTrabajo), sala, pelicula,
-                    precio, fechaHora, comboFormato.getValue(), comboIdioma.getValue());
-
-            cineTrabajo.programarFuncion(funcion);
+            if (seleccionada.isActiva()) {
+                cineTrabajo.desactivarFuncion(seleccionada.getIdFuncion());
+            } else {
+                cineTrabajo.reactivarFuncion(seleccionada.getIdFuncion());
+            }
 
             persistencia.guardar(cineTrabajo);
             principalController.actualizarCine(cineTrabajo);
             principalController.mostrarFunciones();
 
-        } catch (IOException | ClassNotFoundException e) {
-            // Error de datos (archivo / copia), distinto de un error de reglas
-            mostrarError("Error al guardar los datos: " + e.getMessage());
         } catch (Exception e) {
-            // Error de reglas de negocio: horario ocupado, fecha pasada, etc.
-            mostrarError(e.getMessage());
+            mostrarError("Error al cambiar el estado de la funcion: " + e.getMessage());
         }
-    }
-
-    /**
-     * Que hace: cambia el precio de la funcion elegida en la lista.
-     * El precio nuevo se escribe en el campo Precio. Las reservas ya hechas
-     * conservan su importe, porque cada entrada guarda el precio que se pago.
-     */
-    @FXML
-    private void editarPrecio() {
-        ocultarError();
-
-        try {
-            int posicion = listaFunciones.getSelectionModel().getSelectedIndex();
-            if (posicion < 0) {
-                throw new IllegalArgumentException("Seleccione una funcion de la lista");
-            }
-
-            double precio;
-            try {
-                precio = Double.parseDouble(campoPrecio.getText().trim());
-            } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("Escriba el precio nuevo en el campo Precio");
-            }
-
-            // El ID de la funcion elegida; despues se busca dentro de la copia
-            int idFuncion = cine.getFunciones().get(posicion).getIdFuncion();
-
-            Cine cineTrabajo = cine.copiar();
-            cineTrabajo.editarPrecioFuncion(idFuncion, precio);
-
-            persistencia.guardar(cineTrabajo);
-            principalController.actualizarCine(cineTrabajo);
-            principalController.mostrarFunciones();
-
-        } catch (IOException | ClassNotFoundException e) {
-            mostrarError("Error al guardar los datos: " + e.getMessage());
-        } catch (Exception e) {
-            mostrarError(e.getMessage());
-        }
-    }
-
-    /**
-     * Que hace: elimina la funcion elegida en la lista.
-     * Si la funcion tiene reservas, Cine avisa con un error y no se borra.
-     */
-    @FXML
-    private void eliminarFuncion() {
-        ocultarError();
-
-        try {
-            int posicion = listaFunciones.getSelectionModel().getSelectedIndex();
-            if (posicion < 0) {
-                throw new IllegalArgumentException("Seleccione una funcion de la lista");
-            }
-
-            int idFuncion = cine.getFunciones().get(posicion).getIdFuncion();
-
-            Cine cineTrabajo = cine.copiar();
-            cineTrabajo.eliminarFuncion(idFuncion);
-
-            persistencia.guardar(cineTrabajo);
-            principalController.actualizarCine(cineTrabajo);
-            principalController.mostrarFunciones();
-
-        } catch (IOException | ClassNotFoundException e) {
-            mostrarError("Error al guardar los datos: " + e.getMessage());
-        } catch (Exception e) {
-            mostrarError(e.getMessage());
-        }
-    }
-
-    /**
-     * Que hace: calcula el ID de la nueva funcion (el mayor existente + 1).
-     * Retorna: el ID siguiente.
-     */
-    private int obtenerSiguienteId(Cine unCine) {
-        int mayorId = 0;
-        for (Funcion funcion : unCine.getFunciones()) {
-            if (funcion.getIdFuncion() > mayorId) {
-                mayorId = funcion.getIdFuncion();
-            }
-        }
-        return mayorId + 1;
     }
 
     private void mostrarError(String mensaje) {
