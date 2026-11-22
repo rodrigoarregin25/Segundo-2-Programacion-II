@@ -270,7 +270,7 @@ public class PrincipalController {
             DetallePeliculaController controlador = loader.getController();
 
             controlador.setPrincipalController(this);
-            controlador.configurar(pelicula);
+            controlador.configurar(pelicula, cine);
 
             contenedorPrincipal.setCenter(pantalla);
 

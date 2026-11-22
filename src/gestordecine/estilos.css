@@ -531,3 +531,135 @@
     -fx-alignment: CENTER;
     -fx-padding: 0;
 }
+
+.tarjeta-funcion {
+    -fx-background-color: #0D1625;
+    -fx-background-radius: 8;
+    -fx-padding: 15;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.tarjeta-funcion .label {
+    -fx-text-fill: #CBD5E1;
+}
+
+/* FECHAS DE FUNCIONES */
+
+.boton-fecha {
+    -fx-background-color: #0D1625;
+    -fx-border-color: #30415A;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+
+    -fx-alignment: CENTER;
+    -fx-text-alignment: CENTER;
+
+    -fx-min-width: 75;
+    -fx-pref-width: 75;
+    -fx-min-height: 75;
+    -fx-pref-height: 75;
+
+    -fx-cursor: hand;
+}
+
+.boton-fecha:hover {
+    -fx-border-color: #2389F5;
+    -fx-background-color: #1E2E46;
+}
+
+.tarjeta-horario {
+    -fx-background-color: #0D1625;
+    -fx-background-radius: 10;
+    -fx-border-color: #30415A;
+    -fx-border-radius: 10;
+    -fx-padding: 15;
+    -fx-pref-width: 180;
+    -fx-min-width: 180;
+    -fx-alignment: CENTER;
+    -fx-cursor: hand;
+}
+
+.tarjeta-horario:hover {
+    -fx-background-color: #1E2E46;
+    -fx-border-color: #2389F5;
+}
+
+.hora-funcion {
+    -fx-text-fill: white;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+.detalle-horario {
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 12px;
+}
+
+.precio-horario {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+/* =========================
+   COMBOBOX / FILTROS OSCUROS
+   ========================= */
+
+.combo-box {
+    -fx-background-color: #0B1730;
+    -fx-border-color: #2A4B7C;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 2;
+}
+
+.combo-box .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+}
+
+.combo-box .arrow-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0 8 8 0;
+}
+
+.combo-box .arrow {
+    -fx-background-color: #9FB3D9;
+}
+
+.combo-box:hover {
+    -fx-border-color: #3A8DFF;
+}
+
+.combo-box:focused {
+    -fx-border-color: #3A8DFF;
+    -fx-effect: dropshadow(gaussian, rgba(58,141,255,0.25), 8, 0.2, 0, 0);
+}
+
+/* desplegable */
+.combo-box-popup .list-view {
+    -fx-background-color: #12213D;
+    -fx-border-color: #2A4B7C;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+}
+
+.combo-box-popup .list-cell {
+    -fx-background-color: #12213D;
+    -fx-text-fill: white;
+    -fx-padding: 8 10;
+}
+
+.combo-box-popup .list-cell:hover {
+    -fx-background-color: #1E3A5F;
+}
+
+.combo-box-popup .list-cell:selected {
+    -fx-background-color: #2F80ED;
+    -fx-text-fill: white;
+}

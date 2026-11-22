@@ -8,6 +8,8 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
 
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="gestordecine.SalasController"
@@ -75,22 +77,21 @@
 
             </VBox>
             
-            <HBox alignment="CENTER_LEFT" spacing="10"
-                  styleClass="encabezado-lista-salas">
+            <TableView fx:id="tablaSalas"
+                       VBox.vgrow="ALWAYS"
+                       styleClass="tabla-peliculas">
 
-                <Label text="Estado"
-                       minWidth="65"
-                       prefWidth="65"
-                       maxWidth="65"/>
+                <columns>
+                    <TableColumn fx:id="columnaEstado"
+                                 text="Estado"
+                                 prefWidth="85"/>
 
-                <Label text="Nombre"
-                       styleClass="subtitulo-pagina"/>
+                    <TableColumn fx:id="columnaNombre"
+                                 text="Nombre"
+                                 prefWidth="230"/>
+                </columns>
 
-            </HBox>
-
-            <ListView fx:id="listaSalas"
-                      VBox.vgrow="ALWAYS"
-                      styleClass="lista-salas"/>
+            </TableView>
 
         </VBox>
 
