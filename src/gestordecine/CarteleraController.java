@@ -231,6 +231,16 @@ public class CarteleraController {
             // AGREGAR TARJETA A LA CARTELERA
             contenedorPeliculas.getChildren().add(tarjeta);
         }
+
+        // Si ninguna pelicula cumplio los filtros, se avisa en pantalla
+        if (contenedorPeliculas.getChildren().isEmpty()) {
+            Label sinResultados = new Label("No hay funciones para estos filtros");
+            sinResultados.setStyle(
+                    "-fx-text-fill: #94A3B8;"
+                    + "-fx-font-size: 14px;"
+            );
+            contenedorPeliculas.getChildren().add(sinResultados);
+        }
     }
 
     private String formatearGeneros(Pelicula pelicula) {
