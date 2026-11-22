@@ -3,7 +3,7 @@ package gestordecine;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class Funcion implements Serializable{
+public class Funcion implements Serializable, Desactivable {
     
     private static final long serialVersionUID = -8444399254319352013L;
 
@@ -119,6 +119,7 @@ public class Funcion implements Serializable{
      * Que hace: dice si la funcion esta activa
      * Retorna: true si esta activa, false si esta desactivada
      */
+    @Override
     public boolean isActiva() {
         return !desactivada;
     }
@@ -126,6 +127,7 @@ public class Funcion implements Serializable{
     /**
      * Que hace: desactiva la funcion (no se borra, las reservas quedan en el historial)
      */
+    @Override
     public void desactivar() {
         this.desactivada = true;
     }
@@ -133,6 +135,7 @@ public class Funcion implements Serializable{
     /**
      * Que hace: vuelve a activar la funcion
      */
+    @Override
     public void reactivar() {
         this.desactivada = false;
     }

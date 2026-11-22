@@ -13,6 +13,10 @@ public class Cliente implements Serializable {
     // Mantener este valor para conservar la compatibilidad con cine_app.dat.
     private static final long serialVersionUID = 8961938315294995730L;
 
+    // Límites de validación.
+    private static final int DNI_MAXIMO = 99999999;
+    private static final int LARGO_MINIMO_CONTRASENIA = 4;
+
     private int dni;
     private String nombre;
     private String apellido;
@@ -33,50 +37,64 @@ public class Cliente implements Serializable {
      * @param email Correo electrónico del usuario.
      * @param contrasenia Contraseña de acceso.
      * @throws IllegalArgumentException Si el DNI es inválido, algún campo
-     * obligatorio está vacío o el correo no tiene un formato válido.
+     * obligatorio está vacío, el correo no es válido o la contraseña tiene
+     * menos de cuatro caracteres.
      */
     public Cliente(int dni, String nombre, String apellido,
             String email, String contrasenia) {
 
         if (dni <= 0) {
             throw new IllegalArgumentException(
-                    "El numero de DNI debe ser mayor a cero"
+                    "El número de DNI debe ser mayor a cero"
             );
         }
 
-        if (nombre == null || nombre.trim().equals("")) {
+        if (dni > DNI_MAXIMO) {
             throw new IllegalArgumentException(
-                    "El nombre no puede estar vacio"
+                    "El DNI no puede tener más de 8 dígitos"
             );
         }
 
-        if (apellido == null || apellido.trim().equals("")) {
+        if (nombre == null || nombre.isBlank()) {
             throw new IllegalArgumentException(
-                    "El apellido no puede estar vacio"
+                    "El nombre no puede estar vacío"
             );
         }
 
-        if (email == null || email.trim().equals("")) {
+        if (apellido == null || apellido.isBlank()) {
             throw new IllegalArgumentException(
-                    "El email no puede estar vacio"
+                    "El apellido no puede estar vacío"
+            );
+        }
+
+        if (email == null || email.isBlank()) {
+            throw new IllegalArgumentException(
+                    "El email no puede estar vacío"
             );
         }
 
         if (!esEmailValido(email)) {
             throw new IllegalArgumentException(
-                    "El email no es valido (ejemplo: nombre@mail.com)"
+                    "El email no es válido (ejemplo: nombre@mail.com)"
             );
         }
 
-        if (contrasenia == null || contrasenia.trim().equals("")) {
+        if (contrasenia == null || contrasenia.isBlank()) {
             throw new IllegalArgumentException(
-                    "La contraseña no puede estar vacia"
+                    "La contraseña no puede estar vacía"
+            );
+        }
+
+        if (contrasenia.length() < LARGO_MINIMO_CONTRASENIA) {
+            throw new IllegalArgumentException(
+                    "La contraseña debe tener al menos "
+                    + LARGO_MINIMO_CONTRASENIA + " caracteres"
             );
         }
 
         this.dni = dni;
-        this.nombre = nombre;
-        this.apellido = apellido;
+        this.nombre = nombre.trim();
+        this.apellido = apellido.trim();
         this.email = email.trim();
         this.contrasenia = contrasenia;
         this.rol = Rol.CLIENTE;
@@ -102,7 +120,7 @@ public class Cliente implements Serializable {
 
         if (rol == null) {
             throw new IllegalArgumentException(
-                    "El rol no puede ser null"
+                    "El rol no puede ser nulo"
             );
         }
 
@@ -284,8 +302,11 @@ public class Cliente implements Serializable {
      * @throws IllegalArgumentException Si el nombre es nulo o está vacío.
      */
     public void setNombre(String nombre) {
+
         if (nombre == null || nombre.isBlank()) {
-            throw new IllegalArgumentException("El nombre no puede estar vacío");
+            throw new IllegalArgumentException(
+                    "El nombre no puede estar vacío"
+            );
         }
 
         this.nombre = nombre.trim();
@@ -298,8 +319,11 @@ public class Cliente implements Serializable {
      * @throws IllegalArgumentException Si el apellido es nulo o está vacío.
      */
     public void setApellido(String apellido) {
+
         if (apellido == null || apellido.isBlank()) {
-            throw new IllegalArgumentException("El apellido no puede estar vacío");
+            throw new IllegalArgumentException(
+                    "El apellido no puede estar vacío"
+            );
         }
 
         this.apellido = apellido.trim();
@@ -312,8 +336,11 @@ public class Cliente implements Serializable {
      * @throws IllegalArgumentException Si el correo no es válido.
      */
     public void setEmail(String email) {
+
         if (email == null || !esEmailValido(email)) {
-            throw new IllegalArgumentException("El correo electrónico no es válido");
+            throw new IllegalArgumentException(
+                    "El correo electrónico no es válido"
+            );
         }
 
         this.email = email.trim();
@@ -322,12 +349,25 @@ public class Cliente implements Serializable {
     /**
      * Modifica la contraseña del usuario.
      *
+     * Aplica las mismas validaciones que el constructor.
+     *
      * @param contrasenia Nueva contraseña.
-     * @throws IllegalArgumentException Si la contraseña es nula o está vacía.
+     * @throws IllegalArgumentException Si la contraseña es nula, está vacía o
+     * tiene menos de cuatro caracteres.
      */
     public void setContrasenia(String contrasenia) {
+
         if (contrasenia == null || contrasenia.isBlank()) {
-            throw new IllegalArgumentException("La contraseña no puede estar vacía");
+            throw new IllegalArgumentException(
+                    "La contraseña no puede estar vacía"
+            );
+        }
+
+        if (contrasenia.length() < LARGO_MINIMO_CONTRASENIA) {
+            throw new IllegalArgumentException(
+                    "La contraseña debe tener al menos "
+                    + LARGO_MINIMO_CONTRASENIA + " caracteres"
+            );
         }
 
         this.contrasenia = contrasenia;

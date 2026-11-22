@@ -8,7 +8,9 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -270,9 +272,9 @@ public class ReservasController {
     }
 
     /**
-     * Que hace: cancela la reserva seleccionada. La reserva no se borra: queda
-     * como cancelada y sus butacas se liberan. Se trabaja sobre una copia del
-     * cine.
+     * Que hace: pide confirmacion y cancela la reserva seleccionada. La
+     * reserva no se borra: queda como cancelada y sus butacas se liberan. Se
+     * trabaja sobre una copia del cine.
      */
     @FXML
     private void cancelarReserva() {
@@ -281,6 +283,41 @@ public class ReservasController {
         Reserva seleccionada = listaReservas.getSelectionModel().getSelectedItem();
         if (seleccionada == null) {
             mostrarError("Seleccione una reserva");
+            return;
+        }
+
+        // Pedir confirmacion antes de cancelar (igual que en Mis reservas)
+        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+
+        confirmacion.setTitle("Cancelar reserva");
+        confirmacion.setHeaderText("¿Querés cancelar esta reserva?");
+        confirmacion.setContentText(
+                "Código: " + seleccionada.getCodigoReserva()
+                + "\nEsta operación liberará las butacas reservadas."
+        );
+
+        confirmacion.initOwner(listaReservas.getScene().getWindow());
+
+        // Mismo estilo oscuro que usan los otros carteles del sistema
+        confirmacion.getDialogPane().getStylesheets().add(
+                getClass().getResource("estilos.css").toExternalForm()
+        );
+        confirmacion.getDialogPane().getStyleClass().add("alerta-cinema");
+
+        Button botonSi = (Button) confirmacion.getDialogPane()
+                .lookupButton(ButtonType.OK);
+        botonSi.setText("Sí, cancelar");
+        botonSi.getStyleClass().add("boton-alerta-cinema");
+
+        Button botonNo = (Button) confirmacion.getDialogPane()
+                .lookupButton(ButtonType.CANCEL);
+        botonNo.setText("Conservar");
+        botonNo.getStyleClass().add("boton-alerta-cinema");
+
+        ButtonType respuesta = confirmacion.showAndWait()
+                .orElse(ButtonType.CANCEL);
+
+        if (respuesta != ButtonType.OK) {
             return;
         }
 

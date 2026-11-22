@@ -3,7 +3,7 @@ package gestordecine;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public final class Sala implements Serializable {
+public final class Sala implements Serializable, Desactivable {
 
     private static final long serialVersionUID = -6729183293122678294L;
     private final int idSala;

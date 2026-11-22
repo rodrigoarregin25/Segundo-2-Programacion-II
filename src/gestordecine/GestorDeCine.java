@@ -1,9 +1,13 @@
 package gestordecine;
 
+import java.io.File;
+import java.io.IOException;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
 public class GestorDeCine extends Application {
@@ -13,7 +17,16 @@ public class GestorDeCine extends Application {
 
         PersistenciaCine persistencia = new PersistenciaCine("cine_app.dat");
 
-        Cine cine = persistencia.cargarOCrear();
+        Cine cine;
+
+        try {
+            cine = persistencia.cargarOCrear();
+        } catch (IOException | ClassNotFoundException | ClassCastException e) {
+            // no se sigue: asi no se pisa el archivo con datos vacios
+            mostrarErrorDeArchivo(e);
+            Platform.exit();
+            return;
+        }
 
         FXMLLoader loader = new FXMLLoader(
                 getClass().getResource("Principal.fxml")
@@ -31,6 +44,23 @@ public class GestorDeCine extends Application {
         stage.setMaximized(true);
         stage.setScene(escena);
         stage.show();
+    }
+
+    /**
+     * Que hace: avisa en una ventana que no se pudo leer el archivo de datos
+     * Parametros: error (Exception que se produjo al leer o guardar)
+     */
+    private void mostrarErrorDeArchivo(Exception error) {
+        File archivo = new File("cine_app.dat");
+
+        Alert alerta = new Alert(Alert.AlertType.ERROR);
+        alerta.setTitle("Error al abrir los datos");
+        alerta.setHeaderText("No se pudo leer el archivo de datos del cine");
+        alerta.setContentText("Archivo: " + archivo.getAbsolutePath()
+                + "\nEl archivo no se modificó. Revisalo o restaurá una copia "
+                + "y volvé a abrir la aplicación."
+                + "\n\nDetalle: " + error.getMessage());
+        alerta.showAndWait();
     }
 
     public static void main(String[] args) {

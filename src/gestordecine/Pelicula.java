@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.time.Year;
 import java.util.ArrayList;
 
-public class Pelicula implements Serializable {
+public class Pelicula implements Serializable, Desactivable {
 
     private static final long serialVersionUID = 3768598950091524L;
 
