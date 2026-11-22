@@ -10,7 +10,6 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.PasswordField?>
-<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.ScrollPane?>
 
 <ScrollPane xmlns:fx="http://javafx.com/fxml"
@@ -22,25 +21,37 @@
 
         <VBox spacing="5">
             <Label text="Nueva reserva" styleClass="titulo-pagina"/>
-            <Label text="Elegí la función, las butacas y los datos del cliente"
+            <Label text="Elegí la película, la función, las butacas y los datos del cliente"
                    styleClass="subtitulo-pagina"/>
         </VBox>
 
         <HBox spacing="25">
 
-            <!-- Izquierda: funcion, cantidad, tipo de entrada y plano de butacas -->
+            <!-- Izquierda: pelicula, funcion, cantidades y plano de butacas -->
             <VBox spacing="12" styleClass="tarjeta-contenido"
                   HBox.hgrow="ALWAYS">
+
+                <Label text="Película" style="-fx-text-fill: #CBD5E1;"/>
+                <ComboBox fx:id="comboPelicula" maxWidth="Infinity"/>
 
                 <Label text="Función" style="-fx-text-fill: #CBD5E1;"/>
                 <ComboBox fx:id="comboFuncion" maxWidth="Infinity"/>
 
-                <Label text="Cantidad de entradas" style="-fx-text-fill: #CBD5E1;"/>
-                <ComboBox fx:id="comboCantidad" maxWidth="Infinity"/>
-
-                <Label text="Tipo de entrada para las próximas butacas"
-                       style="-fx-text-fill: #CBD5E1;"/>
-                <ComboBox fx:id="comboTipoEntrada" maxWidth="Infinity"/>
+                <Label text="Cantidad de entradas por tipo" style="-fx-text-fill: #CBD5E1;"/>
+                <HBox spacing="12">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="General" style="-fx-text-fill: #94A3B8;"/>
+                        <ComboBox fx:id="comboGeneral" maxWidth="Infinity"/>
+                    </VBox>
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Estudiante (20% off)" style="-fx-text-fill: #94A3B8;"/>
+                        <ComboBox fx:id="comboEstudiante" maxWidth="Infinity"/>
+                    </VBox>
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Jubilados (45% off)" style="-fx-text-fill: #94A3B8;"/>
+                        <ComboBox fx:id="comboJubilado" maxWidth="Infinity"/>
+                    </VBox>
+                </HBox>
 
                 <!-- Leyenda -->
                 <HBox spacing="15">
@@ -95,10 +106,6 @@
                         styleClass="boton-primario"
                         maxWidth="Infinity"
                         onAction="#confirmarReserva"/>
-
-                <TextArea fx:id="areaComprobante" visible="false" managed="false"
-                          editable="false" prefRowCount="14"
-                          style="-fx-font-family: monospace;"/>
             </VBox>
 
         </HBox>
