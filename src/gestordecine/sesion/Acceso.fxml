@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="gestordecine.sesion.AccesoController"
+      spacing="15"
+      prefWidth="400"
+      style="-fx-background-color: #151F30;">
+
+    <padding>
+        <Insets top="25" right="25" bottom="25" left="25"/>
+    </padding>
+
+    <Label fx:id="tituloAcceso"
+           text="Iniciar sesión"
+           style="-fx-text-fill: white; -fx-font-size: 24px; -fx-font-weight: bold;"/>
+
+    <Label text="Ingresá con tu cuenta de CINEMA"
+           style="-fx-text-fill: #94A3B8; -fx-font-size: 13px;"/>
+
+    <Label text="DNI"
+           style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+
+    <TextField fx:id="campoDni"
+               styleClass="campo-cinema"
+               promptText="Ingresá tu DNI"/>
+
+    <Label text="Contraseña"
+           style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+
+    <PasswordField fx:id="campoContrasenia"
+                   styleClass="campo-cinema"
+                   promptText="Ingresá tu contraseña"/>
+
+    <VBox fx:id="camposRegistro"
+          spacing="10"
+          visible="false"
+          managed="false">
+
+        <Label text="Nombre"
+               style="-fx-text-fill: white;"/>
+
+        <TextField fx:id="campoNombre"
+                   promptText="Nombre"/>
+
+        <Label text="Apellido"
+               style="-fx-text-fill: white;"/>
+
+        <TextField fx:id="campoApellido"
+                   promptText="Apellido"/>
+
+        <Label text="Correo electrónico"
+               style="-fx-text-fill: white;"/>
+
+        <TextField fx:id="campoEmail"
+                   promptText="Correo electrónico"/>
+
+    </VBox>
+
+    <Label fx:id="mensajeError"
+           visible="false"
+           managed="false"
+           wrapText="true"
+           style="-fx-text-fill: #F87171; -fx-font-size: 12px;"/>
+
+    <Button fx:id="botonIngresar"
+            text="Ingresar"
+            onAction="#ingresar"
+            maxWidth="Infinity"
+            style="-fx-background-color: #2563EB; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 12; -fx-background-radius: 7; -fx-cursor: hand;"/>
+
+    <Button fx:id="botonAlternar"
+            text="No tengo cuenta, registrarme"
+            onAction="#alternarModo"
+            maxWidth="Infinity"
+            style="-fx-background-color: transparent; -fx-text-fill: #93C5FD; -fx-cursor: hand;"/>
+
+</VBox>
+
