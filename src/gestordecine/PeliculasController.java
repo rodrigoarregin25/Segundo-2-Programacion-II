@@ -238,6 +238,13 @@ public class PeliculasController {
             principalController.actualizarCine(cineTrabajo);
             principalController.mostrarPeliculas();
 
+        } catch (IllegalStateException e) {
+
+            DialogoCinema.mostrarError(
+                    tablaPeliculas.getScene().getWindow(),
+                    "No se puede desactivar la película",
+                    e.getMessage()
+            );
         } catch (Exception e) {
             mostrarMensaje("Error al cambiar el estado de la película: " + e.getMessage());
             e.printStackTrace();

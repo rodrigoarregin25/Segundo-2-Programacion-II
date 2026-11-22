@@ -332,6 +332,22 @@ public class Cine implements Serializable {
             throw new IllegalArgumentException("La pelicula no existe");
         }
 
+        for (Funcion funcion : funciones) {
+
+            boolean mismaPelicula
+                    = funcion.getPelicula().getIdPelicula() == idPelicula;
+
+            boolean funcionPendiente
+                    = funcion.getFechaHoraFin().isAfter(LocalDateTime.now());
+
+            if (mismaPelicula && funcionPendiente) {
+                throw new IllegalStateException(
+                        "No se puede desactivar la película porque tiene "
+                        + "funciones pendientes o en curso."
+                );
+            }
+        }
+
         pelicula.desactivar();
 
     }

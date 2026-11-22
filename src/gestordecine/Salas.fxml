@@ -21,23 +21,30 @@
     <VBox spacing="15">
 
         <!-- Fila superior: título y botones -->
-        <HBox alignment="CENTER_LEFT" spacing="20">
-
-            <Label text="Administración de salas"
-                   styleClass="titulo-pagina"/>
-
-            <Region HBox.hgrow="ALWAYS"/>
+        <HBox alignment="CENTER_RIGHT" spacing="12">
 
             <Button text="Editar sala"
+                    prefWidth="145"
+                    minWidth="145"
+                    maxWidth="145"
+                    prefHeight="45"
                     styleClass="boton-secundario"
                     onAction="#editarSala"/>
 
             <Button fx:id="botonEstado"
                     text="Desactivar sala"
+                    prefWidth="160"
+                    minWidth="160"
+                    maxWidth="160"
+                    prefHeight="45"
                     styleClass="boton-peligro"
                     onAction="#cambiarEstadoSala"/>
 
             <Button text="+ Nueva sala"
+                    prefWidth="150"
+                    minWidth="150"
+                    maxWidth="150"
+                    prefHeight="45"
                     styleClass="boton-primario"
                     onAction="#nuevaSala"/>
 
@@ -61,11 +68,11 @@
     </VBox>
     
     <Label fx:id="mensajeError"
-       text=""
-       visible="false"
-       managed="false"
-       wrapText="true"
-       styleClass="mensaje-error"/>
+           text=""
+           visible="false"
+           managed="false"
+           wrapText="true"
+           styleClass="mensaje-error"/>
 
     <!-- CONTENIDO -->
 
@@ -88,23 +95,23 @@
                        VBox.vgrow="ALWAYS"
                        styleClass="tabla-peliculas">
 
-<columns>
-    <TableColumn fx:id="columnaId"
-                 text="ID"
-                 prefWidth="45"/>
+                <columns>
+                    <TableColumn fx:id="columnaId"
+                                 text="ID"
+                                 prefWidth="45"/>
 
-    <TableColumn fx:id="columnaEstado"
-                 text="Estado"
-                 prefWidth="70"/>
+                    <TableColumn fx:id="columnaEstado"
+                                 text="Estado"
+                                 prefWidth="70"/>
 
-    <TableColumn fx:id="columnaNombre"
-                 text="Nombre"
-                 prefWidth="135"/>
+                    <TableColumn fx:id="columnaNombre"
+                                 text="Nombre"
+                                 prefWidth="135"/>
 
-    <TableColumn fx:id="columnaCapacidad"
-                 text="Capacidad"
-                 prefWidth="95"/>
-</columns>
+                    <TableColumn fx:id="columnaCapacidad"
+                                 text="Capacidad"
+                                 prefWidth="95"/>
+                </columns>
 
             </TableView>
 

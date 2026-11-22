@@ -14,27 +14,68 @@
       spacing="25"
       styleClass="contenido-principal">
 
+    <!-- ENCABEZADO PRINCIPAL -->
     <HBox alignment="CENTER_LEFT" spacing="20">
 
         <VBox spacing="8">
             <Label text="Administración de películas"
                    styleClass="titulo-pagina"/>
+
             <Label text="Gestioná las películas registradas en el cine"
                    styleClass="subtitulo-pagina"/>
         </VBox>
 
         <Region HBox.hgrow="ALWAYS"/>
 
-        <Button text="+ Nueva película"
-                styleClass="boton-primario"
-                onAction="#nuevaPelicula"/>
+        <!-- ENCABEZADO PRINCIPAL -->
+        <VBox spacing="16">
+
+            <!-- PRIMERA FILA: TÍTULO Y BOTONES -->
+            <HBox alignment="CENTER_LEFT" spacing="20">
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <HBox alignment="CENTER_RIGHT" spacing="12">
+
+                    <Button text="Editar película"
+                            prefWidth="145"
+                            minWidth="145"
+                            maxWidth="145"
+                            prefHeight="45"
+                            styleClass="boton-secundario"
+                            onAction="#editarPelicula"/>
+
+                    <Button fx:id="botonEstado"
+                            text="Desactivar película"
+                            prefWidth="160"
+                            minWidth="160"
+                            maxWidth="160"
+                            prefHeight="45"
+                            styleClass="boton-peligro"
+                            onAction="#desactivarPelicula"/>
+
+                    <Button text="+ Nueva película"
+                            prefWidth="150"
+                            minWidth="150"
+                            maxWidth="150"
+                            prefHeight="45"
+                            styleClass="boton-primario"
+                            onAction="#nuevaPelicula"/>
+
+                </HBox>
+
+            </HBox>
+
+        </VBox>
 
     </HBox>
 
-    <VBox spacing="15" 
+    <!-- PANEL DE PELÍCULAS -->
+    <VBox spacing="15"
           VBox.vgrow="ALWAYS"
           styleClass="tarjeta-contenido">
 
+        <!-- TÍTULO Y FILTRO -->
         <HBox alignment="CENTER_LEFT" spacing="12">
 
             <Label text="Películas registradas"
@@ -51,16 +92,18 @@
 
         </HBox>
 
+        <!-- TABLA -->
         <TableView fx:id="tablaPeliculas"
-                   VBox.vgrow="ALWAYS"  
+                   VBox.vgrow="ALWAYS"
                    styleClass="tabla-peliculas">
 
             <columns>
+
                 <TableColumn fx:id="colEstado"
                              id="columna-estado"
                              text="Estado"
                              prefWidth="90"/>
-                
+
                 <TableColumn fx:id="colTitulo"
                              text="Título"
                              prefWidth="400"/>
@@ -68,15 +111,15 @@
                 <TableColumn fx:id="colDuracion"
                              text="Duración"
                              prefWidth="110"/>
-                
+
                 <TableColumn fx:id="colFechaEstreno"
                              text="Año"
                              prefWidth="90"/>
-                
+
                 <TableColumn fx:id="colGenero"
                              text="Genero"
                              prefWidth="300"/>
-                
+
                 <TableColumn fx:id="colDirector"
                              text="Director"
                              prefWidth="180"/>
@@ -89,37 +132,18 @@
                              text="Puntuación"
                              prefWidth="110"/>
 
-                
             </columns>
 
         </TableView>
-        
-        <VBox alignment="BOTTOM_RIGHT" spacing="8">
 
-            <Label fx:id="mensajeEstado"
-                   text=""
-                   visible="false"
-                   managed="true"
-                   minHeight="20"
-                   prefHeight="20"
-                   maxHeight="20"
-                   styleClass="mensaje-error"/>
+        <!-- MENSAJE DE ERROR -->
+        <Label fx:id="mensajeEstado"
+               text=""
+               visible="false"
+               managed="false"
+               wrapText="true"
+               styleClass="mensaje-error"/>
 
-            <HBox alignment="CENTER_RIGHT" spacing="12">
-
-                <Button text="Editar película"
-                        styleClass="boton-secundario"
-                        onAction="#editarPelicula"/>
-
-                <Button fx:id="botonEstado"
-                        text="Desactivar película"
-                        styleClass="boton-peligro"
-                        onAction="#desactivarPelicula"/>
-
-            </HBox>
-
-        </VBox>
-        
     </VBox>
-    
+
 </VBox>
