@@ -1,27 +1,22 @@
 package gestordecine;
 
-import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import javafx.scene.image.Image;
-import javafx.scene.layout.VBox;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
-import java.util.List;
-import javafx.scene.layout.HBox;
-import javafx.scene.control.Button;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
+import javafx.fxml.FXML;
+import javafx.scene.Cursor;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.VBox;
 
 public class DetallePeliculaController {
 
@@ -131,54 +126,10 @@ public class DetallePeliculaController {
                 .collect(java.util.stream.Collectors.joining(", "));
     }
 
-    private void mostrarFunciones(Pelicula pelicula, Cine cine) {
-
-        contenedorFunciones.getChildren().clear();
-
-        List<Funcion> funciones = cine.getFunciones().stream()
-                .filter(funcion
-                        -> funcion.getPelicula().getIdPelicula()
-                == pelicula.getIdPelicula())
-                .filter(funcion
-                        -> funcion.getFechaHora().isAfter(LocalDateTime.now()))
-                .filter(funcion -> funcion.getSala().isActiva())
-                .sorted(Comparator.comparing(Funcion::getFechaHora))
-                .toList();
-
-        mensajeSinFunciones.setVisible(funciones.isEmpty());
-        mensajeSinFunciones.setManaged(funciones.isEmpty());
-
-        DateTimeFormatter formatoFecha
-                = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm");
-
-        for (Funcion funcion : funciones) {
-
-            Label fecha = new Label(
-                    funcion.getFechaHora().format(formatoFecha)
-            );
-
-            Label detalles = new Label(
-                    funcion.getSala().getNombreSala()
-                    + " | " + funcion.getFormatoPelicula()
-                    + " | " + funcion.getIdiomaPelicula()
-            );
-
-            Label precio = new Label(
-                    "$" + String.format("%.2f", funcion.getPrecio())
-            );
-
-            Button botonReservar = new Button("Reservar");
-            botonReservar.getStyleClass().add("boton-primario");
-
-            VBox informacion = new VBox(8, fecha, detalles);
-
-            HBox tarjeta = new HBox(20, informacion, precio, botonReservar);
-            tarjeta.getStyleClass().add("tarjeta-funcion");
-
-            contenedorFunciones.getChildren().add(tarjeta);
-        }
-    }
-
+    /**
+     * Que hace: muestra los horarios de la fecha elegida. Al hacer clic en un
+     * horario se abre Nueva reserva con esa funcion ya elegida.
+     */
     private void mostrarHorarios() {
 
         contenedorFunciones.getChildren().clear();
@@ -198,6 +149,7 @@ public class DetallePeliculaController {
 
             VBox tarjeta = new VBox(7);
             tarjeta.getStyleClass().add("tarjeta-horario");
+            tarjeta.setCursor(Cursor.HAND);
 
             Label hora = new Label(
                     funcion.getFechaHora().format(formatoHora)
@@ -216,11 +168,15 @@ public class DetallePeliculaController {
             sala.getStyleClass().add("detalle-horario");
 
             Label precio = new Label(
-                    String.format("$%.2f", funcion.getPrecio())
+                    String.format(Locale.of("es", "AR"), "$%,.2f", funcion.getPrecio())
             );
             precio.getStyleClass().add("precio-horario");
 
             tarjeta.getChildren().addAll(hora, formato, sala, precio);
+
+            // Al elegir el horario se va a Nueva reserva con esta funcion
+            tarjeta.setOnMouseClicked(evento
+                    -> principalController.mostrarNuevaReservaConFuncion(funcion));
 
             contenedorFunciones.getChildren().add(tarjeta);
         }
@@ -230,13 +186,14 @@ public class DetallePeliculaController {
 
         contenedorFechas.getChildren().clear();
 
-        // Obtener las funciones futuras de la película
+        // Obtener las funciones futuras y activas de la película
         funcionesDisponibles = cine.getFunciones().stream()
                 .filter(funcion
                         -> funcion.getPelicula().getIdPelicula()
                 == pelicula.getIdPelicula())
                 .filter(funcion
                         -> funcion.getFechaHora().isAfter(LocalDateTime.now()))
+                .filter(funcion -> funcion.isActiva())
                 .filter(funcion -> funcion.getSala().isActiva())
                 .sorted(Comparator.comparing(Funcion::getFechaHora))
                 .toList();
@@ -257,7 +214,7 @@ public class DetallePeliculaController {
         mensajeSinFunciones.setManaged(!hayFunciones);
 
         DateTimeFormatter formatoDia
-                = DateTimeFormatter.ofPattern("EEE", new java.util.Locale("es", "AR"));
+                = DateTimeFormatter.ofPattern("EEE", Locale.of("es", "AR"));
 
         DateTimeFormatter formatoNumero
                 = DateTimeFormatter.ofPattern("dd");

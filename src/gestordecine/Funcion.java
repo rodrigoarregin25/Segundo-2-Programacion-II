@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 public class Funcion implements Serializable{
+    
+    private static final long serialVersionUID = -8444399254319352013L;
 
     private final int idFuncion;
     private final Sala sala;
@@ -12,6 +14,8 @@ public class Funcion implements Serializable{
     private final LocalDateTime fechaHora;
     private final String formatoPelicula;
     private final String idiomaPelicula;
+    // false por defecto: en los datos guardados antes, todas las funciones siguen activas
+    private boolean desactivada;
 
     public Funcion(int idFuncion, Sala sala, Pelicula pelicula, double precio, LocalDateTime fechaHora, String formatoPelicula, String idiomaPelicula) {
         setPrecio(precio);
@@ -109,6 +113,28 @@ public class Funcion implements Serializable{
 
     public LocalDateTime getFechaHoraFin() {
         return fechaHora.plusMinutes(pelicula.getDuracionPelicula());
+    }
+
+    /**
+     * Que hace: dice si la funcion esta activa
+     * Retorna: true si esta activa, false si esta desactivada
+     */
+    public boolean isActiva() {
+        return !desactivada;
+    }
+
+    /**
+     * Que hace: desactiva la funcion (no se borra, las reservas quedan en el historial)
+     */
+    public void desactivar() {
+        this.desactivada = true;
+    }
+
+    /**
+     * Que hace: vuelve a activar la funcion
+     */
+    public void reactivar() {
+        this.desactivada = false;
     }
 
 }

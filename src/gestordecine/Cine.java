@@ -174,7 +174,8 @@ public class Cine implements Serializable {
                 throw new RegistroDuplicadoException("Ya existe una funcion con ese ID");
             }
 
-            if (existente.getSala() == funcion.getSala()) {
+            // una funcion desactivada no ocupa el horario de la sala
+            if (existente.isActiva() && existente.getSala() == funcion.getSala()) {
 
                 if (funcion.getFechaHora().isBefore(existente.getFechaHoraFin()) && funcion.getFechaHoraFin().isAfter(existente.getFechaHora())) {
                     throw new IllegalArgumentException("Ya existe una funcion programada en ese horario");
@@ -379,6 +380,10 @@ public class Cine implements Serializable {
                     "La funcion no esta registrada en este cine");
         }
 
+        if (!funcion.isActiva()) {
+            throw new IllegalArgumentException("La funcion esta desactivada");
+        }
+
         return servicioDeReservas.confirmarReserva(cliente, funcion, entradas);
 
     }
@@ -427,6 +432,82 @@ public class Cine implements Serializable {
         }
 
         sala.setNombreSala(nuevoNombre);
+    }
+
+    /**
+     * Que hace: cambia el precio de una funcion. Las reservas que ya existen
+     * conservan su importe.
+     * Parametros: idFuncion (int), nuevoPrecio (double)
+     * Lanza: IllegalArgumentException si la funcion no existe o el precio no es valido
+     */
+    public void editarPrecioFuncion(int idFuncion, double nuevoPrecio) {
+        Funcion funcion = buscarFuncionPorId(idFuncion);
+
+        if (funcion == null) {
+            throw new IllegalArgumentException("La funcion no existe");
+        }
+
+        funcion.setPrecio(nuevoPrecio);
+    }
+
+    /**
+     * Que hace: elimina una funcion, solo si no tiene reservas
+     * Parametros: idFuncion (int)
+     * Lanza: IllegalArgumentException si la funcion no existe o tiene reservas
+     */
+    public void eliminarFuncion(int idFuncion) {
+        Funcion funcion = buscarFuncionPorId(idFuncion);
+
+        if (funcion == null) {
+            throw new IllegalArgumentException("La funcion no existe");
+        }
+
+        if (servicioDeReservas.tieneReservas(funcion)) {
+            throw new IllegalArgumentException(
+                    "No se puede eliminar: la funcion tiene reservas");
+        }
+
+        funciones.remove(funcion);
+    }
+
+    /**
+     * Que hace: desactiva una funcion (no se borra, las reservas quedan en el historial)
+     * Parametros: idFuncion (int)
+     * Lanza: IllegalArgumentException si la funcion no existe,
+     * IllegalStateException si ya estaba desactivada
+     */
+    public void desactivarFuncion(int idFuncion) {
+        Funcion funcion = buscarFuncionPorId(idFuncion);
+
+        if (funcion == null) {
+            throw new IllegalArgumentException("La funcion no existe");
+        }
+
+        if (!funcion.isActiva()) {
+            throw new IllegalStateException("La funcion ya esta desactivada");
+        }
+
+        funcion.desactivar();
+    }
+
+    /**
+     * Que hace: vuelve a activar una funcion desactivada
+     * Parametros: idFuncion (int)
+     * Lanza: IllegalArgumentException si la funcion no existe,
+     * IllegalStateException si ya estaba activa
+     */
+    public void reactivarFuncion(int idFuncion) {
+        Funcion funcion = buscarFuncionPorId(idFuncion);
+
+        if (funcion == null) {
+            throw new IllegalArgumentException("La funcion no existe");
+        }
+
+        if (funcion.isActiva()) {
+            throw new IllegalStateException("La funcion ya esta activa");
+        }
+
+        funcion.reactivar();
     }
 
 }

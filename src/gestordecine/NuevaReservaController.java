@@ -135,7 +135,7 @@ public class NuevaReservaController {
 
     /**
      * Que hace: recibe el cine y la persistencia, carga las peliculas que
-     * tienen funciones futuras y muestra el estado de la sesion.
+     * tienen funciones futuras activas y muestra el estado de la sesion.
      * Parametros: cine (el cine actual), persistencia (para guardar cambios).
      */
     public void configurar(Cine cine, PersistenciaCine persistencia) {
@@ -144,6 +144,10 @@ public class NuevaReservaController {
 
         peliculasDisponibles = new ArrayList<>();
         for (Funcion funcion : cine.buscarFuncionesFuturas()) {
+            // las funciones desactivadas no se pueden reservar
+            if (!funcion.isActiva()) {
+                continue;
+            }
             boolean yaEsta = false;
             for (Pelicula pelicula : peliculasDisponibles) {
                 if (pelicula.getIdPelicula() == funcion.getPelicula().getIdPelicula()) {
@@ -165,6 +169,26 @@ public class NuevaReservaController {
 
     public void setPrincipalController(PrincipalController principalController) {
         this.principalController = principalController;
+    }
+
+    /**
+     * Que hace: deja elegidas la pelicula y la funcion que se pasan, por ejemplo
+     * cuando se llega desde el detalle de una pelicula. Se llama despues de configurar.
+     * Parametros: funcion (la funcion que se quiere reservar).
+     */
+    public void preseleccionarFuncion(Funcion funcion) {
+        for (int i = 0; i < peliculasDisponibles.size(); i++) {
+            if (peliculasDisponibles.get(i).getIdPelicula()
+                    == funcion.getPelicula().getIdPelicula()) {
+                comboPelicula.getSelectionModel().select(i);
+            }
+        }
+
+        for (int i = 0; i < funcionesFiltradas.size(); i++) {
+            if (funcionesFiltradas.get(i).getIdFuncion() == funcion.getIdFuncion()) {
+                comboFuncion.getSelectionModel().select(i);
+            }
+        }
     }
 
     /**
@@ -291,7 +315,7 @@ public class NuevaReservaController {
     }
 
     /**
-     * Que hace: carga en el desplegable las funciones futuras de una pelicula.
+     * Que hace: carga en el desplegable las funciones futuras y activas de una pelicula.
      * Parametros: pelicula (la pelicula elegida).
      */
     private void cargarFunciones(Pelicula pelicula) {
@@ -303,6 +327,10 @@ public class NuevaReservaController {
         comboFuncion.getItems().clear();
 
         for (Funcion funcion : cine.buscarFuncionesFuturas()) {
+            // las funciones desactivadas no se pueden reservar
+            if (!funcion.isActiva()) {
+                continue;
+            }
             if (funcion.getPelicula().getIdPelicula() == pelicula.getIdPelicula()) {
                 funcionesFiltradas.add(funcion);
                 comboFuncion.getItems().add(
