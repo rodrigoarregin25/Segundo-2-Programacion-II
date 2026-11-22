@@ -15,50 +15,59 @@
       styleClass="contenido-principal">
 
     <!-- ENCABEZADO PRINCIPAL -->
-    <VBox spacing="16">
+    <VBox spacing="10">
 
-        <!-- TITULO Y BOTONES -->
+        <!-- PRIMERA FILA: INFORMACIÓN Y VOLVER -->
         <HBox alignment="CENTER_LEFT" spacing="20">
 
-            <Label text="Administración de salas"
-                   styleClass="titulo-pagina"/>
+            <VBox spacing="8">
+
+                <Label text="Administración de salas"
+                       styleClass="titulo-pagina"/>
+
+                <Label text="Gestioná las salas y su distribución de butacas"
+                       styleClass="subtitulo-pagina"/>
+
+            </VBox>
 
             <Region HBox.hgrow="ALWAYS"/>
 
-            <HBox alignment="CENTER_RIGHT" spacing="12">
-
-                <Button text="Editar sala"
-                        prefWidth="145"
-                        minWidth="145"
-                        maxWidth="145"
-                        prefHeight="45"
-                        styleClass="boton-secundario"
-                        onAction="#editarSala"/>
-
-                <Button fx:id="botonEstado"
-                        text="Desactivar sala"
-                        prefWidth="160"
-                        minWidth="160"
-                        maxWidth="160"
-                        prefHeight="45"
-                        styleClass="boton-peligro"
-                        onAction="#cambiarEstadoSala"/>
-
-                <Button text="+ Nueva sala"
-                        prefWidth="150"
-                        minWidth="150"
-                        maxWidth="150"
-                        prefHeight="45"
-                        styleClass="boton-primario"
-                        onAction="#nuevaSala"/>
-
-            </HBox>
+            <Button text="← Volver"
+                    prefWidth="150"
+                    prefHeight="40"
+                    styleClass="boton-secundario"
+                    onAction="#volver"/>
 
         </HBox>
 
-        <!-- SUBTITULO -->
-        <Label text="Gestioná las salas y su distribución de butacas"
-               styleClass="subtitulo-pagina"/>
+        <!-- SEGUNDA FILA: ACCIONES -->
+        <HBox alignment="CENTER_RIGHT" spacing="12">
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Button text="Editar sala"
+                    prefWidth="145"
+                    minWidth="145"
+                    prefHeight="45"
+                    styleClass="boton-secundario"
+                    onAction="#editarSala"/>
+
+            <Button fx:id="botonEstado"
+                    text="Desactivar sala"
+                    prefWidth="160"
+                    minWidth="160"
+                    prefHeight="45"
+                    styleClass="boton-peligro"
+                    onAction="#cambiarEstadoSala"/>
+
+            <Button text="+ Nueva sala"
+                    prefWidth="175"
+                    minWidth="175"
+                    prefHeight="45"
+                    styleClass="boton-primario"
+                    onAction="#nuevaSala"/>
+
+        </HBox>
 
     </VBox>
 
@@ -79,7 +88,7 @@
               minWidth="420"
               styleClass="tarjeta-contenido">
 
-            <!-- TITULO Y FILTRO -->
+            <!-- TÍTULO Y FILTRO -->
             <HBox alignment="CENTER_LEFT" spacing="8">
 
                 <Label text="Salas registradas"
@@ -126,7 +135,7 @@
 
         </VBox>
 
-        <!-- DISTRIBUCION DE BUTACAS -->
+        <!-- DISTRIBUCIÓN DE BUTACAS -->
         <VBox spacing="20"
               HBox.hgrow="ALWAYS"
               styleClass="tarjeta-contenido">

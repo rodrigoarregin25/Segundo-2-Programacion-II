@@ -2,9 +2,9 @@
 
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.layout.Region?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.ComboBox?>
@@ -15,60 +15,59 @@
       styleClass="contenido-principal">
 
     <!-- ENCABEZADO PRINCIPAL -->
-    <HBox alignment="CENTER_LEFT" spacing="20">
+    <VBox spacing="10">
 
-        <VBox spacing="8">
-            <Label text="Administración de películas"
-                   styleClass="titulo-pagina"/>
+        <!-- PRIMERA FILA: INFORMACIÓN Y VOLVER -->
+        <HBox alignment="CENTER_LEFT" spacing="20">
 
-            <Label text="Gestioná las películas registradas en el cine"
-                   styleClass="subtitulo-pagina"/>
-        </VBox>
+            <VBox spacing="8">
+                <Label text="Administración de películas"
+                       styleClass="titulo-pagina"/>
 
-        <Region HBox.hgrow="ALWAYS"/>
+                <Label text="Gestioná las películas registradas en el cine"
+                       styleClass="subtitulo-pagina"/>
+            </VBox>
 
-        <!-- ENCABEZADO PRINCIPAL -->
-        <VBox spacing="16">
+            <Region HBox.hgrow="ALWAYS"/>
 
-            <!-- PRIMERA FILA: TÍTULO Y BOTONES -->
-            <HBox alignment="CENTER_LEFT" spacing="20">
+            <Button text="← Volver"
+                    prefWidth="150"
+                    prefHeight="40"
+                    styleClass="boton-secundario"
+                    onAction="#volver"/>
 
-                <Region HBox.hgrow="ALWAYS"/>
+        </HBox>
 
-                <HBox alignment="CENTER_RIGHT" spacing="12">
+        <!-- SEGUNDA FILA: ACCIONES -->
+        <HBox alignment="CENTER_RIGHT" spacing="12">
 
-                    <Button text="Editar película"
-                            prefWidth="145"
-                            minWidth="145"
-                            maxWidth="145"
-                            prefHeight="45"
-                            styleClass="boton-secundario"
-                            onAction="#editarPelicula"/>
+            <Region HBox.hgrow="ALWAYS"/>
 
-                    <Button fx:id="botonEstado"
-                            text="Desactivar película"
-                            prefWidth="160"
-                            minWidth="160"
-                            maxWidth="160"
-                            prefHeight="45"
-                            styleClass="boton-peligro"
-                            onAction="#desactivarPelicula"/>
+            <Button text="Editar película"
+                    prefWidth="145"
+                    minWidth="145"
+                    prefHeight="45"
+                    styleClass="boton-secundario"
+                    onAction="#editarPelicula"/>
 
-                    <Button text="+ Nueva película"
-                            prefWidth="150"
-                            minWidth="150"
-                            maxWidth="150"
-                            prefHeight="45"
-                            styleClass="boton-primario"
-                            onAction="#nuevaPelicula"/>
+            <Button fx:id="botonEstado"
+                    text="Desactivar película"
+                    prefWidth="160"
+                    minWidth="160"
+                    prefHeight="45"
+                    styleClass="boton-peligro"
+                    onAction="#desactivarPelicula"/>
 
-                </HBox>
+            <Button text="+ Nueva película"
+                    prefWidth="175"
+                    minWidth="175"
+                    prefHeight="45"
+                    styleClass="boton-primario"
+                    onAction="#nuevaPelicula"/>
 
-            </HBox>
+        </HBox>
 
-        </VBox>
-
-    </HBox>
+    </VBox>
 
     <!-- PANEL DE PELÍCULAS -->
     <VBox spacing="15"
@@ -117,7 +116,7 @@
                              prefWidth="90"/>
 
                 <TableColumn fx:id="colGenero"
-                             text="Genero"
+                             text="Género"
                              prefWidth="300"/>
 
                 <TableColumn fx:id="colDirector"

@@ -289,4 +289,12 @@ public class FuncionesController {
         mensajeError.setVisible(false);
         mensajeError.setManaged(false);
     }
+
+    /**
+     * Regresa a la cartelera principal de CINEMA.
+     */
+    @FXML
+    private void volver() {
+        principalController.volver();
+    }
 }

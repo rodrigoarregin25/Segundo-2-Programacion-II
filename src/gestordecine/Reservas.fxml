@@ -15,59 +15,64 @@
       styleClass="contenido-principal">
 
     <!-- ENCABEZADO PRINCIPAL -->
-    <VBox spacing="16">
+    <VBox spacing="10">
 
-        <!-- PRIMERA FILA: TITULO Y BOTONES -->
+        <!-- PRIMERA FILA: INFORMACIÓN Y VOLVER -->
         <HBox alignment="CENTER_LEFT" spacing="20">
 
-            <Label text="Reservas"
-                   styleClass="titulo-pagina"/>
+            <VBox spacing="8">
+
+                <Label text="Reservas"
+                       styleClass="titulo-pagina"/>
+
+                <Label text="Consultá, revisá el comprobante o cancelá una reserva"
+                       styleClass="subtitulo-pagina"/>
+
+            </VBox>
 
             <Region HBox.hgrow="ALWAYS"/>
 
-            <HBox alignment="CENTER_RIGHT" spacing="12">
-
-                <Button fx:id="botonComprobante"
-                        text="Ver comprobante"
-                        prefWidth="145"
-                        minWidth="145"
-                        maxWidth="145"
-                        prefHeight="45"
-                        styleClass="boton-secundario"
-                        onAction="#verComprobante"/>
-
-                <Button fx:id="botonCancelar"
-                        text="Cancelar reserva"
-                        prefWidth="160"
-                        minWidth="160"
-                        maxWidth="160"
-                        prefHeight="45"
-                        styleClass="boton-peligro"
-                        onAction="#cancelarReserva"/>
-
-                <Button text="+ Nueva reserva"
-                        prefWidth="150"
-                        minWidth="150"
-                        maxWidth="150"
-                        prefHeight="45"
-                        styleClass="boton-primario"
-                        onAction="#nuevaReserva"/>
-
-            </HBox>
+            <Button text="← Volver"
+                    prefWidth="150"
+                    prefHeight="40"
+                    styleClass="boton-secundario"
+                    onAction="#volver"/>
 
         </HBox>
 
-        <!-- SEGUNDA FILA: SUBTITULO -->
-        <HBox alignment="CENTER_LEFT">
+        <!-- SEGUNDA FILA: ACCIONES -->
+        <HBox alignment="CENTER_RIGHT" spacing="12">
 
-            <Label text="Consultá, revisá el comprobante o cancelá una reserva"
-                   styleClass="subtitulo-pagina"/>
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Button fx:id="botonComprobante"
+                    text="Ver comprobante"
+                    prefWidth="145"
+                    minWidth="145"
+                    prefHeight="45"
+                    styleClass="boton-secundario"
+                    onAction="#verComprobante"/>
+
+            <Button fx:id="botonCancelar"
+                    text="Cancelar reserva"
+                    prefWidth="160"
+                    minWidth="160"
+                    prefHeight="45"
+                    styleClass="boton-peligro"
+                    onAction="#cancelarReserva"/>
+
+            <Button text="+ Nueva reserva"
+                    prefWidth="175"
+                    minWidth="175"
+                    prefHeight="45"
+                    styleClass="boton-primario"
+                    onAction="#nuevaReserva"/>
 
         </HBox>
 
     </VBox>
 
-    <!-- BUSQUEDA -->
+    <!-- BÚSQUEDA -->
     <HBox spacing="10"
           alignment="CENTER_LEFT"
           styleClass="tarjeta-contenido">
@@ -97,6 +102,7 @@
           styleClass="tarjeta-contenido"
           VBox.vgrow="ALWAYS">
 
+        <!-- TÍTULO Y EXPORTACIÓN -->
         <HBox alignment="CENTER_LEFT" spacing="12">
 
             <Label text="Reservas encontradas"
@@ -110,10 +116,12 @@
 
         </HBox>
 
+        <!-- LISTADO -->
         <ListView fx:id="listaReservas"
                   styleClass="lista-salas"
                   VBox.vgrow="ALWAYS"/>
 
+        <!-- MENSAJE DE ERROR -->
         <Label fx:id="mensajeError"
                visible="false"
                managed="false"

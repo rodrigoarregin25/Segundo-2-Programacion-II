@@ -392,4 +392,12 @@ public class ReservasController {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Regresa a la cartelera principal.
+     */
+    @FXML
+    private void volver() {
+        principalController.volver();
+    }
 }

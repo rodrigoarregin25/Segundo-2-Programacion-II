@@ -14,52 +14,57 @@
       styleClass="contenido-principal">
 
     <!-- ENCABEZADO PRINCIPAL -->
-    <VBox spacing="16">
+    <VBox spacing="10">
 
-        <!-- PRIMERA FILA: TITULO Y BOTONES -->
+        <!-- PRIMERA FILA: INFORMACIÓN Y VOLVER -->
         <HBox alignment="CENTER_LEFT" spacing="20">
 
-            <Label text="Administración de funciones"
-                   styleClass="titulo-pagina"/>
+            <VBox spacing="8">
+
+                <Label text="Administración de funciones"
+                       styleClass="titulo-pagina"/>
+
+                <Label text="Gestioná las funciones programadas en cada sala"
+                       styleClass="subtitulo-pagina"/>
+
+            </VBox>
 
             <Region HBox.hgrow="ALWAYS"/>
 
-            <HBox alignment="CENTER_RIGHT" spacing="12">
-
-                <Button text="Editar precio"
-                        prefWidth="145"
-                        minWidth="145"
-                        maxWidth="145"
-                        prefHeight="45"
-                        styleClass="boton-secundario"
-                        onAction="#editarFuncion"/>
-
-                <Button fx:id="botonEstado"
-                        text="Desactivar función"
-                        prefWidth="160"
-                        minWidth="160"
-                        maxWidth="160"
-                        prefHeight="45"
-                        styleClass="boton-peligro"
-                        onAction="#cambiarEstadoFuncion"/>
-
-                <Button text="+ Nueva función"
-                        prefWidth="150"
-                        minWidth="150"
-                        maxWidth="150"
-                        prefHeight="45"
-                        styleClass="boton-primario"
-                        onAction="#nuevaFuncion"/>
-
-            </HBox>
+            <Button text="← Volver"
+                    prefWidth="150"
+                    prefHeight="40"
+                    styleClass="boton-secundario"
+                    onAction="#volver"/>
 
         </HBox>
 
-        <!-- SEGUNDA FILA: SUBTITULO -->
-        <HBox alignment="CENTER_LEFT">
+        <!-- SEGUNDA FILA: ACCIONES -->
+        <HBox alignment="CENTER_RIGHT" spacing="12">
 
-            <Label text="Gestioná las funciones programadas en cada sala"
-                   styleClass="subtitulo-pagina"/>
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Button text="Editar precio"
+                    prefWidth="145"
+                    minWidth="145"
+                    prefHeight="45"
+                    styleClass="boton-secundario"
+                    onAction="#editarFuncion"/>
+
+            <Button fx:id="botonEstado"
+                    text="Desactivar función"
+                    prefWidth="160"
+                    minWidth="160"
+                    prefHeight="45"
+                    styleClass="boton-peligro"
+                    onAction="#cambiarEstadoFuncion"/>
+
+            <Button text="+ Nueva función"
+                    prefWidth="175"
+                    minWidth="175"
+                    prefHeight="45"
+                    styleClass="boton-primario"
+                    onAction="#nuevaFuncion"/>
 
         </HBox>
 
@@ -70,7 +75,7 @@
           styleClass="tarjeta-contenido"
           VBox.vgrow="ALWAYS">
 
-        <!-- TITULO Y FILTRO -->
+        <!-- TÍTULO Y FILTRO -->
         <HBox alignment="CENTER_LEFT" spacing="10">
 
             <Label text="Funciones programadas"

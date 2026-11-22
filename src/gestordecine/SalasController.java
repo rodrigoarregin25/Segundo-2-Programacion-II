@@ -442,4 +442,12 @@ public class SalasController {
         // Mostrar ventana
         alerta.showAndWait();
     }
+
+    /**
+     * Regresa a la cartelera principal.
+     */
+    @FXML
+    private void volver() {
+        principalController.volver();
+    }
 }

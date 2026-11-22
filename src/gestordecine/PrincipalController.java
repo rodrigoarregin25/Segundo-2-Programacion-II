@@ -589,4 +589,14 @@ public class PrincipalController {
         }
     }
 
+    /**
+     * Regresa a la cartelera principal de CINEMA.
+     *
+     * Permite reutilizar la navegación desde las distintas pantallas del
+     * sistema.
+     */
+    public void volver() {
+        mostrarCartelera();
+    }
+
 }

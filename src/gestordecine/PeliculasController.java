@@ -267,4 +267,12 @@ public class PeliculasController {
                 .collect(java.util.stream.Collectors.joining(", "));
     }
 
+    /**
+     * Regresa a la cartelera principal de CINEMA.
+     */
+    @FXML
+    private void volver() {
+        principalController.volver();
+    }
+
 }
