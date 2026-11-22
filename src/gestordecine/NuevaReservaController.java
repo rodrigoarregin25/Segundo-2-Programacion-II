@@ -1,5 +1,6 @@
 package gestordecine;
 
+import gestordecine.sesion.SesionCliente;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -10,22 +11,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.scene.Scene;
-import javafx.scene.layout.Priority;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import javafx.stage.Modality;
-import javafx.stage.Window;
-import javafx.scene.paint.Color;
-import javafx.scene.effect.ColorAdjust;
-import javafx.scene.effect.Effect;
-import gestordecine.sesion.SesionCliente;
 
+/**
+ * Controla la selección y compra de entradas para funciones del cine. Utiliza
+ * el acceso centralizado y la sesión vigente del cliente.
+ */
 public class NuevaReservaController {
 
     private static final double ANCHO_BUTACA = 28;
@@ -39,9 +32,6 @@ public class NuevaReservaController {
     private PrincipalController principalController;
     private boolean volverCarteleraSiCancela = false;
 
-    // true cuando el cuadro de ingreso esta en modo "registrarme"
-    private boolean registrando = false;
-
     // Peliculas que tienen funciones futuras (misma posicion que en comboPelicula)
     private ArrayList<Pelicula> peliculasDisponibles = new ArrayList<>();
     // Funciones de la pelicula elegida (misma posicion que en comboFuncion)
@@ -53,10 +43,6 @@ public class NuevaReservaController {
 
     @FXML
     private VBox tarjetaCompra;
-    @FXML
-    private VBox panelLogin;
-    @FXML
-    private VBox panelRegistro;
     @FXML
     private VBox panelSesion;
     @FXML
@@ -80,31 +66,11 @@ public class NuevaReservaController {
     @FXML
     private Label etiquetaCliente;
     @FXML
-    private TextField campoDni;
-    @FXML
-    private TextField campoNombre;
-    @FXML
-    private TextField campoApellido;
-    @FXML
-    private TextField campoEmail;
-    @FXML
-    private PasswordField campoContrasenia;
-    @FXML
-    private Label mensajeLogin;
-    @FXML
     private Label mensajeError;
-    @FXML
-    private Button botonIngresar;
-    @FXML
-    private Button botonAlternar;
     @FXML
     private Button botonConfirmar;
     @FXML
     private Button botonAbrirAcceso;
-    @FXML
-    private Label tituloAcceso;
-
-    private Stage ventanaAcceso;
 
     /**
      * Obtiene el cliente que tiene una sesión iniciada.
@@ -154,10 +120,6 @@ public class NuevaReservaController {
                         elegirFuncion(funcionesFiltradas.get(posicion));
                     }
                 });
-        // Retirar el formulario de acceso del panel lateral.
-        // Se mostrará únicamente dentro de la ventana emergente.
-        VBox contenedorOriginal = (VBox) panelLogin.getParent();
-        contenedorOriginal.getChildren().remove(panelLogin);
     }
 
     /**
@@ -256,9 +218,6 @@ public class NuevaReservaController {
         botonAbrirAcceso.setVisible(!conSesion);
         botonAbrirAcceso.setManaged(!conSesion);
 
-        panelLogin.setVisible(!conSesion);
-        panelLogin.setManaged(!conSesion);
-
         panelSesion.setVisible(conSesion);
         panelSesion.setManaged(conSesion);
 
@@ -271,127 +230,6 @@ public class NuevaReservaController {
                     + clienteActual.getApellido()
                     + " (DNI " + clienteActual.getDni() + ")"
             );
-        }
-    }
-
-    /**
-     * Que hace: cambia el cuadro de ingreso entre "ingresar" y "registrarme".
-     */
-    @FXML
-    private void alternarRegistro() {
-
-        registrando = !registrando;
-        ocultarErrorLogin();
-
-        panelRegistro.setVisible(registrando);
-        panelRegistro.setManaged(registrando);
-
-        if (registrando) {
-
-            tituloAcceso.setText("Crear cuenta");
-            botonIngresar.setText("Crear cuenta");
-            botonAlternar.setText("Ya tengo cuenta, ingresar");
-
-        } else {
-
-            tituloAcceso.setText("Ingresar");
-            botonIngresar.setText("Ingresar");
-            botonAlternar.setText("No tengo cuenta, registrarme");
-        }
-
-        // Adaptar la altura del emergente según los campos visibles
-        if (ventanaAcceso != null && ventanaAcceso.isShowing()) {
-
-            javafx.application.Platform.runLater(() -> {
-
-                ventanaAcceso.sizeToScene();
-
-                // Mantener la ventana centrada sobre CINEMA
-                Window principal = ventanaAcceso.getOwner();
-
-                ventanaAcceso.setX(
-                        principal.getX()
-                        + (principal.getWidth() - ventanaAcceso.getWidth()) / 2
-                );
-
-                ventanaAcceso.setY(
-                        principal.getY()
-                        + (principal.getHeight() - ventanaAcceso.getHeight()) / 2
-                );
-            });
-        }
-    }
-
-    /**
-     * Que hace: inicia sesion con DNI y contrasenia. Si se esta registrando,
-     * valida los datos y crea el cliente nuevo (se guarda sobre una copia del
-     * cine).
-     */
-    @FXML
-    private void ingresar() {
-        ocultarErrorLogin();
-
-        try {
-            int dni;
-            try {
-                dni = Integer.parseInt(campoDni.getText().trim());
-            } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("El DNI debe ser un numero");
-            }
-
-            Cliente cliente;
-
-            if (registrando) {
-                validarDatosCliente();
-
-                Cine cineTrabajo = cine.copiar();
-                cliente = new Cliente(dni, campoNombre.getText().trim(),
-                        campoApellido.getText().trim(), campoEmail.getText().trim(),
-                        campoContrasenia.getText());
-                cineTrabajo.getServicioDeReservas().registrarCliente(cliente);
-
-                persistencia.guardar(cineTrabajo);
-                principalController.actualizarCine(cineTrabajo);
-                this.cine = cineTrabajo;
-
-                if (ventanaAcceso != null) {
-                    ventanaAcceso.close();
-                }
-            } else {
-                cliente = cine.getServicioDeReservas().buscarClientePorDni(dni);
-                if (cliente == null) {
-                    throw new IllegalArgumentException(
-                            "No existe un cliente con ese DNI. Usa registrarme");
-                }
-                if (!cliente.getContrasenia().equals(campoContrasenia.getText())) {
-                    throw new IllegalArgumentException("La contrasenia es incorrecta");
-                }
-            }
-
-            // Registrar el cliente autenticado en la sesión centralizada.
-            SesionCliente.iniciarSesion(cliente);
-            principalController.actualizarMenuCuenta();
-
-            campoDni.clear();
-            campoNombre.clear();
-            campoApellido.clear();
-            campoEmail.clear();
-            campoContrasenia.clear();
-            if (registrando) {
-                alternarRegistro();
-            }
-
-            if (ventanaAcceso != null) {
-                ventanaAcceso.close();
-            }
-            actualizarSesion();
-
-        } catch (IOException | ClassNotFoundException e) {
-            // Error de datos (archivo / copia), distinto de un error de reglas
-            mostrarErrorLogin("Error al guardar los datos: " + e.getMessage());
-        } catch (Exception e) {
-            // Error de reglas: DNI repetido, datos invalidos, contrasenia incorrecta
-            mostrarErrorLogin(e.getMessage());
         }
     }
 
@@ -700,27 +538,6 @@ public class NuevaReservaController {
     }
 
     /**
-     * Que hace: valida los datos de un cliente nuevo (nombre, apellido, email y
-     * contrasenia). Lanza IllegalArgumentException si algo esta mal.
-     */
-    private void validarDatosCliente() {
-        if (campoNombre.getText().isBlank() || campoApellido.getText().isBlank()) {
-            throw new IllegalArgumentException("Complete el nombre y el apellido");
-        }
-
-        String email = campoEmail.getText().trim();
-        if (!email.contains("@") || !email.contains(".")
-                || email.indexOf('@') > email.lastIndexOf('.')) {
-            throw new IllegalArgumentException("El email no es valido");
-        }
-
-        if (campoContrasenia.getText().length() < 4) {
-            throw new IllegalArgumentException(
-                    "La contrasenia debe tener al menos 4 caracteres");
-        }
-    }
-
-    /**
      * Que hace: deja la compra como nueva: borra las butacas marcadas y vuelve
      * la cantidad a 1 entrada general. La sesion sigue iniciada.
      */
@@ -735,115 +552,31 @@ public class NuevaReservaController {
         actualizarResumen();
     }
 
+    /**
+     * Abre el formulario de acceso centralizado de CINEMA.
+     *
+     * Reutiliza el formulario administrado por PrincipalController y actualiza
+     * el estado de la compra cuando se cierra.
+     */
     @FXML
     private void abrirAcceso() {
 
-        if (ventanaAcceso == null) {
+        // Abrir el mismo formulario utilizado desde el menú principal.
+        principalController.mostrarAcceso();
 
-            ventanaAcceso = new Stage();
-            ventanaAcceso.initStyle(StageStyle.TRANSPARENT);
-            ventanaAcceso.initModality(Modality.WINDOW_MODAL);
+        // El registro puede haber creado una nueva copia de Cine.
+        // Recuperar la referencia vigente antes de comprobar la sesión.
+        this.cine = principalController.obtenerCineActual();
 
-            Window principal = botonAbrirAcceso.getScene().getWindow();
-            ventanaAcceso.initOwner(principal);
+        // Actualizar la compra según el resultado del acceso.
+        actualizarSesion();
 
-            // El formulario que ya desarrolló Gimena
-            panelLogin.setVisible(true);
-            panelLogin.setManaged(true);
-
-            // Botón para cerrar
-            Button botonCerrar = new Button("✕");
-            botonCerrar.setStyle(
-                    "-fx-background-color: transparent;"
-                    + "-fx-text-fill: #94A3B8;"
-                    + "-fx-font-size: 17px;"
-                    + "-fx-cursor: hand;"
-            );
-
-            botonCerrar.setOnAction(evento -> ventanaAcceso.close());
-
-            // Retirar el título de su posición original
-            panelLogin.getChildren().remove(tituloAcceso);
-
-// Encabezado: título a la izquierda y X a la derecha
-            Region separador = new Region();
-            HBox.setHgrow(separador, Priority.ALWAYS);
-
-            HBox encabezado = new HBox(10, tituloAcceso, separador, botonCerrar);
-            encabezado.setAlignment(Pos.CENTER_LEFT);
-
-            // Contenedor personalizado
-            VBox contenido = new VBox(16, encabezado, panelLogin);
-            contenido.setPadding(new javafx.geometry.Insets(24));
-            contenido.setPrefWidth(390);
-
-            contenido.setStyle(
-                    "-fx-background-color: #151F30;"
-                    + "-fx-background-radius: 12;"
-                    + "-fx-border-color: #334155;"
-                    + "-fx-border-radius: 12;"
-                    + "-fx-border-width: 1;"
-            );
-
-            contenido.getStyleClass().add("acceso-cinema");
-
-            contenido.setPrefWidth(420);
-
-            Scene escena = new Scene(contenido);
-            escena.setFill(Color.TRANSPARENT);
-
-            escena.getStylesheets().add(
-                    getClass().getResource("estilos.css").toExternalForm()
-            );
-
-            escena.setOnKeyPressed(evento -> {
-                if (evento.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
-                    ventanaAcceso.close();
-                }
-            });
-
-            ventanaAcceso.setScene(escena);
-
-            ventanaAcceso.setOnShown(evento -> {
-                ventanaAcceso.setX(
-                        principal.getX()
-                        + (principal.getWidth() - ventanaAcceso.getWidth()) / 2
-                );
-
-                ventanaAcceso.setY(
-                        principal.getY()
-                        + (principal.getHeight() - ventanaAcceso.getHeight()) / 2
-                );
-            });
+        // Si llegó desde Cartelera y canceló el ingreso, regresar.
+        if (volverCarteleraSiCancela && !SesionCliente.haySesion()) {
+            principalController.mostrarCartelera();
         }
 
-        // Obtener la ventana principal de CINEMA
-        Window principal = botonAbrirAcceso.getScene().getWindow();
-
-// Guardar el efecto anterior para restaurarlo después
-        Effect efectoAnterior = principal.getScene().getRoot().getEffect();
-
-// Oscurecer el fondo mientras está abierto el ingreso
-        ColorAdjust oscurecer = new ColorAdjust();
-        oscurecer.setBrightness(-0.50);
-
-        principal.getScene().getRoot().setEffect(oscurecer);
-
-// Al cerrar el emergente
-        ventanaAcceso.setOnHidden(evento -> {
-
-            // Recuperar el aspecto normal de CINEMA
-            principal.getScene().getRoot().setEffect(efectoAnterior);
-
-            // Si vino desde Cartelera y canceló el acceso
-            if (volverCarteleraSiCancela && !SesionCliente.haySesion()) {
-                principalController.mostrarCartelera();
-            }
-
-            volverCarteleraSiCancela = false;
-        });
-
-        ventanaAcceso.showAndWait();
+        volverCarteleraSiCancela = false;
     }
 
     private void mostrarError(String mensaje) {
@@ -857,14 +590,4 @@ public class NuevaReservaController {
         mensajeError.setManaged(false);
     }
 
-    private void mostrarErrorLogin(String mensaje) {
-        mensajeLogin.setText(mensaje);
-        mensajeLogin.setVisible(true);
-        mensajeLogin.setManaged(true);
-    }
-
-    private void ocultarErrorLogin() {
-        mensajeLogin.setVisible(false);
-        mensajeLogin.setManaged(false);
-    }
 }

@@ -3,13 +3,10 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.Priority?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.ScrollPane?>
 
 <ScrollPane xmlns:fx="http://javafx.com/fxml"
@@ -19,16 +16,19 @@
 
     <VBox spacing="25" styleClass="contenido-principal">
 
+        <!-- ENCABEZADO -->
         <VBox spacing="5">
             <Label text="Nueva reserva" styleClass="titulo-pagina"/>
-            <Label text="Ingresá con tu cuenta y elegí la película, la función y las butacas"
+            <Label text="Elegí la película, la función y las butacas"
                    styleClass="subtitulo-pagina"/>
         </VBox>
 
         <HBox spacing="25">
 
-            <!-- Izquierda: pelicula, funcion, cantidades y plano de butacas -->
-            <VBox fx:id="tarjetaCompra" spacing="12" styleClass="tarjeta-contenido"
+            <!-- SELECCIÓN DE FUNCIÓN, ENTRADAS Y BUTACAS -->
+            <VBox fx:id="tarjetaCompra"
+                  spacing="12"
+                  styleClass="tarjeta-contenido"
                   HBox.hgrow="ALWAYS">
 
                 <Label text="Película" style="-fx-text-fill: #CBD5E1;"/>
@@ -37,7 +37,8 @@
                 <Label text="Función" style="-fx-text-fill: #CBD5E1;"/>
                 <ComboBox fx:id="comboFuncion" maxWidth="Infinity"/>
 
-                <Label text="Cantidad de entradas por tipo" style="-fx-text-fill: #CBD5E1;"/>
+                <Label text="Cantidad de entradas por tipo"
+                       style="-fx-text-fill: #CBD5E1;"/>
                 <HBox spacing="12">
                     <VBox spacing="4" HBox.hgrow="ALWAYS">
                         <Label text="General" style="-fx-text-fill: #94A3B8;"/>
@@ -53,7 +54,7 @@
                     </VBox>
                 </HBox>
 
-                <!-- Leyenda -->
+                <!-- LEYENDA -->
                 <HBox spacing="15">
                     <HBox spacing="6">
                         <Region prefWidth="16" prefHeight="16"
@@ -75,56 +76,26 @@
                 <VBox fx:id="contenedorButacas" spacing="12"/>
             </VBox>
 
-            <!-- Derecha: ingreso del cliente, sesion y resumen -->
-            <VBox spacing="18" styleClass="tarjeta-contenido" prefWidth="360">
+            <!-- SESIÓN Y RESUMEN DE COMPRA -->
+            <VBox spacing="18"
+                  styleClass="tarjeta-contenido"
+                  prefWidth="360">
 
-                <!-- Ingresar o registrarse -->
-                
+                <!-- INGRESO CENTRALIZADO: YA NO HAY FORMULARIO DUPLICADO -->
                 <Button fx:id="botonAbrirAcceso"
                         text="Ingresar / Registrarse"
                         styleClass="boton-primario"
                         maxWidth="Infinity"
                         onAction="#abrirAcceso"/>
-                <VBox fx:id="panelLogin"
+
+                <!-- INFORMACIÓN DEL CLIENTE AUTENTICADO -->
+                <VBox fx:id="panelSesion"
                       spacing="10"
                       visible="false"
                       managed="false">
-                    <Label fx:id="tituloAcceso"
-       text="Ingresar"
-       styleClass="titulo-seccion"/>
-
-                    <Label text="DNI" style="-fx-text-fill: #CBD5E1;"/>
-                    <TextField fx:id="campoDni"/>
-                    <Label text="Contraseña" style="-fx-text-fill: #CBD5E1;"/>
-                    <PasswordField fx:id="campoContrasenia"/>
-
-                    <VBox fx:id="panelRegistro" spacing="10" visible="false" managed="false">
-                        <Label text="Nombre" style="-fx-text-fill: #CBD5E1;"/>
-                        <TextField fx:id="campoNombre"/>
-                        <Label text="Apellido" style="-fx-text-fill: #CBD5E1;"/>
-                        <TextField fx:id="campoApellido"/>
-                        <Label text="Email" style="-fx-text-fill: #CBD5E1;"/>
-                        <TextField fx:id="campoEmail"/>
-                    </VBox>
-
-                    <Label fx:id="mensajeLogin" visible="false" managed="false"
-                           wrapText="true"
-                           style="-fx-text-fill: #EF4444;"/>
-
-                    <Button fx:id="botonIngresar" text="Ingresar"
-                            styleClass="boton-primario"
-                            maxWidth="Infinity"
-                            onAction="#ingresar"/>
-                    <Button fx:id="botonAlternar" text="No tengo cuenta, registrarme"
-                            styleClass="boton-secundario"
-                            maxWidth="Infinity"
-                            onAction="#alternarRegistro"/>
-                </VBox>
-
-                <!-- Sesion iniciada -->
-                <VBox fx:id="panelSesion" spacing="10" visible="false" managed="false">
                     <Label text="Sesión iniciada" styleClass="titulo-seccion"/>
-                    <Label fx:id="etiquetaCliente" wrapText="true"
+                    <Label fx:id="etiquetaCliente"
+                           wrapText="true"
                            style="-fx-text-fill: white;"/>
                     <Button text="Cerrar sesión"
                             styleClass="boton-secundario"
@@ -132,26 +103,27 @@
                             onAction="#cerrarSesion"/>
                 </VBox>
 
-                <!-- Resumen y confirmacion -->
+                <!-- RESUMEN Y CONFIRMACIÓN -->
                 <VBox fx:id="panelResumen" spacing="10">
                     <Label text="Tu reserva" styleClass="titulo-seccion"/>
-
-                    <ListView fx:id="listaEntradas" prefHeight="130"
+                    <ListView fx:id="listaEntradas"
+                              prefHeight="130"
                               styleClass="lista-salas"/>
-                    <Label fx:id="etiquetaTotal" text="Total: $0.0"
+                    <Label fx:id="etiquetaTotal"
+                           text="Total: $0.0"
                            style="-fx-text-fill: white; -fx-font-weight: bold;"/>
-
-                    <Label fx:id="mensajeError" visible="false" managed="false"
+                    <Label fx:id="mensajeError"
+                           visible="false"
+                           managed="false"
                            wrapText="true"
                            style="-fx-text-fill: #EF4444;"/>
-
-                    <Button fx:id="botonConfirmar" text="Confirmar reserva"
+                    <Button fx:id="botonConfirmar"
+                            text="Confirmar reserva"
                             styleClass="boton-primario"
                             maxWidth="Infinity"
                             onAction="#confirmarReserva"/>
                 </VBox>
             </VBox>
-
         </HBox>
     </VBox>
 </ScrollPane>

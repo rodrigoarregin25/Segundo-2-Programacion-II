@@ -463,7 +463,7 @@ public class PrincipalController {
      * oscurece temporalmente el fondo.
      */
     @FXML
-    private void mostrarAcceso() {
+    public void mostrarAcceso() {
 
         try {
             FXMLLoader loader = new FXMLLoader(
@@ -599,4 +599,12 @@ public class PrincipalController {
         mostrarCartelera();
     }
 
+    /**
+     * Obtiene la instancia actualizada del cine.
+     *
+     * @return Cine que utiliza actualmente la aplicación.
+     */
+    public Cine obtenerCineActual() {
+        return cine;
+    }
 }
