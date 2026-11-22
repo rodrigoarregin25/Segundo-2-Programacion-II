@@ -1,158 +1,241 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-/**
- *
- * @author gimen
- */
+
 package gestordecine;
 
 import java.io.Serializable;
 
 /**
- * Cliente de cine. Se lo identifica por su DNI. Tambien puede ser
- * administrador, segun su rol.
+ * Representa un usuario registrado en CINEMA.
+ *
+ * Cada usuario se identifica mediante su DNI y puede tener
+ * el rol CLIENTE o ADMINISTRADOR.
  */
 public class Cliente implements Serializable {
 
-    // Numero de version para poder leer los archivos .dat guardados antes
+    // Mantener este valor para conservar la compatibilidad con cine_app.dat.
     private static final long serialVersionUID = 8961938315294995730L;
+
     private int dni;
     private String nombre;
     private String apellido;
     private String email;
     private String contrasenia;
-    // Los clientes guardados antes de existir los roles tienen null aca,
-    // por eso getRol() devuelve CLIENTE cuando es null
+
+    // Los usuarios antiguos pueden tener el rol en null.
+    // En ese caso, se consideran clientes.
     private Rol rol;
 
     /**
-     * Que hace: crea un cliente validando sus datos. Siempre con rol CLIENTE.
-     * Parametros: dni (int), nombre (String), apellido (String), email
-     * (String), contrasenia (String) Lanza: IllegalArgumentException si el dni
-     * es menor o igual a 0 o si el nombre, apellido, email o contrasenia son
-     * null o estan vacios
+     * Crea un usuario con rol CLIENTE y valida sus datos.
+     *
+     * @param dni Documento de identidad del usuario.
+     * @param nombre Nombre del usuario.
+     * @param apellido Apellido del usuario.
+     * @param email Correo electrónico del usuario.
+     * @param contrasenia Contraseña de acceso.
+     * @throws IllegalArgumentException Si el DNI es inválido, algún campo
+     * obligatorio está vacío o el correo no tiene un formato válido.
      */
-    public Cliente(int dni, String nombre, String apellido, String email, String contrasenia) {
+    public Cliente(int dni, String nombre, String apellido,
+                   String email, String contrasenia) {
 
-        //validaciones
         if (dni <= 0) {
-            throw new IllegalArgumentException("El numero de DNI debe ser mayor a cero");
+            throw new IllegalArgumentException(
+                    "El numero de DNI debe ser mayor a cero"
+            );
         }
 
         if (nombre == null || nombre.trim().equals("")) {
-            throw new IllegalArgumentException("El nombre no puede estar vacio");
+            throw new IllegalArgumentException(
+                    "El nombre no puede estar vacio"
+            );
         }
 
         if (apellido == null || apellido.trim().equals("")) {
-            throw new IllegalArgumentException("El apellido no puede estar vacio");
+            throw new IllegalArgumentException(
+                    "El apellido no puede estar vacio"
+            );
         }
 
         if (email == null || email.trim().equals("")) {
-            throw new IllegalArgumentException("El email no puede estar vacio");
+            throw new IllegalArgumentException(
+                    "El email no puede estar vacio"
+            );
+        }
+
+        if (!esEmailValido(email)) {
+            throw new IllegalArgumentException(
+                    "El email no es valido (ejemplo: nombre@mail.com)"
+            );
         }
 
         if (contrasenia == null || contrasenia.trim().equals("")) {
-            throw new IllegalArgumentException("La contraseña no puede estar vacia");
+            throw new IllegalArgumentException(
+                    "La contraseña no puede estar vacia"
+            );
         }
 
         this.dni = dni;
         this.nombre = nombre;
         this.apellido = apellido;
-        this.email = email;
+        this.email = email.trim();
         this.contrasenia = contrasenia;
         this.rol = Rol.CLIENTE;
     }
 
     /**
-     * Que hace: crea un cliente con un rol elegido (por ejemplo un
-     * administrador). Parametros: los mismos que el otro constructor, mas rol
-     * (Rol) Lanza: IllegalArgumentException si el rol es null o algun dato es
-     * invalido
+     * Crea un usuario con un rol específico.
+     *
+     * @param dni Documento de identidad del usuario.
+     * @param nombre Nombre del usuario.
+     * @param apellido Apellido del usuario.
+     * @param email Correo electrónico del usuario.
+     * @param contrasenia Contraseña de acceso.
+     * @param rol Rol que se asignará al usuario.
+     * @throws IllegalArgumentException Si algún dato es inválido
+     * o el rol es nulo.
      */
-    public Cliente(int dni, String nombre, String apellido, String email,
-            String contrasenia, Rol rol) {
+    public Cliente(int dni, String nombre, String apellido,
+                   String email, String contrasenia, Rol rol) {
 
         this(dni, nombre, apellido, email, contrasenia);
 
         if (rol == null) {
-            throw new IllegalArgumentException("El rol no puede ser null");
+            throw new IllegalArgumentException(
+                    "El rol no puede ser null"
+            );
         }
 
         this.rol = rol;
     }
 
     /**
-     * Que hace: devuelve el dni del cliente Retorna: el dni (int)
+     * Comprueba que un correo electrónico tenga un formato válido.
+     *
+     * Verifica que no tenga espacios, que exista una sola arroba
+     * y que el dominio contenga un punto con texto a ambos lados.
+     *
+     * @param email Correo electrónico que se desea validar.
+     * @return true si tiene un formato válido, false en caso contrario.
+     */
+    private static boolean esEmailValido(String email) {
+
+        String texto = email.trim();
+
+        if (texto.contains(" ")) {
+            return false;
+        }
+
+        // Debe tener una única arroba y texto antes de ella.
+        int arroba = texto.indexOf('@');
+
+        if (arroba <= 0 || arroba != texto.lastIndexOf('@')) {
+            return false;
+        }
+
+        // El dominio debe tener un punto con texto a ambos lados.
+        String dominio = texto.substring(arroba + 1);
+        int punto = dominio.lastIndexOf('.');
+
+        if (punto <= 0 || punto == dominio.length() - 1) {
+            return false;
+        }
+
+        if (dominio.startsWith(".") || dominio.contains("..")) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Obtiene el DNI del usuario.
+     *
+     * @return DNI del usuario.
      */
     public int getDni() {
         return dni;
     }
 
     /**
-     * Que hace: devuelve el nombre del cliente Retorna: el nombre (String)
+     * Obtiene el nombre del usuario.
+     *
+     * @return Nombre del usuario.
      */
     public String getNombre() {
         return nombre;
     }
 
     /**
-     * Que hace: devuelve el apellido del cliente Retorna: el apellido (String)
+     * Obtiene el apellido del usuario.
+     *
+     * @return Apellido del usuario.
      */
     public String getApellido() {
         return apellido;
     }
 
     /**
-     * Que hace: devuelve el email del cliente Retorna: el email (String)
+     * Obtiene el correo electrónico del usuario.
+     *
+     * @return Correo electrónico del usuario.
      */
     public String getEmail() {
         return email;
     }
 
     /**
-     * Que hace: devuelve la contraseña del cliente Retorna: la contraseña
-     * (String)
+     * Obtiene la contraseña del usuario.
+     *
+     * @return Contraseña del usuario.
      */
     public String getContrasenia() {
         return contrasenia;
     }
 
     /**
-     * Que hace: devuelve el rol del usuario. Si el cliente es de los datos
-     * viejos (sin rol guardado), se considera CLIENTE. Retorna: el rol (Rol)
+     * Obtiene el rol asignado al usuario.
+     *
+     * Los usuarios guardados antes de incorporar roles
+     * se consideran CLIENTE cuando su rol es null.
+     *
+     * @return Rol del usuario.
      */
     public Rol getRol() {
+
         if (rol == null) {
             return Rol.CLIENTE;
         }
+
         return rol;
     }
 
     /**
-     * Que hace: dice si el usuario es administrador Retorna: true si su rol es
-     * ADMINISTRADOR, false si no
+     * Comprueba si el usuario es administrador.
+     *
+     * @return true si tiene rol ADMINISTRADOR, false en caso contrario.
      */
     public boolean esAdministrador() {
         return getRol() == Rol.ADMINISTRADOR;
     }
 
     /**
-     * Que hace: dice si el usuario es un cliente comun Retorna: true si su rol
-     * es CLIENTE, false si no
+     * Comprueba si el usuario es cliente.
+     *
+     * @return true si tiene rol CLIENTE, false en caso contrario.
      */
     public boolean esCliente() {
         return getRol() == Rol.CLIENTE;
     }
 
     /**
-     * Que hace: dice si dos clientes son el mismo (mismo dni) Parametros:
-     * otroObjeto (Object) el objeto a comparar con este cliente Retorna: true
-     * si tienen el mismo dni, false si no
+     * Compara dos usuarios utilizando su DNI.
+     *
+     * @param otroObjeto Objeto que se desea comparar.
+     * @return true si ambos usuarios tienen el mismo DNI.
      */
     @Override
     public boolean equals(Object otroObjeto) {
+
         if (this == otroObjeto) {
             return true;
         }
@@ -162,12 +245,14 @@ public class Cliente implements Serializable {
         }
 
         Cliente otroCliente = (Cliente) otroObjeto;
+
         return dni == otroCliente.dni;
     }
 
     /**
-     * Que hace: calcula el hash del cliente, usando el mismo campo que equals
-     * Retorna: el hash (int)
+     * Calcula el código hash del usuario a partir de su DNI.
+     *
+     * @return Código hash del usuario.
      */
     @Override
     public int hashCode() {
@@ -183,10 +268,11 @@ public class Cliente implements Serializable {
     public void setRol(Rol nuevoRol) {
 
         if (nuevoRol == null) {
-            throw new IllegalArgumentException("El rol no puede ser nulo");
+            throw new IllegalArgumentException(
+                    "El rol no puede ser nulo"
+            );
         }
 
         this.rol = nuevoRol;
     }
-
 }
