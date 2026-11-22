@@ -9,7 +9,6 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.TextArea?>
 
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="gestordecine.ReservasController"
@@ -41,32 +40,24 @@
                 onAction="#verTodas"/>
     </HBox>
 
-    <HBox spacing="25" VBox.vgrow="ALWAYS">
+    <!-- Lista de reservas (cada una como tarjeta) y acciones -->
+    <VBox spacing="12" styleClass="tarjeta-contenido" VBox.vgrow="ALWAYS">
+        <Label text="Reservas encontradas" styleClass="titulo-seccion"/>
+        <ListView fx:id="listaReservas" styleClass="lista-salas"
+                  VBox.vgrow="ALWAYS"/>
 
-        <!-- Lista de reservas -->
-        <VBox spacing="12" styleClass="tarjeta-contenido"
-              HBox.hgrow="ALWAYS">
-            <Label text="Reservas encontradas" styleClass="titulo-seccion"/>
-            <ListView fx:id="listaReservas" styleClass="lista-salas"
-                      VBox.vgrow="ALWAYS"/>
-        </VBox>
+        <Label fx:id="mensajeError" visible="false" managed="false"
+               wrapText="true"
+               style="-fx-text-fill: #EF4444;"/>
 
-        <!-- Comprobante y cancelacion -->
-        <VBox spacing="10" styleClass="tarjeta-contenido" prefWidth="420">
-            <Label text="Comprobante" styleClass="titulo-seccion"/>
-            <TextArea fx:id="areaComprobante" editable="false"
-                      VBox.vgrow="ALWAYS"
-                      style="-fx-font-family: monospace;"/>
-
-            <Label fx:id="mensajeError" visible="false" managed="false"
-                   wrapText="true"
-                   style="-fx-text-fill: #EF4444;"/>
-
+        <HBox spacing="10">
+            <Button fx:id="botonComprobante" text="Ver comprobante"
+                    styleClass="boton-secundario"
+                    onAction="#verComprobante"/>
             <Button fx:id="botonCancelar" text="Cancelar reserva"
                     styleClass="boton-peligro"
-                    maxWidth="Infinity"
                     onAction="#cancelarReserva"/>
-        </VBox>
+        </HBox>
+    </VBox>
 
-    </HBox>
 </VBox>

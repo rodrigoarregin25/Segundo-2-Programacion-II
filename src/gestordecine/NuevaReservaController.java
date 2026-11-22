@@ -11,7 +11,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
@@ -23,31 +22,55 @@ public class NuevaReservaController {
     private static final double ESPACIO_ENTRE_ELEMENTOS = 8;
     private static final double ANCHO_PASILLO = 26;
     private static final double ANCHO_ETIQUETA_FILA = 24;
-    private static final int MAXIMO_ENTRADAS = 10;
+    private static final int MAXIMO_POR_TIPO = 10;
+
+    // Cliente que inicio sesion. Es static para que siga igual al cambiar de pantalla
+    private static Cliente clienteActual;
 
     private Cine cine;
     private PersistenciaCine persistencia;
     private PrincipalController principalController;
 
-    // La posicion elegida en el desplegable coincide con la posicion en esta lista
-    private ArrayList<Funcion> funcionesDisponibles;
+    // true cuando el cuadro de ingreso esta en modo "registrarme"
+    private boolean registrando = false;
+
+    // Peliculas que tienen funciones futuras (misma posicion que en comboPelicula)
+    private ArrayList<Pelicula> peliculasDisponibles = new ArrayList<>();
+    // Funciones de la pelicula elegida (misma posicion que en comboFuncion)
+    private ArrayList<Funcion> funcionesFiltradas = new ArrayList<>();
     private Funcion funcionElegida;
 
-    // Entradas (butaca + tipo) que el usuario fue marcando en el plano
-    private ArrayList<Entrada> entradas = new ArrayList<>();
+    // Butacas que el usuario fue marcando en el plano
+    private ArrayList<Butaca> butacasMarcadas = new ArrayList<>();
 
+    @FXML
+    private VBox tarjetaCompra;
+    @FXML
+    private VBox panelLogin;
+    @FXML
+    private VBox panelRegistro;
+    @FXML
+    private VBox panelSesion;
+    @FXML
+    private VBox panelResumen;
+    @FXML
+    private ComboBox<String> comboPelicula;
     @FXML
     private ComboBox<String> comboFuncion;
     @FXML
-    private ComboBox<String> comboCantidad;
+    private ComboBox<String> comboGeneral;
     @FXML
-    private ComboBox<String> comboTipoEntrada;
+    private ComboBox<String> comboEstudiante;
+    @FXML
+    private ComboBox<String> comboJubilado;
     @FXML
     private VBox contenedorButacas;
     @FXML
     private ListView<String> listaEntradas;
     @FXML
     private Label etiquetaTotal;
+    @FXML
+    private Label etiquetaCliente;
     @FXML
     private TextField campoDni;
     @FXML
@@ -59,68 +82,85 @@ public class NuevaReservaController {
     @FXML
     private PasswordField campoContrasenia;
     @FXML
+    private Label mensajeLogin;
+    @FXML
     private Label mensajeError;
     @FXML
-    private Button botonConfirmar;
+    private Button botonIngresar;
     @FXML
-    private TextArea areaComprobante;
+    private Button botonAlternar;
+    @FXML
+    private Button botonConfirmar;
 
     /**
-     * Que hace: carga las cantidades y los tipos de entrada, y avisa cuando se
-     * elige otra funcion o otra cantidad. JavaFX lo llama solo al abrir la pantalla.
+     * Que hace: carga las cantidades (0 a 10) y avisa cuando se elige otra
+     * pelicula, otra funcion o se cambia una cantidad. JavaFX lo llama solo
+     * al abrir la pantalla.
      */
     @FXML
     private void initialize() {
-        comboTipoEntrada.getItems().addAll(
-                "Entrada General", "Entrada Estudiante", "Entrada Jubilados");
-        comboTipoEntrada.getSelectionModel().selectFirst();
-
-        for (int i = 1; i <= MAXIMO_ENTRADAS; i++) {
-            comboCantidad.getItems().add(String.valueOf(i));
+        for (int i = 0; i <= MAXIMO_POR_TIPO; i++) {
+            comboGeneral.getItems().add(String.valueOf(i));
+            comboEstudiante.getItems().add(String.valueOf(i));
+            comboJubilado.getItems().add(String.valueOf(i));
         }
-        comboCantidad.getSelectionModel().selectFirst();
+        comboGeneral.getSelectionModel().select(1);
+        comboEstudiante.getSelectionModel().select(0);
+        comboJubilado.getSelectionModel().select(0);
 
-        // Al cambiar la cantidad se borra lo marcado para empezar de nuevo
-        comboCantidad.getSelectionModel().selectedIndexProperty()
+        // Al cambiar una cantidad solo se sacan las butacas que sobran
+        comboGeneral.getSelectionModel().selectedIndexProperty()
+                .addListener((observable, anterior, nuevo) -> ajustarSeleccion());
+        comboEstudiante.getSelectionModel().selectedIndexProperty()
+                .addListener((observable, anterior, nuevo) -> ajustarSeleccion());
+        comboJubilado.getSelectionModel().selectedIndexProperty()
+                .addListener((observable, anterior, nuevo) -> ajustarSeleccion());
+
+        comboPelicula.getSelectionModel().selectedIndexProperty()
                 .addListener((observable, anterior, nuevo) -> {
-                    entradas.clear();
-                    ocultarError();
-                    dibujarButacas();
-                    actualizarResumen();
+                    int posicion = nuevo.intValue();
+                    if (posicion >= 0 && posicion < peliculasDisponibles.size()) {
+                        cargarFunciones(peliculasDisponibles.get(posicion));
+                    }
                 });
 
         comboFuncion.getSelectionModel().selectedIndexProperty()
                 .addListener((observable, anterior, nuevo) -> {
                     int posicion = nuevo.intValue();
-                    if (posicion >= 0) {
-                        elegirFuncion(funcionesDisponibles.get(posicion));
+                    if (posicion >= 0 && posicion < funcionesFiltradas.size()) {
+                        elegirFuncion(funcionesFiltradas.get(posicion));
                     }
                 });
     }
 
     /**
-     * Que hace: recibe el cine y la persistencia, y carga las funciones futuras.
+     * Que hace: recibe el cine y la persistencia, carga las peliculas que
+     * tienen funciones futuras y muestra el estado de la sesion.
      * Parametros: cine (el cine actual), persistencia (para guardar cambios).
      */
     public void configurar(Cine cine, PersistenciaCine persistencia) {
         this.cine = cine;
         this.persistencia = persistencia;
 
-        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-        funcionesDisponibles = cine.buscarFuncionesFuturas();
-
-        for (Funcion funcion : funcionesDisponibles) {
-            comboFuncion.getItems().add(
-                    funcion.getPelicula().getTituloPelicula()
-                    + " | " + funcion.getSala().getNombreSala()
-                    + " | " + funcion.getFechaHora().format(formato)
-                    + " | " + funcion.getFormatoPelicula()
-                    + " | $" + funcion.getPrecio());
+        peliculasDisponibles = new ArrayList<>();
+        for (Funcion funcion : cine.buscarFuncionesFuturas()) {
+            boolean yaEsta = false;
+            for (Pelicula pelicula : peliculasDisponibles) {
+                if (pelicula.getIdPelicula() == funcion.getPelicula().getIdPelicula()) {
+                    yaEsta = true;
+                }
+            }
+            if (!yaEsta) {
+                peliculasDisponibles.add(funcion.getPelicula());
+                comboPelicula.getItems().add(funcion.getPelicula().getTituloPelicula());
+            }
         }
 
-        if (!funcionesDisponibles.isEmpty()) {
-            comboFuncion.getSelectionModel().selectFirst();
+        if (!peliculasDisponibles.isEmpty()) {
+            comboPelicula.getSelectionModel().selectFirst();
         }
+
+        actualizarSesion();
     }
 
     public void setPrincipalController(PrincipalController principalController) {
@@ -128,11 +168,157 @@ public class NuevaReservaController {
     }
 
     /**
-     * Que hace: devuelve la cantidad de entradas elegida en el desplegable.
-     * Retorna: la cantidad (de 1 a 10).
+     * Que hace: muestra el cuadro de ingreso o los datos del cliente segun haya
+     * sesion iniciada, y bloquea la compra hasta que se ingrese.
      */
-    private int obtenerCantidad() {
-        return comboCantidad.getSelectionModel().getSelectedIndex() + 1;
+    private void actualizarSesion() {
+        // si el cliente ya no existe en los datos, se cierra la sesion
+        if (clienteActual != null
+                && cine.getServicioDeReservas().buscarClientePorDni(clienteActual.getDni()) == null) {
+            clienteActual = null;
+        }
+
+        boolean conSesion = clienteActual != null;
+
+        panelLogin.setVisible(!conSesion);
+        panelLogin.setManaged(!conSesion);
+        panelSesion.setVisible(conSesion);
+        panelSesion.setManaged(conSesion);
+
+        tarjetaCompra.setDisable(!conSesion);
+        panelResumen.setDisable(!conSesion);
+
+        if (conSesion) {
+            etiquetaCliente.setText("Cliente: " + clienteActual.getNombre() + " "
+                    + clienteActual.getApellido() + " (DNI " + clienteActual.getDni() + ")");
+        }
+    }
+
+    /**
+     * Que hace: cambia el cuadro de ingreso entre "ingresar" y "registrarme".
+     */
+    @FXML
+    private void alternarRegistro() {
+        registrando = !registrando;
+        ocultarErrorLogin();
+
+        panelRegistro.setVisible(registrando);
+        panelRegistro.setManaged(registrando);
+
+        if (registrando) {
+            botonIngresar.setText("Crear cuenta");
+            botonAlternar.setText("Ya tengo cuenta, ingresar");
+        } else {
+            botonIngresar.setText("Ingresar");
+            botonAlternar.setText("No tengo cuenta, registrarme");
+        }
+    }
+
+    /**
+     * Que hace: inicia sesion con DNI y contrasenia. Si se esta registrando,
+     * valida los datos y crea el cliente nuevo (se guarda sobre una copia del cine).
+     */
+    @FXML
+    private void ingresar() {
+        ocultarErrorLogin();
+
+        try {
+            int dni;
+            try {
+                dni = Integer.parseInt(campoDni.getText().trim());
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("El DNI debe ser un numero");
+            }
+
+            Cliente cliente;
+
+            if (registrando) {
+                validarDatosCliente();
+
+                Cine cineTrabajo = cine.copiar();
+                cliente = new Cliente(dni, campoNombre.getText().trim(),
+                        campoApellido.getText().trim(), campoEmail.getText().trim(),
+                        campoContrasenia.getText());
+                cineTrabajo.getServicioDeReservas().registrarCliente(cliente);
+
+                persistencia.guardar(cineTrabajo);
+                principalController.actualizarCine(cineTrabajo);
+                this.cine = cineTrabajo;
+            } else {
+                cliente = cine.getServicioDeReservas().buscarClientePorDni(dni);
+                if (cliente == null) {
+                    throw new IllegalArgumentException(
+                            "No existe un cliente con ese DNI. Usa registrarme");
+                }
+                if (!cliente.getContrasenia().equals(campoContrasenia.getText())) {
+                    throw new IllegalArgumentException("La contrasenia es incorrecta");
+                }
+            }
+
+            clienteActual = cliente;
+
+            campoDni.clear();
+            campoNombre.clear();
+            campoApellido.clear();
+            campoEmail.clear();
+            campoContrasenia.clear();
+            if (registrando) {
+                alternarRegistro();
+            }
+
+            actualizarSesion();
+
+        } catch (IOException | ClassNotFoundException e) {
+            // Error de datos (archivo / copia), distinto de un error de reglas
+            mostrarErrorLogin("Error al guardar los datos: " + e.getMessage());
+        } catch (Exception e) {
+            // Error de reglas: DNI repetido, datos invalidos, contrasenia incorrecta
+            mostrarErrorLogin(e.getMessage());
+        }
+    }
+
+    /**
+     * Que hace: cierra la sesion y deja la compra bloqueada otra vez.
+     */
+    @FXML
+    private void cerrarSesion() {
+        clienteActual = null;
+        butacasMarcadas.clear();
+        ocultarError();
+        dibujarButacas();
+        actualizarResumen();
+        actualizarSesion();
+    }
+
+    /**
+     * Que hace: carga en el desplegable las funciones futuras de una pelicula.
+     * Parametros: pelicula (la pelicula elegida).
+     */
+    private void cargarFunciones(Pelicula pelicula) {
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+        funcionElegida = null;
+        butacasMarcadas.clear();
+        funcionesFiltradas = new ArrayList<>();
+        comboFuncion.getItems().clear();
+
+        for (Funcion funcion : cine.buscarFuncionesFuturas()) {
+            if (funcion.getPelicula().getIdPelicula() == pelicula.getIdPelicula()) {
+                funcionesFiltradas.add(funcion);
+                comboFuncion.getItems().add(
+                        funcion.getSala().getNombreSala()
+                        + " | " + funcion.getFechaHora().format(formato)
+                        + " | " + funcion.getFormatoPelicula()
+                        + " | $" + funcion.getPrecio());
+            }
+        }
+
+        dibujarButacas();
+        actualizarResumen();
+
+        if (!funcionesFiltradas.isEmpty()) {
+            comboFuncion.getSelectionModel().selectFirst();
+        }
     }
 
     /**
@@ -141,7 +327,33 @@ public class NuevaReservaController {
      */
     private void elegirFuncion(Funcion funcion) {
         funcionElegida = funcion;
-        entradas.clear();
+        butacasMarcadas.clear();
+        ocultarError();
+        dibujarButacas();
+        actualizarResumen();
+    }
+
+    /**
+     * Que hace: suma las entradas de los tres tipos.
+     * Retorna: la cantidad total de entradas elegida.
+     */
+    private int obtenerTotalEntradas() {
+        return comboGeneral.getSelectionModel().getSelectedIndex()
+                + comboEstudiante.getSelectionModel().getSelectedIndex()
+                + comboJubilado.getSelectionModel().getSelectedIndex();
+    }
+
+    /**
+     * Que hace: cuando baja la cantidad de entradas, saca las ultimas butacas
+     * marcadas que sobran. Lo que ya estaba bien marcado se conserva.
+     */
+    private void ajustarSeleccion() {
+        int total = obtenerTotalEntradas();
+
+        while (butacasMarcadas.size() > total) {
+            butacasMarcadas.remove(butacasMarcadas.size() - 1);
+        }
+
         ocultarError();
         dibujarButacas();
         actualizarResumen();
@@ -222,7 +434,7 @@ public class NuevaReservaController {
 
         if (cine.getServicioDeReservas().estaOcupada(funcionElegida, butaca)) {
             etiqueta.setStyle("-fx-background-color: #6B7280;");
-        } else if (buscarPosicionEntrada(butaca) >= 0) {
+        } else if (butacasMarcadas.contains(butaca)) {
             etiqueta.setStyle("-fx-background-color: #22C55E;");
         }
 
@@ -232,9 +444,9 @@ public class NuevaReservaController {
     }
 
     /**
-     * Que hace: marca la butaca con el tipo de entrada elegido, o la desmarca
-     * si ya estaba marcada. Las ocupadas no se pueden marcar, y tampoco se
-     * pueden marcar mas butacas que la cantidad de entradas elegida.
+     * Que hace: marca la butaca o la desmarca si ya estaba marcada. Las
+     * ocupadas no se pueden marcar, y tampoco mas butacas que la cantidad
+     * total de entradas elegida.
      * Parametros: butaca (la butaca donde se hizo clic).
      */
     private void alternarButaca(Butaca butaca) {
@@ -245,17 +457,15 @@ public class NuevaReservaController {
             return;
         }
 
-        int posicion = buscarPosicionEntrada(butaca);
-
-        if (posicion >= 0) {
-            entradas.remove(posicion);
+        if (butacasMarcadas.contains(butaca)) {
+            butacasMarcadas.remove(butaca);
         } else {
-            if (entradas.size() >= obtenerCantidad()) {
-                mostrarError("Ya elegiste las " + obtenerCantidad()
+            if (butacasMarcadas.size() >= obtenerTotalEntradas()) {
+                mostrarError("Ya elegiste las " + obtenerTotalEntradas()
                         + " butacas. Desmarca una o aumenta la cantidad de entradas");
                 return;
             }
-            entradas.add(crearEntrada(butaca));
+            butacasMarcadas.add(butaca);
         }
 
         dibujarButacas();
@@ -263,34 +473,34 @@ public class NuevaReservaController {
     }
 
     /**
-     * Que hace: crea la entrada del tipo elegido en el desplegable.
-     * Parametros: butaca (la butaca de la entrada).
-     * Retorna: una EntradaGeneral, EntradaEstudiante o EntradaJubilados.
+     * Que hace: arma las entradas a partir de las butacas marcadas. Las
+     * primeras son generales, despues estudiantes y al final jubilados,
+     * segun las cantidades elegidas.
+     * Retorna: la lista de entradas (ArrayList de Entrada).
      */
-    private Entrada crearEntrada(Butaca butaca) {
+    private ArrayList<Entrada> construirEntradas() {
+        ArrayList<Entrada> entradas = new ArrayList<>();
+
+        if (funcionElegida == null) {
+            return entradas;
+        }
+
         double precio = funcionElegida.getPrecio();
-        int tipo = comboTipoEntrada.getSelectionModel().getSelectedIndex();
+        int generales = comboGeneral.getSelectionModel().getSelectedIndex();
+        int estudiantes = comboEstudiante.getSelectionModel().getSelectedIndex();
 
-        if (tipo == 1) {
-            return new EntradaEstudiante(butaca, precio);
-        }
-        if (tipo == 2) {
-            return new EntradaJubilados(butaca, precio);
-        }
-        return new EntradaGeneral(butaca, precio);
-    }
+        for (int i = 0; i < butacasMarcadas.size(); i++) {
+            Butaca butaca = butacasMarcadas.get(i);
 
-    /**
-     * Que hace: busca si una butaca ya esta marcada.
-     * Retorna: la posicion en la lista de entradas, o -1 si no esta.
-     */
-    private int buscarPosicionEntrada(Butaca butaca) {
-        for (int i = 0; i < entradas.size(); i++) {
-            if (entradas.get(i).getButaca().equals(butaca)) {
-                return i;
+            if (i < generales) {
+                entradas.add(new EntradaGeneral(butaca, precio));
+            } else if (i < generales + estudiantes) {
+                entradas.add(new EntradaEstudiante(butaca, precio));
+            } else {
+                entradas.add(new EntradaJubilados(butaca, precio));
             }
         }
-        return -1;
+        return entradas;
     }
 
     /**
@@ -300,7 +510,7 @@ public class NuevaReservaController {
         ArrayList<String> textos = new ArrayList<>();
         double total = 0;
 
-        for (Entrada entrada : entradas) {
+        for (Entrada entrada : construirEntradas()) {
             textos.add(entrada.getButaca().getIdentificador()
                     + " - " + entrada.getTipo()
                     + " - $" + entrada.calcularPrecioFinal());
@@ -311,8 +521,8 @@ public class NuevaReservaController {
     }
 
     /**
-     * Que hace: confirma la reserva con las butacas marcadas. Si el DNI no existe,
-     * registra al cliente con los datos del formulario. Muestra el comprobante.
+     * Que hace: confirma la reserva con las butacas marcadas para el cliente
+     * que inicio sesion. Muestra el comprobante en una ventana y limpia la pantalla.
      * Se trabaja sobre una copia del cine: si algo falla, no se guarda nada.
      */
     @FXML
@@ -320,58 +530,79 @@ public class NuevaReservaController {
         ocultarError();
 
         try {
+            if (clienteActual == null) {
+                throw new IllegalArgumentException("Inicia sesion para reservar");
+            }
             if (funcionElegida == null) {
                 throw new IllegalArgumentException("Seleccione una funcion");
             }
-            if (entradas.isEmpty()) {
-                throw new IllegalArgumentException("Debe seleccionar al menos una butaca");
+            int total = obtenerTotalEntradas();
+            if (total == 0) {
+                throw new IllegalArgumentException("Elegi al menos una entrada");
             }
-            if (entradas.size() != obtenerCantidad()) {
-                throw new IllegalArgumentException("Elegiste " + obtenerCantidad()
-                        + " entradas pero marcaste " + entradas.size() + " butacas");
-            }
-
-            int dni;
-            try {
-                dni = Integer.parseInt(campoDni.getText().trim());
-            } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("El DNI debe ser un numero");
+            if (butacasMarcadas.size() != total) {
+                throw new IllegalArgumentException("Elegiste " + total
+                        + " entradas pero marcaste " + butacasMarcadas.size() + " butacas");
             }
 
             Cine cineTrabajo = cine.copiar();
             ServicioDeReservas servicio = cineTrabajo.getServicioDeReservas();
             Funcion funcion = cineTrabajo.buscarFuncionPorId(funcionElegida.getIdFuncion());
+            Cliente cliente = servicio.buscarClientePorDni(clienteActual.getDni());
 
-            // Si el cliente ya existe se usa ese; si no, se registra uno nuevo
-            Cliente cliente = servicio.buscarClientePorDni(dni);
-            if (cliente == null) {
-                cliente = new Cliente(dni, campoNombre.getText(), campoApellido.getText(),
-                        campoEmail.getText(), campoContrasenia.getText());
-                servicio.registrarCliente(cliente);
-            }
-
-            Reserva reserva = cineTrabajo.confirmarReserva(cliente, funcion, entradas);
+            Reserva reserva = cineTrabajo.confirmarReserva(
+                    cliente, funcion, construirEntradas());
 
             persistencia.guardar(cineTrabajo);
             principalController.actualizarCine(cineTrabajo);
             this.cine = cineTrabajo;
 
-            // Se muestra el comprobante y se limpia lo marcado
-            areaComprobante.setText(servicio.generarComprobante(reserva));
-            areaComprobante.setVisible(true);
-            areaComprobante.setManaged(true);
-
-            entradas.clear();
-            dibujarButacas();
-            actualizarResumen();
+            limpiarPantalla();
+            VentanaComprobante.mostrar(reserva);
 
         } catch (IOException | ClassNotFoundException e) {
             // Error de datos (archivo / copia), distinto de un error de reglas
             mostrarError("Error al guardar los datos: " + e.getMessage());
         } catch (Exception e) {
-            // Error de reglas de negocio: butaca ocupada, DNI repetido, datos invalidos, etc.
+            // Error de reglas de negocio: butaca ocupada, datos invalidos, etc.
             mostrarError(e.getMessage());
         }
+    }
+
+    /**
+     * Que hace: valida los datos de un cliente nuevo (nombre, apellido, email y
+     * contrasenia). Lanza IllegalArgumentException si algo esta mal.
+     */
+    private void validarDatosCliente() {
+        if (campoNombre.getText().isBlank() || campoApellido.getText().isBlank()) {
+            throw new IllegalArgumentException("Complete el nombre y el apellido");
+        }
+
+        String email = campoEmail.getText().trim();
+        if (!email.contains("@") || !email.contains(".")
+                || email.indexOf('@') > email.lastIndexOf('.')) {
+            throw new IllegalArgumentException("El email no es valido");
+        }
+
+        if (campoContrasenia.getText().length() < 4) {
+            throw new IllegalArgumentException(
+                    "La contrasenia debe tener al menos 4 caracteres");
+        }
+    }
+
+    /**
+     * Que hace: deja la compra como nueva: borra las butacas marcadas y
+     * vuelve la cantidad a 1 entrada general. La sesion sigue iniciada.
+     */
+    private void limpiarPantalla() {
+        butacasMarcadas.clear();
+        comboGeneral.getSelectionModel().select(1);
+        comboEstudiante.getSelectionModel().select(0);
+        comboJubilado.getSelectionModel().select(0);
+
+        ocultarError();
+        dibujarButacas();
+        actualizarResumen();
     }
 
     private void mostrarError(String mensaje) {
@@ -383,5 +614,16 @@ public class NuevaReservaController {
     private void ocultarError() {
         mensajeError.setVisible(false);
         mensajeError.setManaged(false);
+    }
+
+    private void mostrarErrorLogin(String mensaje) {
+        mensajeLogin.setText(mensaje);
+        mensajeLogin.setVisible(true);
+        mensajeLogin.setManaged(true);
+    }
+
+    private void ocultarErrorLogin() {
+        mensajeLogin.setVisible(false);
+        mensajeLogin.setManaged(false);
     }
 }
