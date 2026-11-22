@@ -26,9 +26,15 @@ public class NuevaReservaController {
     private static final double ANCHO_ETIQUETA_FILA = 24;
     private static final int MAXIMO_POR_TIPO = 10;
 
+    // Cliente que inicio sesion. Es static para que siga igual al cambiar de pantalla
+    private static Cliente clienteActual;
+
     private Cine cine;
     private PersistenciaCine persistencia;
     private PrincipalController principalController;
+
+    // true cuando el cuadro de ingreso esta en modo "registrarme"
+    private boolean registrando = false;
 
     // Peliculas que tienen funciones futuras (misma posicion que en comboPelicula)
     private ArrayList<Pelicula> peliculasDisponibles = new ArrayList<>();
@@ -39,6 +45,16 @@ public class NuevaReservaController {
     // Butacas que el usuario fue marcando en el plano
     private ArrayList<Butaca> butacasMarcadas = new ArrayList<>();
 
+    @FXML
+    private VBox tarjetaCompra;
+    @FXML
+    private VBox panelLogin;
+    @FXML
+    private VBox panelRegistro;
+    @FXML
+    private VBox panelSesion;
+    @FXML
+    private VBox panelResumen;
     @FXML
     private ComboBox<String> comboPelicula;
     @FXML
@@ -56,6 +72,8 @@ public class NuevaReservaController {
     @FXML
     private Label etiquetaTotal;
     @FXML
+    private Label etiquetaCliente;
+    @FXML
     private TextField campoDni;
     @FXML
     private TextField campoNombre;
@@ -66,7 +84,13 @@ public class NuevaReservaController {
     @FXML
     private PasswordField campoContrasenia;
     @FXML
+    private Label mensajeLogin;
+    @FXML
     private Label mensajeError;
+    @FXML
+    private Button botonIngresar;
+    @FXML
+    private Button botonAlternar;
     @FXML
     private Button botonConfirmar;
 
@@ -112,8 +136,8 @@ public class NuevaReservaController {
     }
 
     /**
-     * Que hace: recibe el cine y la persistencia, y carga las peliculas que
-     * tienen funciones futuras.
+     * Que hace: recibe el cine y la persistencia, carga las peliculas que
+     * tienen funciones futuras y muestra el estado de la sesion.
      * Parametros: cine (el cine actual), persistencia (para guardar cambios).
      */
     public void configurar(Cine cine, PersistenciaCine persistencia) {
@@ -137,10 +161,135 @@ public class NuevaReservaController {
         if (!peliculasDisponibles.isEmpty()) {
             comboPelicula.getSelectionModel().selectFirst();
         }
+
+        actualizarSesion();
     }
 
     public void setPrincipalController(PrincipalController principalController) {
         this.principalController = principalController;
+    }
+
+    /**
+     * Que hace: muestra el cuadro de ingreso o los datos del cliente segun haya
+     * sesion iniciada, y bloquea la compra hasta que se ingrese.
+     */
+    private void actualizarSesion() {
+        // si el cliente ya no existe en los datos, se cierra la sesion
+        if (clienteActual != null
+                && cine.getServicioDeReservas().buscarClientePorDni(clienteActual.getDni()) == null) {
+            clienteActual = null;
+        }
+
+        boolean conSesion = clienteActual != null;
+
+        panelLogin.setVisible(!conSesion);
+        panelLogin.setManaged(!conSesion);
+        panelSesion.setVisible(conSesion);
+        panelSesion.setManaged(conSesion);
+
+        tarjetaCompra.setDisable(!conSesion);
+        panelResumen.setDisable(!conSesion);
+
+        if (conSesion) {
+            etiquetaCliente.setText("Cliente: " + clienteActual.getNombre() + " "
+                    + clienteActual.getApellido() + " (DNI " + clienteActual.getDni() + ")");
+        }
+    }
+
+    /**
+     * Que hace: cambia el cuadro de ingreso entre "ingresar" y "registrarme".
+     */
+    @FXML
+    private void alternarRegistro() {
+        registrando = !registrando;
+        ocultarErrorLogin();
+
+        panelRegistro.setVisible(registrando);
+        panelRegistro.setManaged(registrando);
+
+        if (registrando) {
+            botonIngresar.setText("Crear cuenta");
+            botonAlternar.setText("Ya tengo cuenta, ingresar");
+        } else {
+            botonIngresar.setText("Ingresar");
+            botonAlternar.setText("No tengo cuenta, registrarme");
+        }
+    }
+
+    /**
+     * Que hace: inicia sesion con DNI y contrasenia. Si se esta registrando,
+     * valida los datos y crea el cliente nuevo (se guarda sobre una copia del cine).
+     */
+    @FXML
+    private void ingresar() {
+        ocultarErrorLogin();
+
+        try {
+            int dni;
+            try {
+                dni = Integer.parseInt(campoDni.getText().trim());
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("El DNI debe ser un numero");
+            }
+
+            Cliente cliente;
+
+            if (registrando) {
+                validarDatosCliente();
+
+                Cine cineTrabajo = cine.copiar();
+                cliente = new Cliente(dni, campoNombre.getText().trim(),
+                        campoApellido.getText().trim(), campoEmail.getText().trim(),
+                        campoContrasenia.getText());
+                cineTrabajo.getServicioDeReservas().registrarCliente(cliente);
+
+                persistencia.guardar(cineTrabajo);
+                principalController.actualizarCine(cineTrabajo);
+                this.cine = cineTrabajo;
+            } else {
+                cliente = cine.getServicioDeReservas().buscarClientePorDni(dni);
+                if (cliente == null) {
+                    throw new IllegalArgumentException(
+                            "No existe un cliente con ese DNI. Usa registrarme");
+                }
+                if (!cliente.getContrasenia().equals(campoContrasenia.getText())) {
+                    throw new IllegalArgumentException("La contrasenia es incorrecta");
+                }
+            }
+
+            clienteActual = cliente;
+
+            campoDni.clear();
+            campoNombre.clear();
+            campoApellido.clear();
+            campoEmail.clear();
+            campoContrasenia.clear();
+            if (registrando) {
+                alternarRegistro();
+            }
+
+            actualizarSesion();
+
+        } catch (IOException | ClassNotFoundException e) {
+            // Error de datos (archivo / copia), distinto de un error de reglas
+            mostrarErrorLogin("Error al guardar los datos: " + e.getMessage());
+        } catch (Exception e) {
+            // Error de reglas: DNI repetido, datos invalidos, contrasenia incorrecta
+            mostrarErrorLogin(e.getMessage());
+        }
+    }
+
+    /**
+     * Que hace: cierra la sesion y deja la compra bloqueada otra vez.
+     */
+    @FXML
+    private void cerrarSesion() {
+        clienteActual = null;
+        butacasMarcadas.clear();
+        ocultarError();
+        dibujarButacas();
+        actualizarResumen();
+        actualizarSesion();
     }
 
     /**
@@ -374,9 +523,8 @@ public class NuevaReservaController {
     }
 
     /**
-     * Que hace: confirma la reserva con las butacas marcadas. Si el DNI no existe,
-     * valida y registra al cliente con los datos del formulario. Muestra el
-     * comprobante en una ventana y limpia la pantalla.
+     * Que hace: confirma la reserva con las butacas marcadas para el cliente
+     * que inicio sesion. Muestra el comprobante en una ventana y limpia la pantalla.
      * Se trabaja sobre una copia del cine: si algo falla, no se guarda nada.
      */
     @FXML
@@ -384,6 +532,9 @@ public class NuevaReservaController {
         ocultarError();
 
         try {
+            if (clienteActual == null) {
+                throw new IllegalArgumentException("Inicia sesion para reservar");
+            }
             if (funcionElegida == null) {
                 throw new IllegalArgumentException("Seleccione una funcion");
             }
@@ -396,26 +547,10 @@ public class NuevaReservaController {
                         + " entradas pero marcaste " + butacasMarcadas.size() + " butacas");
             }
 
-            int dni;
-            try {
-                dni = Integer.parseInt(campoDni.getText().trim());
-            } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("El DNI debe ser un numero");
-            }
-
             Cine cineTrabajo = cine.copiar();
             ServicioDeReservas servicio = cineTrabajo.getServicioDeReservas();
             Funcion funcion = cineTrabajo.buscarFuncionPorId(funcionElegida.getIdFuncion());
-
-            // Si el cliente ya existe se usa ese; si no, se validan los datos y se registra
-            Cliente cliente = servicio.buscarClientePorDni(dni);
-            if (cliente == null) {
-                validarDatosCliente();
-                cliente = new Cliente(dni, campoNombre.getText().trim(),
-                        campoApellido.getText().trim(), campoEmail.getText().trim(),
-                        campoContrasenia.getText());
-                servicio.registrarCliente(cliente);
-            }
+            Cliente cliente = servicio.buscarClientePorDni(clienteActual.getDni());
 
             Reserva reserva = cineTrabajo.confirmarReserva(
                     cliente, funcion, construirEntradas());
@@ -460,16 +595,10 @@ public class NuevaReservaController {
     }
 
     /**
-     * Que hace: deja la pantalla como nueva: borra los datos del cliente, las
-     * butacas marcadas y vuelve la cantidad a 1 entrada general.
+     * Que hace: deja la compra como nueva: borra las butacas marcadas y
+     * vuelve la cantidad a 1 entrada general. La sesion sigue iniciada.
      */
     private void limpiarPantalla() {
-        campoDni.clear();
-        campoNombre.clear();
-        campoApellido.clear();
-        campoEmail.clear();
-        campoContrasenia.clear();
-
         butacasMarcadas.clear();
         comboGeneral.getSelectionModel().select(1);
         comboEstudiante.getSelectionModel().select(0);
@@ -507,5 +636,16 @@ public class NuevaReservaController {
     private void ocultarError() {
         mensajeError.setVisible(false);
         mensajeError.setManaged(false);
+    }
+
+    private void mostrarErrorLogin(String mensaje) {
+        mensajeLogin.setText(mensaje);
+        mensajeLogin.setVisible(true);
+        mensajeLogin.setManaged(true);
+    }
+
+    private void ocultarErrorLogin() {
+        mensajeLogin.setVisible(false);
+        mensajeLogin.setManaged(false);
     }
 }
