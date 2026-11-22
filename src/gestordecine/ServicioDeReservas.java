@@ -1,6 +1,8 @@
 package gestordecine;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 /**
@@ -177,14 +179,21 @@ public class ServicioDeReservas implements Serializable {
     }
 
     /**
-     * Que hace: cancela la reserva con ese codigo, lo que libera sus butacas
+     * Que hace: cancela la reserva con ese codigo, lo que libera sus butacas.
+     * No se puede cancelar si la funcion ya comenzo.
      * Parametros: codigo (String) Lanza: IllegalArgumentException si no existe
-     * la reserva o ya estaba cancelada
+     * la reserva, si ya estaba cancelada o si la funcion ya comenzo
      */
     public void cancelarReserva(String codigo) {
         Reserva reserva = buscarPorCodigo(codigo);
         if (reserva == null) {
             throw new IllegalArgumentException("No existe una reserva con ese codigo");
+        }
+        // si ya estaba cancelada, el mensaje lo da la propia reserva
+        if (reserva.isConfirmada()
+                && !reserva.getFuncion().getFechaHora().isAfter(LocalDateTime.now())) {
+            throw new IllegalArgumentException(
+                    "No se puede cancelar: la funcion ya comenzo");
         }
         reserva.cancelar();
     }
@@ -201,6 +210,7 @@ public class ServicioDeReservas implements Serializable {
 
         Funcion funcion = reserva.getFuncion();
         Cliente cliente = reserva.getCliente();
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
         String estado = "Confirmada";
         if (!reserva.isConfirmada()) {
@@ -214,7 +224,7 @@ public class ServicioDeReservas implements Serializable {
                 + " (DNI " + cliente.getDni() + ")\n";
         texto = texto + "Pelicula: " + funcion.getPelicula().getTituloPelicula() + "\n";
         texto = texto + "Sala: " + funcion.getSala().getNombreSala() + "\n";
-        texto = texto + "Funcion: " + funcion.getFechaHora() + "\n";
+        texto = texto + "Funcion: " + funcion.getFechaHora().format(formato) + "\n";
         texto = texto + "Butacas:\n";
         for (Entrada entrada : reserva.getEntradas()) {
             texto = texto + "  " + entrada.getButaca().getIdentificador()
