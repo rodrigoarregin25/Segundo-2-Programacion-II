@@ -80,7 +80,8 @@
             <Label text="Próximas funciones"
                    styleClass="titulo-seccion"/>
 
-            <VBox spacing="12">
+            <VBox fx:id="seccionHorarios"
+                  spacing="12">
 
                 <Label text="SELECCIONÁ UNA FECHA"
                        styleClass="subtitulo-pagina"/>
@@ -93,8 +94,8 @@
                        styleClass="subtitulo-pagina"/>
 
                 <FlowPane fx:id="contenedorFunciones"
-                      hgap="12"
-                      vgap="12"/>
+                          hgap="12"
+                          vgap="12"/>
 
             </VBox>
 

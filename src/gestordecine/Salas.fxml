@@ -59,6 +59,13 @@
 
         </HBox>
     </VBox>
+    
+    <Label fx:id="mensajeError"
+       text=""
+       visible="false"
+       managed="false"
+       wrapText="true"
+       styleClass="mensaje-error"/>
 
     <!-- CONTENIDO -->
 
@@ -67,7 +74,7 @@
         <!-- LISTADO DE SALAS -->
 
         <VBox spacing="15"
-              prefWidth="350"
+              prefWidth="420"
               styleClass="tarjeta-contenido">
 
             <VBox spacing="8">
@@ -81,15 +88,23 @@
                        VBox.vgrow="ALWAYS"
                        styleClass="tabla-peliculas">
 
-                <columns>
-                    <TableColumn fx:id="columnaEstado"
-                                 text="Estado"
-                                 prefWidth="85"/>
+<columns>
+    <TableColumn fx:id="columnaId"
+                 text="ID"
+                 prefWidth="45"/>
 
-                    <TableColumn fx:id="columnaNombre"
-                                 text="Nombre"
-                                 prefWidth="230"/>
-                </columns>
+    <TableColumn fx:id="columnaEstado"
+                 text="Estado"
+                 prefWidth="70"/>
+
+    <TableColumn fx:id="columnaNombre"
+                 text="Nombre"
+                 prefWidth="135"/>
+
+    <TableColumn fx:id="columnaCapacidad"
+                 text="Capacidad"
+                 prefWidth="95"/>
+</columns>
 
             </TableView>
 

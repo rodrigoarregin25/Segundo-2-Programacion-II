@@ -7,7 +7,6 @@ import javafx.fxml.FXML;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.control.Label;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Region;
@@ -15,14 +14,13 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
 import javafx.scene.shape.ArcType;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TableColumn;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 
 public class SalasController {
 
@@ -226,9 +224,18 @@ public class SalasController {
                 TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN
         );
 
+        columnaId.setStyle("-fx-alignment: CENTER;");
+        columnaEstado.setStyle("-fx-alignment: CENTER;");
+        columnaNombre.setStyle("-fx-alignment: CENTER-LEFT;");
+        columnaCapacidad.setStyle("-fx-alignment: CENTER;");
+
         // SELECCIÓN DE SALA
         tablaSalas.getSelectionModel().selectedItemProperty()
                 .addListener((observable, anterior, seleccionada) -> {
+
+                    mensajeError.setText("");
+                    mensajeError.setVisible(false);
+                    mensajeError.setManaged(false);
 
                     if (seleccionada == null) {
                         botonEstado.setText("Desactivar sala");
@@ -258,6 +265,18 @@ public class SalasController {
 
         // ESTADO INICIAL
         botonEstado.setDisable(true);
+
+        columnaId.setCellValueFactory(datos
+                -> new SimpleStringProperty(
+                        String.valueOf(datos.getValue().getIdSala())
+                )
+        );
+
+        columnaCapacidad.setCellValueFactory(datos
+                -> new SimpleStringProperty(
+                        String.valueOf(datos.getValue().getButacas().size())
+                )
+        );
     }
 
     public void setPrincipalController(PrincipalController principalController) {
@@ -324,6 +343,12 @@ public class SalasController {
     @FXML
     private Button botonEstado;
 
+    @FXML
+    private TableColumn<Sala, String> columnaId;
+
+    @FXML
+    private TableColumn<Sala, String> columnaCapacidad;
+
     private void mostrarError(String mensaje) {
         mensajeError.setText(mensaje);
         mensajeError.setVisible(true);
@@ -334,7 +359,7 @@ public class SalasController {
     private void editarSala() {
 
         Sala seleccionada = tablaSalas.getSelectionModel().getSelectedItem();
-        
+
         if (seleccionada == null) {
             System.out.println("Seleccioná una sala para editar.");
             return;
@@ -372,9 +397,49 @@ public class SalasController {
             principalController.actualizarCine(cineTrabajo);
             principalController.mostrarSalas();
 
+        } catch (IllegalStateException e) {
+
+            DialogoCinema.mostrarError(
+                    tablaSalas.getScene().getWindow(),
+                    "No se puede desactivar la sala",
+                    e.getMessage()
+            );
+
         } catch (Exception e) {
-            mostrarError("Error al cambiar el estado de la sala: " + e.getMessage());
+
+            DialogoCinema.mostrarError(
+                    tablaSalas.getScene().getWindow(),
+                    "Error al modificar la sala",
+                    "No se pudo completar la operación: " + e.getMessage()
+            );
+
             e.printStackTrace();
         }
+    }
+
+    private void mostrarAlerta(String mensaje) {
+
+        Alert alerta = new Alert(Alert.AlertType.WARNING);
+
+        alerta.setTitle("CINEMA");
+        alerta.setHeaderText("No se puede desactivar la sala");
+        alerta.setContentText(mensaje);
+
+        // Aplicar el CSS de la aplicación
+        alerta.getDialogPane().getStylesheets().add(
+                getClass().getResource("estilos.css").toExternalForm()
+        );
+
+        alerta.getDialogPane().getStyleClass().add("alerta-cinema");
+
+        // Personalizar botón
+        Button botonAceptar = (Button) alerta.getDialogPane()
+                .lookupButton(ButtonType.OK);
+
+        botonAceptar.setText("Entendido");
+        botonAceptar.getStyleClass().add("boton-alerta-cinema");
+
+        // Mostrar ventana
+        alerta.showAndWait();
     }
 }

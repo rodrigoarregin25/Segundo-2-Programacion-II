@@ -61,6 +61,9 @@ public class DetallePeliculaController {
     @FXML
     private FlowPane contenedorFechas;
 
+    @FXML
+    private VBox seccionHorarios;
+
     private PrincipalController principalController;
 
     public void setPrincipalController(PrincipalController principalController) {
@@ -111,8 +114,10 @@ public class DetallePeliculaController {
             );
 
             imagenPoster.setImage(imagen);
-            mostrarFechas(pelicula, cine);
         }
+
+// Las funciones deben cargarse siempre, exista o no el póster.
+        mostrarFechas(pelicula, cine);
     }
 
     private String formatearGeneros(Pelicula pelicula) {
@@ -174,52 +179,52 @@ public class DetallePeliculaController {
         }
     }
 
-private void mostrarHorarios() {
+    private void mostrarHorarios() {
 
-    contenedorFunciones.getChildren().clear();
+        contenedorFunciones.getChildren().clear();
 
-    List<Funcion> funcionesDelDia = funcionesDisponibles.stream()
-            .filter(funcion ->
-                    funcion.getFechaHora().toLocalDate().equals(fechaSeleccionada))
-            .toList();
+        List<Funcion> funcionesDelDia = funcionesDisponibles.stream()
+                .filter(funcion
+                        -> funcion.getFechaHora().toLocalDate().equals(fechaSeleccionada))
+                .toList();
 
-    mensajeSinFunciones.setVisible(funcionesDelDia.isEmpty());
-    mensajeSinFunciones.setManaged(funcionesDelDia.isEmpty());
+        mensajeSinFunciones.setVisible(funcionesDelDia.isEmpty());
+        mensajeSinFunciones.setManaged(funcionesDelDia.isEmpty());
 
-    DateTimeFormatter formatoHora =
-            DateTimeFormatter.ofPattern("HH:mm");
+        DateTimeFormatter formatoHora
+                = DateTimeFormatter.ofPattern("HH:mm");
 
-    for (Funcion funcion : funcionesDelDia) {
+        for (Funcion funcion : funcionesDelDia) {
 
-        VBox tarjeta = new VBox(7);
-        tarjeta.getStyleClass().add("tarjeta-horario");
+            VBox tarjeta = new VBox(7);
+            tarjeta.getStyleClass().add("tarjeta-horario");
 
-        Label hora = new Label(
-                funcion.getFechaHora().format(formatoHora)
-        );
-        hora.getStyleClass().add("hora-funcion");
+            Label hora = new Label(
+                    funcion.getFechaHora().format(formatoHora)
+            );
+            hora.getStyleClass().add("hora-funcion");
 
-        Label formato = new Label(
-                funcion.getFormatoPelicula()
-                + " · " + funcion.getIdiomaPelicula()
-        );
-        formato.getStyleClass().add("detalle-horario");
+            Label formato = new Label(
+                    funcion.getFormatoPelicula()
+                    + " · " + funcion.getIdiomaPelicula()
+            );
+            formato.getStyleClass().add("detalle-horario");
 
-        Label sala = new Label(
-                funcion.getSala().getNombreSala()
-        );
-        sala.getStyleClass().add("detalle-horario");
+            Label sala = new Label(
+                    funcion.getSala().getNombreSala()
+            );
+            sala.getStyleClass().add("detalle-horario");
 
-        Label precio = new Label(
-                String.format("$%.2f", funcion.getPrecio())
-        );
-        precio.getStyleClass().add("precio-horario");
+            Label precio = new Label(
+                    String.format("$%.2f", funcion.getPrecio())
+            );
+            precio.getStyleClass().add("precio-horario");
 
-        tarjeta.getChildren().addAll(hora, formato, sala, precio);
+            tarjeta.getChildren().addAll(hora, formato, sala, precio);
 
-        contenedorFunciones.getChildren().add(tarjeta);
+            contenedorFunciones.getChildren().add(tarjeta);
+        }
     }
-}
 
     private void mostrarFechas(Pelicula pelicula, Cine cine) {
 
@@ -241,6 +246,15 @@ private void mostrarHorarios() {
                 .map(funcion -> funcion.getFechaHora().toLocalDate())
                 .distinct()
                 .toList();
+
+        // Mostrar u ocultar la sección según existan funciones
+        boolean hayFunciones = !funcionesDisponibles.isEmpty();
+
+        seccionHorarios.setVisible(hayFunciones);
+        seccionHorarios.setManaged(hayFunciones);
+
+        mensajeSinFunciones.setVisible(!hayFunciones);
+        mensajeSinFunciones.setManaged(!hayFunciones);
 
         DateTimeFormatter formatoDia
                 = DateTimeFormatter.ofPattern("EEE", new java.util.Locale("es", "AR"));

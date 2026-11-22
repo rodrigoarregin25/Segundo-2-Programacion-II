@@ -663,3 +663,50 @@
     -fx-background-color: #2F80ED;
     -fx-text-fill: white;
 }
+
+/* VENTANA DE ALERTA CINEMA */
+
+.alerta-cinema {
+    -fx-background-color: #111827;
+    -fx-border-color: #334155;
+    -fx-border-width: 1;
+}
+
+.alerta-cinema .header-panel {
+    -fx-background-color: #162238;
+    -fx-padding: 20;
+}
+
+.alerta-cinema .header-panel .label {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+}
+
+.alerta-cinema .content {
+    -fx-background-color: #111827;
+    -fx-padding: 20;
+}
+
+.alerta-cinema .content.label {
+    -fx-text-fill: #CBD5E1;
+    -fx-font-size: 13px;
+}
+
+.alerta-cinema .button-bar {
+    -fx-background-color: #111827;
+    -fx-padding: 10 20 20 20;
+}
+
+.boton-alerta-cinema {
+    -fx-background-color: #2563EB;
+    -fx-text-fill: white;
+    -fx-background-radius: 7;
+    -fx-padding: 9 22;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.boton-alerta-cinema:hover {
+    -fx-background-color: #3B82F6;
+}

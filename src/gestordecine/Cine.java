@@ -106,6 +106,22 @@ public class Cine implements Serializable {
             throw new IllegalStateException("La sala ya está desactivada.");
         }
 
+        for (Funcion funcion : funciones) {
+
+            boolean mismaSala
+                    = funcion.getSala().getIdSala() == idSala;
+
+            boolean funcionPendiente
+                    = funcion.getFechaHoraFin().isAfter(LocalDateTime.now());
+
+            if (mismaSala && funcionPendiente) {
+                throw new IllegalStateException(
+                        "No se puede desactivar la sala porque tiene "
+                        + "funciones pendientes o en curso."
+                );
+            }
+        }
+
         sala.desactivar();
     }
 
