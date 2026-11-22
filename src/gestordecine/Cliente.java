@@ -20,6 +20,10 @@ public class Cliente implements Serializable {
     // Numero de version para poder leer los archivos .dat guardados antes
     private static final long serialVersionUID = 8961938315294995730L;
 
+    // Topes de validacion
+    private static final int DNI_MAXIMO = 99999999;
+    private static final int LARGO_MINIMO_CONTRASENIA = 4;
+
     private int dni;
     private String nombre;
     private String apellido;
@@ -33,15 +37,20 @@ public class Cliente implements Serializable {
      * Que hace: crea un cliente validando sus datos. Siempre con rol CLIENTE.
      * Parametros: dni (int), nombre (String), apellido (String), email (String),
      *             contrasenia (String)
-     * Lanza: IllegalArgumentException si el dni es menor o igual a 0,
-     *        si el nombre, apellido, email o contrasenia son null o estan vacios,
-     *        o si el email no tiene un formato valido
+     * Lanza: IllegalArgumentException si el dni es menor o igual a 0 o tiene
+     *        mas de 8 digitos, si el nombre, apellido, email o contrasenia son
+     *        null o estan vacios, si el email no tiene un formato valido o si
+     *        la contrasenia tiene menos de 4 caracteres
      */
     public Cliente(int dni, String nombre, String apellido, String email, String contrasenia) {
 
         //validaciones
         if (dni <= 0) {
             throw new IllegalArgumentException("El numero de DNI debe ser mayor a cero");
+        }
+
+        if (dni > DNI_MAXIMO) {
+            throw new IllegalArgumentException("El DNI no puede tener mas de 8 digitos");
         }
 
         if (nombre == null || nombre.trim().equals("")) {
@@ -63,6 +72,12 @@ public class Cliente implements Serializable {
 
         if (contrasenia == null || contrasenia.trim().equals("")) {
             throw new IllegalArgumentException("La contraseña no puede estar vacia");
+        }
+
+        if (contrasenia.length() < LARGO_MINIMO_CONTRASENIA) {
+            throw new IllegalArgumentException(
+                    "La contraseña debe tener al menos " + LARGO_MINIMO_CONTRASENIA
+                    + " caracteres");
         }
 
         this.dni = dni;
