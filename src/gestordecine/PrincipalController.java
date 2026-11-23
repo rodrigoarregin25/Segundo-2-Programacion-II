@@ -25,6 +25,8 @@ import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import gestordecine.usuarios.UsuariosController;
 import gestordecine.usuarios.FormularioUsuarioController;
+import javafx.scene.control.Label;
+import javafx.scene.control.Button;
 
 public class PrincipalController {
 
@@ -66,6 +68,22 @@ public class PrincipalController {
 
     @FXML
     private Button botonUsuarios;
+
+    @FXML
+    private Button botonCartelera;
+
+    @FXML
+    private void initialize() {
+        aplicarIcono(botonMisReservas);
+        aplicarIcono(botonReservas);
+        aplicarIcono(botonPeliculas);
+        aplicarIcono(botonSalas);
+        aplicarIcono(botonFunciones);
+        aplicarIcono(botonUsuarios);
+        aplicarIcono(botonIniciarSesion);
+        aplicarIcono(botonCerrarSesion);
+        aplicarIcono(botonCartelera);
+    }
 
     /**
      * Que hace: comprueba que el usuario con sesion sea administrador. Si no lo
@@ -531,21 +549,25 @@ public class PrincipalController {
     }
 
     /**
-     * Actualiza los controles del menú según la sesión del cliente.
+     * Actualiza los controles del menú según el rol del usuario autenticado.
      *
-     * Mis reservas y Cerrar sesión solamente aparecen cuando hay un cliente
-     * autenticado. Reservas, Películas, Salas y Funciones solo las ve el
-     * administrador.
+     * Los clientes pueden acceder a Mis reservas. Los administradores pueden
+     * acceder a la gestión de reservas, películas, salas, funciones y usuarios.
+     *
+     * Las opciones de sesión se muestran según exista o no un usuario
+     * autenticado.
      */
     public void actualizarMenuCuenta() {
 
         boolean haySesion = SesionCliente.haySesion();
         boolean esAdministrador = SesionCliente.esAdministrador();
+        boolean esCliente = SesionCliente.esCliente();
 
-        botonMisReservas.setVisible(haySesion);
-        botonMisReservas.setManaged(haySesion);
+        // Opciones exclusivas del cliente
+        botonMisReservas.setVisible(esCliente);
+        botonMisReservas.setManaged(esCliente);
 
-        // Opciones de administracion
+        // Opciones exclusivas del administrador
         botonReservas.setVisible(esAdministrador);
         botonReservas.setManaged(esAdministrador);
 
@@ -558,6 +580,10 @@ public class PrincipalController {
         botonFunciones.setVisible(esAdministrador);
         botonFunciones.setManaged(esAdministrador);
 
+        botonUsuarios.setVisible(esAdministrador);
+        botonUsuarios.setManaged(esAdministrador);
+
+        // Opciones de inicio y cierre de sesión
         botonIniciarSesion.setVisible(!haySesion);
         botonIniciarSesion.setManaged(!haySesion);
 
@@ -567,15 +593,15 @@ public class PrincipalController {
         etiquetaSesion.setVisible(haySesion);
         etiquetaSesion.setManaged(haySesion);
 
-        botonUsuarios.setVisible(esAdministrador);
-        botonUsuarios.setManaged(esAdministrador);
-
+        // Nombre del usuario autenticado
         if (haySesion) {
+
             Cliente cliente = SesionCliente.getClienteActual();
 
             etiquetaSesion.setText(
                     cliente.getNombre() + " " + cliente.getApellido()
             );
+
         } else {
             etiquetaSesion.setText("");
         }
@@ -807,6 +833,22 @@ public class PrincipalController {
      */
     public void volver() {
         mostrarCartelera();
+    }
+
+    private Label crearIconoMenu() {
+        Label icono = new Label("▸");
+        icono.setStyle(
+                "-fx-text-fill: #60A5FA;"
+                + "-fx-font-size: 13px;"
+                + "-fx-font-weight: bold;"
+        );
+        return icono;
+    }
+
+    private void aplicarIcono(Button boton) {
+        if (boton != null) {
+            boton.setGraphic(crearIconoMenu());
+        }
     }
 
 }

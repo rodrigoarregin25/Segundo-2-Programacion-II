@@ -5,8 +5,12 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.shape.SVGPath?>
 
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="gestordecine.FuncionesController"
@@ -75,25 +79,108 @@
           styleClass="tarjeta-contenido"
           VBox.vgrow="ALWAYS">
 
-        <!-- TÍTULO Y FILTRO -->
+        <!-- TÍTULO -->
         <HBox alignment="CENTER_LEFT" spacing="10">
 
             <Label text="Funciones programadas"
                    styleClass="titulo-seccion"/>
+
+        </HBox>
+        
+        <!-- FILTROS DE FUNCIONES -->
+        <HBox alignment="CENTER_LEFT"
+              spacing="12">
+
+            <ComboBox fx:id="filtroPelicula"
+                      prefWidth="350"
+                      promptText="Todas las películas"
+                      styleClass="filtro-cartelera-unificado"/>
+
+            <DatePicker fx:id="filtroFecha"
+                        prefWidth="185"
+                        promptText="Todas las fechas"
+                        editable="false"
+                        styleClass="filtro-cartelera-unificado"/>
+
+<Button prefWidth="40"
+        minWidth="40"
+        maxWidth="40"
+        prefHeight="40"
+        minHeight="40"
+        maxHeight="40"
+        styleClass="boton-limpiar-unificado"
+        onAction="#limpiarFiltros">
+
+    <graphic>
+        <SVGPath
+            content="M3 6h18 M8 6V4h8v2 M5 6l1 15h12l1-15 M10 10v7 M14 10v7"
+            fill="TRANSPARENT"
+            stroke="WHITE"
+            strokeWidth="1.7"/>
+    </graphic>
+
+</Button>
 
             <Region HBox.hgrow="ALWAYS"/>
 
             <Label text="Estado:"
                    style="-fx-text-fill: #CBD5E1;"/>
 
-            <ComboBox fx:id="filtroEstado"/>
+            <ComboBox fx:id="filtroEstado"
+                      prefWidth="130"
+                      styleClass="filtro-estado"/>
 
         </HBox>
+        <!-- TABLA ADMINISTRATIVA -->
+        <TableView fx:id="listaFunciones"
+                   VBox.vgrow="ALWAYS"
+                   styleClass="tabla-peliculas, tabla-admin-funciones">
 
-        <!-- LISTADO DE FUNCIONES -->
-        <ListView fx:id="listaFunciones"
-                  styleClass="lista-salas"
-                  VBox.vgrow="ALWAYS"/>
+            <columns>
+
+                <TableColumn fx:id="colEstado"
+                             text="Estado"
+                             minWidth="40"
+                             prefWidth="40"/>
+
+                <TableColumn fx:id="colPelicula"
+                             text="Película"
+                             minWidth="230"
+                             prefWidth="350"/>
+
+                <TableColumn fx:id="colSala"
+                             text="Sala"
+                             minWidth="90"
+                             prefWidth="105"/>
+
+                <TableColumn fx:id="colFecha"
+                             text="Fecha"
+                             minWidth="115"
+                             prefWidth="130"/>
+
+                <TableColumn fx:id="colHora"
+                             text="Hora"
+                             minWidth="75"
+                             prefWidth="90"/>
+
+                <TableColumn fx:id="colFormato"
+                             text="Formato"
+                             minWidth="90"
+                             prefWidth="105"/>
+
+                <TableColumn fx:id="colIdioma"
+                             text="Idioma"
+                             minWidth="155"
+                             prefWidth="190"/>
+
+                <TableColumn fx:id="colPrecio"
+                             text="Precio"
+                             minWidth="120"
+                             prefWidth="145"/>
+
+            </columns>
+
+        </TableView>
 
         <!-- MENSAJE DE ERROR -->
         <Label fx:id="mensajeError"

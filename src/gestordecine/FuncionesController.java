@@ -2,20 +2,19 @@ package gestordecine;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import java.time.LocalDate;
+import javafx.scene.control.DatePicker;
 
 public class FuncionesController {
 
@@ -24,48 +23,164 @@ public class FuncionesController {
     private PrincipalController principalController;
 
     @FXML
-    private ListView<Funcion> listaFunciones;
+    private TableView<Funcion> listaFunciones;
+
+    @FXML
+    private TableColumn<Funcion, String> colEstado;
+
+    @FXML
+    private TableColumn<Funcion, String> colPelicula;
+
+    @FXML
+    private TableColumn<Funcion, String> colSala;
+
+    @FXML
+    private TableColumn<Funcion, String> colFecha;
+
+    @FXML
+    private TableColumn<Funcion, String> colHora;
+
+    @FXML
+    private TableColumn<Funcion, String> colFormato;
+
+    @FXML
+    private TableColumn<Funcion, String> colIdioma;
+
+    @FXML
+    private TableColumn<Funcion, String> colPrecio;
+
     @FXML
     private ComboBox<String> filtroEstado;
+
+    @FXML
+    private ComboBox<String> filtroPelicula;
+
+    @FXML
+    private DatePicker filtroFecha;
+
+    private FilteredList<Funcion> funcionesFiltradas;
     @FXML
     private Button botonEstado;
     @FXML
     private Label mensajeError;
 
     /**
-     * Que hace: prepara el filtro de estado, la forma de las tarjetas y el
-     * boton de estado. JavaFX lo llama solo al abrir la pantalla.
+     * Configura las columnas de la tabla de funciones, el filtro de estado y
+     * las acciones disponibles para la función seleccionada.
      */
     @FXML
     private void initialize() {
+
         filtroEstado.getItems().addAll("Activas", "Inactivas", "Todas");
         filtroEstado.setValue("Activas");
 
-        // Cada fila de la lista se dibuja como una tarjeta
-        listaFunciones.setCellFactory(lista -> new ListCell<Funcion>() {
+        botonEstado.setDisable(true);
+
+        DateTimeFormatter formatoFecha
+                = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        DateTimeFormatter formatoHora
+                = DateTimeFormatter.ofPattern("HH:mm");
+
+        // ESTADO
+        colEstado.setCellValueFactory(datos
+                -> new SimpleStringProperty(
+                        datos.getValue().isActiva()
+                        ? "Activa" : "Inactiva"
+                )
+        );
+
+        colEstado.setCellFactory(columna
+                -> new TableCell<Funcion, String>() {
+
             @Override
-            protected void updateItem(Funcion funcion, boolean vacia) {
-                super.updateItem(funcion, vacia);
-                if (vacia || funcion == null) {
-                    setGraphic(null);
+            protected void updateItem(String estado, boolean vacia) {
+
+                super.updateItem(estado, vacia);
+
+                getStyleClass().removeAll(
+                        "estado-activo", "estado-inactivo"
+                );
+
+                if (vacia || estado == null) {
                     setText(null);
-                    setStyle("-fx-background-color: transparent;");
+                    setGraphic(null);
                     return;
                 }
-                HBox tarjeta = crearTarjeta(funcion);
-                tarjeta.setStyle(estiloTarjeta(isSelected(), funcion.isActiva()));
-                tarjeta.prefWidthProperty().bind(
-                        getListView().widthProperty().subtract(40));
-                setGraphic(tarjeta);
-                setText(null);
-                setStyle("-fx-background-color: transparent; -fx-padding: 4 0 4 0;");
-            }
-        });
 
-        // Al elegir una funcion se repinta la lista y se actualiza el boton de estado
-        listaFunciones.getSelectionModel().selectedItemProperty()
+                boolean activa = estado.equals("Activa");
+
+                setText(activa ? "A" : "✕");
+
+                getStyleClass().add(
+                        activa ? "estado-activo" : "estado-inactivo"
+                );
+            }
+        }
+        );
+
+        // PELÍCULA
+        colPelicula.setCellValueFactory(datos
+                -> new SimpleStringProperty(
+                        datos.getValue().getPelicula().getTituloPelicula()
+                )
+        );
+
+        // SALA
+        colSala.setCellValueFactory(datos
+                -> new SimpleStringProperty(
+                        datos.getValue().getSala().getNombreSala()
+                )
+        );
+
+        // FECHA
+        colFecha.setCellValueFactory(datos
+                -> new SimpleStringProperty(
+                        datos.getValue().getFechaHora().format(formatoFecha)
+                )
+        );
+
+        // HORA
+        colHora.setCellValueFactory(datos
+                -> new SimpleStringProperty(
+                        datos.getValue().getFechaHora().format(formatoHora)
+                )
+        );
+
+        // FORMATO
+        colFormato.setCellValueFactory(datos
+                -> new SimpleStringProperty(
+                        datos.getValue().getFormatoPelicula()
+                )
+        );
+
+        // IDIOMA
+        colIdioma.setCellValueFactory(datos
+                -> new SimpleStringProperty(
+                        datos.getValue().getIdiomaPelicula()
+                )
+        );
+
+        // PRECIO
+        colPrecio.setCellValueFactory(datos
+                -> new SimpleStringProperty(
+                        String.format(
+                                Locale.of("es", "AR"),
+                                "$%,.2f",
+                                datos.getValue().getPrecio()
+                        )
+                )
+        );
+
+        // DISTRIBUIR LAS COLUMNAS
+        listaFunciones.setColumnResizePolicy(
+                TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN
+        );
+
+        // ACTUALIZAR BOTÓN SEGÚN LA SELECCIÓN
+        listaFunciones.getSelectionModel()
+                .selectedItemProperty()
                 .addListener((observable, anterior, seleccionada) -> {
-                    listaFunciones.refresh();
 
                     if (seleccionada == null) {
                         botonEstado.setText("Desactivar función");
@@ -74,6 +189,7 @@ public class FuncionesController {
                     }
 
                     botonEstado.setDisable(false);
+
                     if (seleccionada.isActiva()) {
                         botonEstado.setText("Desactivar función");
                     } else {
@@ -81,123 +197,60 @@ public class FuncionesController {
                     }
                 });
 
-        botonEstado.setDisable(true);
+        listaFunciones.setPlaceholder(
+                new Label("No hay funciones para mostrar")
+        );
     }
 
     /**
-     * Que hace: recibe el cine y la persistencia, y muestra las funciones segun
-     * el filtro. Parametros: cine (el cine actual), persistencia (para guardar
-     * los cambios).
+     * Configura la pantalla y prepara los filtros combinados de estado,
+     * película y fecha.
+     *
+     * @param cine Cine con las funciones registradas.
+     * @param persistencia Administrador de persistencia.
      */
     public void configurar(Cine cine, PersistenciaCine persistencia) {
+
         this.cine = cine;
         this.persistencia = persistencia;
 
         ObservableList<Funcion> funciones
                 = FXCollections.observableArrayList(cine.getFunciones());
 
-        FilteredList<Funcion> funcionesFiltradas = new FilteredList<>(funciones);
+        funcionesFiltradas = new FilteredList<>(funciones);
         listaFunciones.setItems(funcionesFiltradas);
 
-        filtroEstado.valueProperty().addListener((observable, anterior, nuevo) -> {
+        // Cargar títulos de películas sin repetir.
+        filtroPelicula.getItems().clear();
+        filtroPelicula.getItems().add("Todas las películas");
 
-            funcionesFiltradas.setPredicate(funcion -> {
-                if ("Activas".equals(nuevo)) {
-                    return funcion.isActiva();
-                }
-                if ("Inactivas".equals(nuevo)) {
-                    return !funcion.isActiva();
-                }
-                return true;
-            });
+        funciones.stream()
+                .map(funcion -> funcion.getPelicula().getTituloPelicula())
+                .distinct()
+                .sorted(String.CASE_INSENSITIVE_ORDER)
+                .forEach(titulo -> filtroPelicula.getItems().add(titulo));
 
-            listaFunciones.getSelectionModel().clearSelection();
-        });
+        filtroPelicula.setValue("Todas las películas");
+        filtroFecha.setValue(null);
 
-        // Al abrir se muestran las funciones activas
-        funcionesFiltradas.setPredicate(Funcion::isActiva);
+        // Combinar todos los criterios en una sola búsqueda.
+        filtroEstado.valueProperty().addListener(
+                (observable, anterior, nuevo) -> aplicarFiltros()
+        );
+
+        filtroPelicula.valueProperty().addListener(
+                (observable, anterior, nuevo) -> aplicarFiltros()
+        );
+
+        filtroFecha.valueProperty().addListener(
+                (observable, anterior, nuevo) -> aplicarFiltros()
+        );
+
+        aplicarFiltros();
     }
 
     public void setPrincipalController(PrincipalController principalController) {
         this.principalController = principalController;
-    }
-
-    /**
-     * Que hace: arma la tarjeta de una funcion (datos a la izquierda, precio a
-     * la derecha). Parametros: funcion (la funcion a mostrar). Retorna: la
-     * tarjeta lista para mostrar en la lista.
-     */
-    private HBox crearTarjeta(Funcion funcion) {
-        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-
-        Label titulo = new Label(funcion.getPelicula().getTituloPelicula());
-        titulo.setStyle("-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;");
-
-        Label detalle = new Label(funcion.getSala().getNombreSala()
-                + "  ·  " + funcion.getFechaHora().format(formato));
-        detalle.setStyle("-fx-text-fill: #94A3B8; -fx-font-size: 13px;");
-
-        HBox etiquetas = new HBox(8,
-                crearEtiqueta(funcion.getFormatoPelicula()),
-                crearEtiqueta(funcion.getIdiomaPelicula()));
-
-        if (!funcion.isActiva()) {
-            Label inactiva = crearEtiqueta("DESACTIVADA");
-            inactiva.setStyle(inactiva.getStyle()
-                    + " -fx-text-fill: #FCA5A5; -fx-background-color: #3B1D24;");
-            etiquetas.getChildren().add(inactiva);
-        }
-
-        VBox datos = new VBox(6, titulo, detalle, etiquetas);
-
-        Label precio = new Label(String.format(Locale.of("es", "AR"),
-                "$%,.2f", funcion.getPrecio()));
-        precio.setStyle("-fx-text-fill: #60A5FA; -fx-font-size: 20px; -fx-font-weight: bold;");
-        Label porEntrada = new Label("por entrada");
-        porEntrada.setStyle("-fx-text-fill: #64748B; -fx-font-size: 11px;");
-        VBox bloquePrecio = new VBox(2, precio, porEntrada);
-        bloquePrecio.setAlignment(Pos.CENTER_RIGHT);
-
-        Region espacio = new Region();
-        HBox.setHgrow(espacio, Priority.ALWAYS);
-
-        HBox tarjeta = new HBox(15, datos, espacio, bloquePrecio);
-        tarjeta.setAlignment(Pos.CENTER_LEFT);
-
-        if (!funcion.isActiva()) {
-            tarjeta.setOpacity(0.65);
-        }
-        return tarjeta;
-    }
-
-    /**
-     * Que hace: arma una etiqueta chica (por ejemplo el formato o el idioma).
-     * Parametros: texto (lo que dice la etiqueta). Retorna: el Label con
-     * estilo.
-     */
-    private Label crearEtiqueta(String texto) {
-        Label etiqueta = new Label(texto);
-        etiqueta.setStyle("-fx-background-color: #1E293B; -fx-text-fill: #CBD5E1;"
-                + " -fx-padding: 2 10 2 10; -fx-background-radius: 10; -fx-font-size: 11px;");
-        return etiqueta;
-    }
-
-    /**
-     * Que hace: devuelve el estilo de la tarjeta: borde azul si esta elegida,
-     * rojo si esta desactivada, gris si no. Parametros: seleccionada (true si
-     * es la elegida), activa (true si esta activa). Retorna: el estilo en
-     * texto.
-     */
-    private String estiloTarjeta(boolean seleccionada, boolean activa) {
-        String borde = "#334155";
-        if (seleccionada) {
-            borde = "#3B82F6";
-        } else if (!activa) {
-            borde = "#EF4444";
-        }
-        return "-fx-background-color: #111C30; -fx-background-radius: 10;"
-                + " -fx-border-color: " + borde + "; -fx-border-radius: 10;"
-                + " -fx-border-width: 1.5; -fx-padding: 14 18 14 18;";
     }
 
     @FXML
@@ -296,5 +349,66 @@ public class FuncionesController {
     @FXML
     private void volver() {
         principalController.volver();
+    }
+
+    /**
+     * Filtra las funciones según su estado, película y fecha.
+     *
+     * Los criterios se aplican simultáneamente.
+     */
+    private void aplicarFiltros() {
+
+        if (funcionesFiltradas == null) {
+            return;
+        }
+
+        String estado = filtroEstado.getValue();
+        String peliculaSeleccionada = filtroPelicula.getValue();
+        LocalDate fechaSeleccionada = filtroFecha.getValue();
+
+        funcionesFiltradas.setPredicate(funcion -> {
+
+            // FILTRO DE ESTADO
+            if ("Activas".equals(estado) && !funcion.isActiva()) {
+                return false;
+            }
+
+            if ("Inactivas".equals(estado) && funcion.isActiva()) {
+                return false;
+            }
+
+            // FILTRO DE PELÍCULA
+            if (peliculaSeleccionada != null
+                    && !peliculaSeleccionada.equals("Todas las películas")
+                    && !funcion.getPelicula().getTituloPelicula()
+                            .equals(peliculaSeleccionada)) {
+
+                return false;
+            }
+
+            // FILTRO DE FECHA
+            if (fechaSeleccionada != null
+                    && !funcion.getFechaHora().toLocalDate()
+                            .equals(fechaSeleccionada)) {
+
+                return false;
+            }
+
+            return true;
+        });
+
+        listaFunciones.getSelectionModel().clearSelection();
+    }
+
+    /**
+     * Limpia los filtros de película y fecha.
+     *
+     * Conserva el filtro de estado seleccionado.
+     */
+    @FXML
+    private void limpiarFiltros() {
+
+        filtroPelicula.setValue("Todas las películas");
+        filtroFecha.setValue(null);
     }
 }

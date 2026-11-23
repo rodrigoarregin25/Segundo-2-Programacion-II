@@ -8,17 +8,14 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import java.util.ArrayList;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import gestordecine.PersistenciaCine;
-import gestordecine.Rol;
-import javafx.scene.control.ChoiceDialog;
 import java.io.IOException;
-import java.util.Optional;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 
@@ -85,37 +82,37 @@ public class UsuariosController {
         this.persistencia = persistencia;
         this.principalController = principalController;
 
-        this.principalController = principalController;
-
-        // Mostrar A para activo e I para inactivo.
+        // Mostrar A para usuarios activos y ✕ para inactivos.
         columnaEstado.setCellValueFactory(datos
                 -> new SimpleStringProperty(
-                        datos.getValue().isActivo() ? "A" : "I"
+                        datos.getValue().isActivo() ? "Activa" : "Inactiva"
                 )
         );
 
-        // Aplicar colores y centrar el estado.
+        // Aplicar los mismos indicadores que en las otras tablas.
         columnaEstado.setCellFactory(columna -> new TableCell<Cliente, String>() {
 
             @Override
             protected void updateItem(String estado, boolean vacio) {
+
                 super.updateItem(estado, vacio);
+
+                getStyleClass().removeAll(
+                        "estado-activo", "estado-inactivo"
+                );
 
                 if (vacio || estado == null) {
                     setText(null);
-                    setStyle("");
+                    setGraphic(null);
                     return;
                 }
 
-                setText(estado);
+                boolean activo = estado.equals("Activa");
 
-                String color = estado.equals("A") ? "#22C55E" : "#EF4444";
+                setText(activo ? "A" : "✕");
 
-                setStyle(
-                        "-fx-text-fill: " + color + ";"
-                        + "-fx-font-weight: bold;"
-                        + "-fx-font-size: 18px;"
-                        + "-fx-alignment: CENTER;"
+                getStyleClass().add(
+                        activo ? "estado-activo" : "estado-inactivo"
                 );
             }
         });
@@ -153,7 +150,8 @@ public class UsuariosController {
         usuariosRegistrados = cine.getServicioDeReservas().getClientes();
 
         // Actualizar el botón según el usuario seleccionado.
-        tablaUsuarios.getSelectionModel().selectedItemProperty()
+        tablaUsuarios.getSelectionModel()
+                .selectedItemProperty()
                 .addListener((observable, anterior, nuevo) -> actualizarBotonEstado());
 
         actualizarBotonEstado();
@@ -175,6 +173,10 @@ public class UsuariosController {
         );
 
         filtrarUsuarios();
+        // Distribuir las columnas según el ancho disponible.
+        tablaUsuarios.setColumnResizePolicy(
+                TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN
+        );
     }
 
     /**

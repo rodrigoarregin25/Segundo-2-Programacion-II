@@ -9,27 +9,98 @@
     -fx-padding: 30 18 30 18;
 }
 
+/* =========================================
+   MENÚ LATERAL CINEMA
+   ========================================= */
+
+/* BOTONES DE NAVEGACIÓN */
+
+.boton-menu {
+    -fx-background-color: #1A2A40;
+    -fx-text-fill: #CBD5E1;
+    -fx-font-size: 14px;
+    -fx-font-weight: normal;
+
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 12 18 12 24;
+    -fx-content-display: LEFT;
+    -fx-graphic-text-gap: 10;
+
+    -fx-background-radius: 9;
+    -fx-border-color: #293B53;
+    -fx-border-width: 1;
+    -fx-border-radius: 9;
+
+    -fx-max-width: Infinity;
+    -fx-min-height: 44px;
+    -fx-pref-height: 44px;
+
+    -fx-cursor: hand;
+}
+
+/* EFECTO AL PASAR EL MOUSE */
+
+.boton-menu:hover {
+    -fx-background-color: #263C58;
+    -fx-border-color: #41658B;
+    -fx-text-fill: #FFFFFF;
+}
+
+/* EFECTO AL PRESIONAR */
+
+.boton-menu:pressed {
+    -fx-background-color: #174A75;
+    -fx-text-fill: #FFFFFF;
+}
+
+/* =========================================
+   LOGO Y ENCABEZADO
+   ========================================= */
+
+.encabezado-menu-cinema {
+    -fx-padding: 0 0 24 0;
+    -fx-alignment: CENTER;
+}
+
 .logo-cine {
     -fx-text-fill: #FFFFFF;
     -fx-font-size: 27px;
     -fx-font-weight: bold;
-    -fx-padding: 0 0 35 10;
+    -fx-padding: 0;
 }
 
-.boton-menu {
-    -fx-background-color: transparent;
-    -fx-text-fill: #AAB6C8;
-    -fx-font-size: 15px;
+.contenedor-logo-cinema {
+    -fx-background-color: #192D46;
+    -fx-background-radius: 14;
+    -fx-border-color: #304765;
+    -fx-border-radius: 14;
+    -fx-border-width: 1;
+}
+
+.subtitulo-logo-cinema {
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+}
+
+/* =========================================
+   PANEL DE SESIÓN
+   ========================================= */
+
+.panel-sesion-cinema {
+    -fx-border-color: #334155 transparent transparent transparent;
+    -fx-border-width: 1 0 0 0;
+    -fx-padding: 16 0 0 0;
+}
+
+.nombre-sesion-cinema {
+    -fx-text-fill: #CBD5E1;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+
+    /* Mismo margen horizontal que los botones */
+    -fx-padding: 8 18 8 18;
     -fx-alignment: CENTER_LEFT;
-    -fx-padding: 14 18;
-    -fx-background-radius: 10;
-    -fx-max-width: Infinity;
-    -fx-cursor: hand;
-}
-
-.boton-menu:hover {
-    -fx-background-color: #243650;
-    -fx-text-fill: #FFFFFF;
 }
 
 .contenido-principal {
@@ -513,25 +584,6 @@
     -fx-border-color: #2389F5;
 }
 
-/* ALINEACIÓN DE TABLA DE PELÍCULAS */
-
-#tablaPeliculas .column-header .label {
-    -fx-alignment: CENTER_LEFT;
-    -fx-padding: 0 0 0 12;
-}
-
-#tablaPeliculas .table-cell {
-    -fx-alignment: CENTER_LEFT;
-    -fx-padding: 0 8 0 12;
-}
-
-/* Centrar encabezado Estado */
-
-#tablaPeliculas #columna-estado .label {
-    -fx-alignment: CENTER;
-    -fx-padding: 0;
-}
-
 .tarjeta-funcion {
     -fx-background-color: #0D1625;
     -fx-background-radius: 8;
@@ -876,4 +928,81 @@
 
 .boton-limpiar-unificado:hover {
     -fx-background-color: #1D3554;
+}
+
+/* Encabezados de tablas administrativas */
+.tabla-peliculas .column-header .label {
+    -fx-alignment: CENTER_LEFT;
+}
+
+/* Columnas con encabezado centrado */
+.tabla-peliculas .column-header:focused .label {
+    -fx-alignment: CENTER_LEFT;
+}
+
+/* RESERVAS: encabezados y datos alineados exactamente igual */
+
+.tabla-reservas .column-header .label {
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 8 0 8;
+}
+
+.tabla-reservas .table-cell {
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 8 0 8;
+}
+
+/* =========================================
+   ADMINISTRACIÓN DE PELÍCULAS
+   ========================================= */
+
+/* Encabezados y celdas con la misma alineación y margen */
+.tabla-admin-peliculas .column-header .label,
+.tabla-admin-peliculas .table-cell {
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 8 0 12;
+}
+
+/* =========================================
+   ADMINISTRACIÓN DE SALAS
+   ========================================= */
+
+/* Encabezados y datos alineados a la izquierda */
+.tabla-admin-salas .column-header .label,
+.tabla-admin-salas .table-cell {
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 8 0 12;
+}
+
+/* =========================================
+   ADMINISTRACIÓN DE FUNCIONES
+   ========================================= */
+
+/* Encabezados y datos con idéntica alineación */
+.tabla-admin-funciones .column-header .label,
+.tabla-admin-funciones .table-cell {
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 8 0 12;
+}
+
+/* Fecha en filtros de administración de funciones */
+.tabla-admin-funciones .date-picker .text-field {
+    -fx-text-fill: #FFFFFF;
+}
+
+/* Fecha en los filtros de funciones */
+.fecha-funciones .text-field {
+    -fx-text-fill: #FFFFFF;
+    -fx-prompt-text-fill: #FFFFFF;
+}
+
+/* =========================================
+   ADMINISTRACIÓN DE USUARIOS
+   ========================================= */
+
+/* Encabezados y datos alineados a la izquierda */
+.tabla-admin-usuarios .column-header .label,
+.tabla-admin-usuarios .table-cell {
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 8 0 12;
 }

@@ -21,7 +21,10 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import gestordecine.persistencia.ExportadorReservasCSV;
-
+import javafx.scene.control.TableView;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableCell;
+import javafx.beans.property.SimpleStringProperty;
 import java.io.File;
 import javafx.stage.FileChooser;
 
@@ -36,149 +39,180 @@ public class ReservasController {
     @FXML
     private TextField campoBusqueda;
     @FXML
-    private ListView<Reserva> listaReservas;
+    private TableView<Reserva> listaReservas;
     @FXML
     private Label mensajeError;
     @FXML
     private Button botonComprobante;
     @FXML
     private Button botonCancelar;
+    @FXML
+    private TableColumn<Reserva, String> colEstado;
+
+    @FXML
+    private TableColumn<Reserva, String> colCodigo;
+
+    @FXML
+    private TableColumn<Reserva, String> colPelicula;
+
+    @FXML
+    private TableColumn<Reserva, String> colFecha;
+
+    @FXML
+    private TableColumn<Reserva, String> colSala;
+
+    @FXML
+    private TableColumn<Reserva, String> colCliente;
+
+    @FXML
+    private TableColumn<Reserva, String> colDni;
+
+    @FXML
+    private TableColumn<Reserva, String> colEntradas;
+
+    @FXML
+    private TableColumn<Reserva, String> colTotal;
 
     /**
-     * Que hace: carga los criterios de busqueda, indica como se dibuja cada
-     * reserva de la lista y avisa cuando se elige una. JavaFX lo llama solo al
-     * abrir la pantalla.
+     * Configura los criterios de búsqueda y las columnas de la tabla
+     * administrativa de reservas.
+     *
+     * También actualiza los botones según la reserva seleccionada por el
+     * administrador.
      */
     @FXML
     private void initialize() {
+
         comboCriterio.getItems().addAll("Codigo", "DNI");
         comboCriterio.getSelectionModel().selectFirst();
+
         botonComprobante.setDisable(true);
         botonCancelar.setDisable(true);
 
-        // Cada reserva se dibuja como una tarjeta
-        listaReservas.setCellFactory(lista -> new ListCell<Reserva>() {
-            {
-                setStyle("-fx-background-color: transparent; -fx-padding: 4 0 4 0;");
+        DateTimeFormatter formatoFecha
+                = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-                // al marcar o desmarcar la fila, se cambia el borde de la tarjeta
-                selectedProperty().addListener((observable, antes, ahora) -> {
-                    if (getItem() != null && getGraphic() != null) {
-                        getGraphic().setStyle(estiloTarjeta(getItem().isConfirmada(), ahora));
-                    }
-                });
-            }
+        // ESTADO
+        colEstado.setCellValueFactory(datos
+                -> new SimpleStringProperty(
+                        datos.getValue().isConfirmada()
+                        ? "CONFIRMADA" : "CANCELADA"
+                )
+        );
+
+        colEstado.setCellValueFactory(datos
+                -> new SimpleStringProperty(
+                        datos.getValue().isConfirmada()
+                        ? "CONFIRMADA" : "CANCELADA"
+                )
+        );
+
+        colEstado.setCellFactory(columna -> new TableCell<Reserva, String>() {
 
             @Override
-            protected void updateItem(Reserva reserva, boolean vacia) {
-                super.updateItem(reserva, vacia);
-                if (vacia || reserva == null) {
+            protected void updateItem(String estado, boolean vacia) {
+                super.updateItem(estado, vacia);
+
+                if (vacia || estado == null) {
+                    setText(null);
                     setGraphic(null);
-                    setText(null);
-                } else {
-                    HBox tarjeta = crearTarjeta(reserva);
-                    tarjeta.setStyle(estiloTarjeta(reserva.isConfirmada(), isSelected()));
-                    setGraphic(tarjeta);
-                    setText(null);
+                    getStyleClass().removeAll("estado-activo", "estado-inactivo");
+                    return;
                 }
+
+                boolean confirmada = estado.equals("CONFIRMADA");
+
+                setText(confirmada ? "A" : "✕");
+
+                getStyleClass().removeAll("estado-activo", "estado-inactivo");
+                getStyleClass().add(confirmada ? "estado-activo" : "estado-inactivo");
             }
         });
 
-        listaReservas.getSelectionModel().selectedItemProperty()
-                .addListener((observable, anterior, nueva) -> mostrarSeleccion(nueva));
-    }
+        // CÓDIGO
+        colCodigo.setCellValueFactory(datos
+                -> new SimpleStringProperty(
+                        datos.getValue().getCodigoReserva()
+                )
+        );
 
-    /**
-     * Que hace: arma el estilo de una tarjeta: franja verde o roja a la
-     * izquierda segun el estado, y borde azul si esta seleccionada. Parametros:
-     * confirmada (true si la reserva esta confirmada), seleccionada (true si es
-     * la fila elegida). Retorna: el texto de estilo (String).
-     */
-    private String estiloTarjeta(boolean confirmada, boolean seleccionada) {
-        String fondo = confirmada ? "#131B2E" : "#2A1520";
-        String acento = confirmada ? "#22C55E" : "#EF4444";
-        String borde = seleccionada ? "#3B82F6" : "#1E293B";
+        // PELÍCULA
+        colPelicula.setCellValueFactory(datos
+                -> new SimpleStringProperty(
+                        datos.getValue().getFuncion()
+                                .getPelicula().getTituloPelicula()
+                )
+        );
 
-        return "-fx-background-color: " + fondo + ";"
-                + "-fx-background-radius: 10;"
-                + "-fx-border-radius: 10;"
-                + "-fx-border-width: 1 1 1 4;"
-                + "-fx-border-color: " + borde + " " + borde + " " + borde + " " + acento + ";";
-    }
+        // FECHA Y HORA
+        colFecha.setCellValueFactory(datos
+                -> new SimpleStringProperty(
+                        datos.getValue().getFuncion()
+                                .getFechaHora().format(formatoFecha)
+                )
+        );
 
-    /**
-     * Que hace: arma la tarjeta visual de una reserva, con el codigo, la
-     * pelicula con su fecha y sala, el cliente, el estado y el importe.
-     * Parametros: reserva (la reserva a dibujar). Retorna: el HBox con la
-     * tarjeta.
-     */
-    private HBox crearTarjeta(Reserva reserva) {
-        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        // SALA
+        colSala.setCellValueFactory(datos
+                -> new SimpleStringProperty(
+                        datos.getValue().getFuncion()
+                                .getSala().getNombreSala()
+                )
+        );
 
-        // Codigo
-        Label codigo = new Label(reserva.getCodigoReserva());
-        codigo.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 17px;");
-        VBox bloqueCodigo = new VBox(codigo);
-        bloqueCodigo.setAlignment(Pos.CENTER_LEFT);
-        bloqueCodigo.setPrefWidth(90);
+        // CLIENTE
+        colCliente.setCellValueFactory(datos
+                -> new SimpleStringProperty(
+                        datos.getValue().getCliente().getNombre()
+                        + " "
+                        + datos.getValue().getCliente().getApellido()
+                )
+        );
 
-        // Pelicula, fecha y sala
-        Label pelicula = new Label(reserva.getFuncion().getPelicula().getTituloPelicula());
-        pelicula.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px;");
-        Label fecha = new Label(reserva.getFuncion().getFechaHora().format(formato));
-        fecha.setStyle("-fx-text-fill: #CBD5E1;");
-        Label sala = new Label(reserva.getFuncion().getSala().getNombreSala());
-        sala.setStyle("-fx-text-fill: #94A3B8;");
-        VBox bloquePelicula = new VBox(3, pelicula, fecha, sala);
-        bloquePelicula.setAlignment(Pos.CENTER_LEFT);
-        bloquePelicula.setPrefWidth(230);
+        // DNI
+        colDni.setCellValueFactory(datos
+                -> new SimpleStringProperty(
+                        String.valueOf(
+                                datos.getValue().getCliente().getDni()
+                        )
+                )
+        );
 
-        // Cliente
-        Label nombre = new Label(reserva.getCliente().getNombre() + " "
-                + reserva.getCliente().getApellido());
-        nombre.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
-        Label dni = new Label("DNI " + reserva.getCliente().getDni());
-        dni.setStyle("-fx-text-fill: #94A3B8;");
-        VBox bloqueCliente = new VBox(3, nombre, dni);
-        bloqueCliente.setAlignment(Pos.CENTER_LEFT);
+        // CANTIDAD DE ENTRADAS
+        colEntradas.setCellValueFactory(datos
+                -> new SimpleStringProperty(
+                        String.valueOf(
+                                datos.getValue().getEntradas().size()
+                        )
+                )
+        );
 
-        // Estado e importe
-        Label estado = new Label();
-        if (reserva.isConfirmada()) {
-            estado.setText("CONFIRMADA");
-            estado.setStyle("-fx-text-fill: #4ADE80; -fx-font-weight: bold;"
-                    + "-fx-background-color: #14532D; -fx-background-radius: 12;"
-                    + "-fx-padding: 3 12 3 12;");
-        } else {
-            estado.setText("CANCELADA");
-            estado.setStyle("-fx-text-fill: #FCA5A5; -fx-font-weight: bold;"
-                    + "-fx-background-color: #7F1D1D; -fx-background-radius: 12;"
-                    + "-fx-padding: 3 12 3 12;");
-        }
-        Label importe = new Label(String.format(Locale.of("es", "AR"), "$%,.2f",
-                reserva.getImporteTotal()));
-        importe.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16px;");
-        VBox bloqueEstado = new VBox(8, estado, importe);
-        bloqueEstado.setAlignment(Pos.CENTER_RIGHT);
+        // IMPORTE TOTAL
+        colTotal.setCellValueFactory(datos
+                -> new SimpleStringProperty(
+                        String.format(
+                                Locale.of("es", "AR"),
+                                "$%,.2f",
+                                datos.getValue().getImporteTotal()
+                        )
+                )
+        );
 
-        // Lineas verticales que separan los bloques
-        Region separador1 = new Region();
-        separador1.setMinWidth(1);
-        separador1.setMaxWidth(1);
-        separador1.setStyle("-fx-background-color: #1E293B;");
-        Region separador2 = new Region();
-        separador2.setMinWidth(1);
-        separador2.setMaxWidth(1);
-        separador2.setStyle("-fx-background-color: #1E293B;");
+        // HABILITAR ACCIONES SEGÚN LA SELECCIÓN
+        listaReservas.getSelectionModel()
+                .selectedItemProperty()
+                .addListener((observable, anterior, nueva)
+                        -> mostrarSeleccion(nueva)
+                );
 
-        Region espacio = new Region();
-        HBox.setHgrow(espacio, Priority.ALWAYS);
+        listaReservas.setPlaceholder(
+                new Label("No hay reservas para mostrar")
+        );
 
-        HBox tarjeta = new HBox(18, bloqueCodigo, separador1, bloquePelicula,
-                separador2, bloqueCliente, espacio, bloqueEstado);
-        tarjeta.setAlignment(Pos.CENTER_LEFT);
-        tarjeta.setPadding(new Insets(12, 18, 12, 18));
-        return tarjeta;
+        // Distribuir las columnas para ocupar el ancho disponible.
+        listaReservas.setColumnResizePolicy(
+                TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN
+        );
     }
 
     /**
@@ -272,9 +306,9 @@ public class ReservasController {
     }
 
     /**
-     * Que hace: pide confirmacion y cancela la reserva seleccionada. La
-     * reserva no se borra: queda como cancelada y sus butacas se liberan. Se
-     * trabaja sobre una copia del cine.
+     * Que hace: pide confirmacion y cancela la reserva seleccionada. La reserva
+     * no se borra: queda como cancelada y sus butacas se liberan. Se trabaja
+     * sobre una copia del cine.
      */
     @FXML
     private void cancelarReserva() {

@@ -25,6 +25,11 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.HBox;
+import java.util.Locale;
+import javafx.geometry.Pos;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 
 /**
  * Controlador de la pantalla Mis reservas.
@@ -111,17 +116,20 @@ public class MisReservasController {
     }
 
     /**
-     * Crea una tarjeta con los datos y las acciones disponibles para una
-     * reserva del cliente.
+     * Crea una tarjeta visual con los datos de una reserva.
+     *
+     * Organiza la información en secciones, diferencia el estado de
+     * confirmación y conserva las acciones de comprobante y cancelación en la
+     * parte inferior.
      *
      * @param reserva Reserva que se desea mostrar.
-     * @return Contenedor visual con información y botones.
+     * @return Tarjeta con los datos y acciones disponibles.
      */
     private VBox crearTarjeta(Reserva reserva) {
 
-        String estado = reserva.isConfirmada()
-                ? "CONFIRMADA" : "CANCELADA";
+        boolean confirmada = reserva.isConfirmada();
 
+        // ENCABEZADO: PELÍCULA Y CÓDIGO
         Label titulo = new Label(
                 reserva.getFuncion().getPelicula().getTituloPelicula()
         );
@@ -131,62 +139,124 @@ public class MisReservasController {
                 + "-fx-font-size: 18px;"
                 + "-fx-font-weight: bold;"
         );
+        titulo.setWrapText(true);
 
+        Label codigo = new Label(
+                "Reserva " + reserva.getCodigoReserva()
+        );
+        codigo.setStyle(
+                "-fx-text-fill: #94A3B8;"
+                + "-fx-font-size: 12px;"
+        );
+
+        VBox informacionPrincipal = new VBox(5, titulo, codigo);
+        HBox.setHgrow(informacionPrincipal, Priority.ALWAYS);
+
+        // ESTADO DE LA RESERVA
+        Label estado = new Label(
+                confirmada ? "CONFIRMADA" : "CANCELADA"
+        );
+
+        estado.setStyle(
+                "-fx-background-color: "
+                + (confirmada ? "#14532D;" : "#7F1D1D;")
+                + "-fx-text-fill: "
+                + (confirmada ? "#4ADE80;" : "#FCA5A5;")
+                + "-fx-font-weight: bold;"
+                + "-fx-font-size: 12px;"
+                + "-fx-background-radius: 12;"
+                + "-fx-padding: 6 12;"
+        );
+
+        HBox encabezado = new HBox(20, informacionPrincipal, estado);
+        encabezado.setAlignment(Pos.CENTER_LEFT);
+
+        // SEPARADOR
+        Region separadorSuperior = new Region();
+        separadorSuperior.setPrefHeight(1);
+        separadorSuperior.setStyle(
+                "-fx-background-color: #334155;"
+        );
+
+        // DATOS DE LA RESERVA
         String butacas = reserva.getEntradas().stream()
                 .map(entrada -> entrada.getButaca().getIdentificador())
                 .collect(Collectors.joining(", "));
 
-        Label detalle = new Label(
-                "Código: " + reserva.getCodigoReserva()
-                + "\nEstado: " + estado
-                + "\nSala: " + reserva.getFuncion().getSala().getNombreSala()
-                + "\nFecha: " + reserva.getFuncion().getFechaHora()
-                        .format(FORMATO_FECHA)
-                + "\nButacas: " + butacas
-                + "\nEntradas: " + reserva.getEntradas().size()
-                + "\nTotal: $" + reserva.getImporteTotal()
+        VBox datoFecha = crearDatoReserva(
+                "FECHA Y HORA",
+                reserva.getFuncion().getFechaHora().format(FORMATO_FECHA)
         );
 
-        detalle.setStyle(
-                "-fx-text-fill: #CBD5E1;"
-                + "-fx-font-size: 13px;"
+        VBox datoSala = crearDatoReserva(
+                "SALA",
+                reserva.getFuncion().getSala().getNombreSala()
         );
 
-        // Botón para visualizar el comprobante.
-        Button botonComprobante = new Button("Ver comprobante");
+        VBox datoButacas = crearDatoReserva(
+                "BUTACAS",
+                butacas
+        );
 
-        botonComprobante.setStyle(
-                "-fx-background-color: #2563EB;"
-                + "-fx-text-fill: white;"
+        VBox datoEntradas = crearDatoReserva(
+                "ENTRADAS",
+                String.valueOf(reserva.getEntradas().size())
+        );
+
+        GridPane datos = new GridPane();
+        datos.setHgap(30);
+        datos.setVgap(18);
+
+        datos.add(datoFecha, 0, 0);
+        datos.add(datoSala, 1, 0);
+        datos.add(datoButacas, 0, 1);
+        datos.add(datoEntradas, 1, 1);
+
+        // TOTAL
+        Label etiquetaTotal = new Label("TOTAL DE LA RESERVA");
+        etiquetaTotal.setStyle(
+                "-fx-text-fill: #94A3B8;"
+                + "-fx-font-size: 12px;"
+        );
+
+        Label importeTotal = new Label(
+                String.format(
+                        Locale.of("es", "AR"),
+                        "$%,.2f",
+                        reserva.getImporteTotal()
+                )
+        );
+
+        importeTotal.setStyle(
+                "-fx-text-fill: white;"
+                + "-fx-font-size: 20px;"
                 + "-fx-font-weight: bold;"
-                + "-fx-background-radius: 7;"
-                + "-fx-padding: 10 18;"
-                + "-fx-cursor: hand;"
         );
+
+        VBox total = new VBox(5, etiquetaTotal, importeTotal);
+
+        // ACCIONES: MANTENER LOS BOTONES ABAJO A LA IZQUIERDA
+        Button botonComprobante = new Button("Ver comprobante");
+        botonComprobante.getStyleClass().add("boton-secundario");
+        botonComprobante.setPrefHeight(40);
 
         botonComprobante.setOnAction(
                 evento -> verComprobante(reserva)
         );
 
         HBox botones = new HBox(12, botonComprobante);
+        botones.setAlignment(Pos.CENTER_LEFT);
 
-        // Solo permitir cancelar reservas confirmadas y futuras.
-        boolean puedeCancelar = reserva.isConfirmada()
+        // Solo se pueden cancelar reservas confirmadas y futuras.
+        boolean puedeCancelar = confirmada
                 && reserva.getFuncion().getFechaHora()
                         .isAfter(LocalDateTime.now());
 
         if (puedeCancelar) {
 
             Button botonCancelar = new Button("Cancelar reserva");
-
-            botonCancelar.setStyle(
-                    "-fx-background-color: #42252D;"
-                    + "-fx-text-fill: #F87171;"
-                    + "-fx-font-weight: bold;"
-                    + "-fx-background-radius: 7;"
-                    + "-fx-padding: 10 18;"
-                    + "-fx-cursor: hand;"
-            );
+            botonCancelar.getStyleClass().add("boton-peligro");
+            botonCancelar.setPrefHeight(40);
 
             botonCancelar.setOnAction(
                     evento -> cancelarReserva(reserva)
@@ -195,7 +265,16 @@ public class MisReservasController {
             botones.getChildren().add(botonCancelar);
         }
 
-        VBox tarjeta = new VBox(12, titulo, detalle, botones);
+        // TARJETA FINAL
+        VBox tarjeta = new VBox(
+                16,
+                encabezado,
+                separadorSuperior,
+                datos,
+                total,
+                botones
+        );
+
         tarjeta.setPadding(new Insets(20));
 
         tarjeta.setStyle(
@@ -206,6 +285,32 @@ public class MisReservasController {
         );
 
         return tarjeta;
+    }
+
+    /**
+     * Crea un bloque de información para una tarjeta de reserva.
+     *
+     * @param etiqueta Nombre del dato que se muestra.
+     * @param valor Contenido correspondiente al dato.
+     * @return Contenedor con la etiqueta y su valor.
+     */
+    private VBox crearDatoReserva(String etiqueta, String valor) {
+
+        Label tituloDato = new Label(etiqueta);
+        tituloDato.setStyle(
+                "-fx-text-fill: #94A3B8;"
+                + "-fx-font-size: 11px;"
+        );
+
+        Label valorDato = new Label(valor);
+        valorDato.setStyle(
+                "-fx-text-fill: #E2E8F0;"
+                + "-fx-font-size: 14px;"
+                + "-fx-font-weight: bold;"
+        );
+        valorDato.setWrapText(true);
+
+        return new VBox(5, tituloDato, valorDato);
     }
 
     /**

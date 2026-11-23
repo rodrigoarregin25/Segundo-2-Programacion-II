@@ -94,14 +94,15 @@
         <!-- TABLA -->
         <TableView fx:id="tablaPeliculas"
                    VBox.vgrow="ALWAYS"
-                   styleClass="tabla-peliculas">
+                   styleClass="tabla-peliculas, tabla-admin-peliculas">
 
             <columns>
 
                 <TableColumn fx:id="colEstado"
                              id="columna-estado"
                              text="Estado"
-                             prefWidth="90"/>
+                             minWidth="65"
+                             prefWidth="65"/>
 
                 <TableColumn fx:id="colTitulo"
                              text="Título"

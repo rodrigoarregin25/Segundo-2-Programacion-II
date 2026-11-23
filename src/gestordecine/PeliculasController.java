@@ -149,7 +149,7 @@ public class PeliculasController {
                         activa ? "estado-activo" : "estado-inactivo"
                 );
 
-                setAlignment(Pos.CENTER);
+                setAlignment(Pos.CENTER_LEFT);
             }
         });
 
@@ -186,14 +186,14 @@ public class PeliculasController {
                     }
                 });
 
-        colEstado.setStyle("-fx-alignment: CENTER;");
-        colTitulo.setStyle("-fx-alignment: CENTER-LEFT;");
-        colDuracion.setStyle("-fx-alignment: CENTER-LEFT;");
-        colFechaEstreno.setStyle("-fx-alignment: CENTER-LEFT;");
-        colGenero.setStyle("-fx-alignment: CENTER-LEFT;");
-        colDirector.setStyle("-fx-alignment: CENTER-LEFT;");
-        colClasificacion.setStyle("-fx-alignment: CENTER-LEFT;");
-        colPuntuacion.setStyle("-fx-alignment: CENTER-LEFT;");
+        // Identificar la columna de estado para alinear
+        // su encabezado y contenido de la misma manera.
+        colEstado.getStyleClass().add("columna-estado-admin");
+
+        // Aprovechar el ancho disponible de la tabla.
+        tablaPeliculas.setColumnResizePolicy(
+                TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN
+        );
     }
 
     @FXML
@@ -254,6 +254,7 @@ public class PeliculasController {
     private void mostrarMensaje(String mensaje) {
         mensajeEstado.setText(mensaje);
         mensajeEstado.setVisible(true);
+        mensajeEstado.setManaged(true);
     }
 
     private String formatearGeneros(Pelicula pelicula) {

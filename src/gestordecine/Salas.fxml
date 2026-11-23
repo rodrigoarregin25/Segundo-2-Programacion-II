@@ -109,25 +109,24 @@
             <!-- TABLA -->
             <TableView fx:id="tablaSalas"
                        VBox.vgrow="ALWAYS"
-                       styleClass="tabla-peliculas">
+                       styleClass="tabla-peliculas, tabla-admin-salas">
 
                 <columns>
 
-                    <TableColumn fx:id="columnaId"
-                                 text="ID"
-                                 prefWidth="45"/>
-
                     <TableColumn fx:id="columnaEstado"
                                  text="Estado"
-                                 prefWidth="70"/>
+                                 minWidth="65"
+                                 prefWidth="65"/>
 
                     <TableColumn fx:id="columnaNombre"
                                  text="Nombre"
-                                 prefWidth="135"/>
+                                 minWidth="150"
+                                 prefWidth="185"/>
 
                     <TableColumn fx:id="columnaCapacidad"
                                  text="Capacidad"
-                                 prefWidth="95"/>
+                                 minWidth="95"
+                                 prefWidth="110"/>
 
                 </columns>
 

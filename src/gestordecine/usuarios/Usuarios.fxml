@@ -113,17 +113,21 @@
         <!-- TABLA -->
         <TableView fx:id="tablaUsuarios"
                    VBox.vgrow="ALWAYS"
-                   styleClass="tabla-peliculas">
+                   styleClass="tabla-peliculas, tabla-admin-usuarios">
 
             <columns>
 
                 <TableColumn fx:id="columnaEstado"
                              text="Estado"
-                             prefWidth="85"/>
+                             minWidth="75"
+                             prefWidth="75"
+                             maxWidth="75"/>
 
                 <TableColumn fx:id="columnaDni"
                              text="DNI"
-                             prefWidth="120"/>
+                             minWidth="120"
+                             prefWidth="120"
+                             maxWidth="120"/>
 
                 <TableColumn fx:id="columnaNombre"
                              text="Nombre"

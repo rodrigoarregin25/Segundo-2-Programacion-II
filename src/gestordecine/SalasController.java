@@ -181,31 +181,34 @@ public class SalasController {
     @FXML
     private void initialize() {
 
-        // COLUMNA ESTADO
+    // COLUMNA ESTADO
         columnaEstado.setCellValueFactory(datos
                 -> new SimpleStringProperty(
-                        datos.getValue().isActiva() ? "A" : "I"
+                        datos.getValue().isActiva() ? "Activa" : "Inactiva"
                 )
         );
 
         columnaEstado.setCellFactory(columna -> new TableCell<Sala, String>() {
 
             @Override
-            protected void updateItem(String estado, boolean empty) {
-                super.updateItem(estado, empty);
+            protected void updateItem(String estado, boolean vacia) {
 
-                if (empty || estado == null) {
+                super.updateItem(estado, vacia);
+
+                getStyleClass().removeAll("estado-activo", "estado-inactivo");
+
+                if (vacia || estado == null) {
                     setText(null);
-                    setStyle("");
+                    setGraphic(null);
                     return;
                 }
 
-                setText(estado);
+                boolean activa = estado.equals("Activa");
 
-                setStyle(
-                        estado.equals("A")
-                        ? "-fx-text-fill: #22C55E; -fx-font-weight: bold; -fx-alignment: CENTER;"
-                        : "-fx-text-fill: #EF4444; -fx-font-weight: bold; -fx-alignment: CENTER;"
+                setText(activa ? "A" : "✕");
+
+                getStyleClass().add(
+                        activa ? "estado-activo" : "estado-inactivo"
                 );
             }
         });
@@ -224,10 +227,6 @@ public class SalasController {
                 TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN
         );
 
-        columnaId.setStyle("-fx-alignment: CENTER;");
-        columnaEstado.setStyle("-fx-alignment: CENTER;");
-        columnaNombre.setStyle("-fx-alignment: CENTER-LEFT;");
-        columnaCapacidad.setStyle("-fx-alignment: CENTER;");
 
         // SELECCIÓN DE SALA
         tablaSalas.getSelectionModel().selectedItemProperty()
@@ -265,12 +264,6 @@ public class SalasController {
 
         // ESTADO INICIAL
         botonEstado.setDisable(true);
-
-        columnaId.setCellValueFactory(datos
-                -> new SimpleStringProperty(
-                        String.valueOf(datos.getValue().getIdSala())
-                )
-        );
 
         columnaCapacidad.setCellValueFactory(datos
                 -> new SimpleStringProperty(
@@ -342,9 +335,6 @@ public class SalasController {
 
     @FXML
     private Button botonEstado;
-
-    @FXML
-    private TableColumn<Sala, String> columnaId;
 
     @FXML
     private TableColumn<Sala, String> columnaCapacidad;
