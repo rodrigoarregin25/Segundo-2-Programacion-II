@@ -20,7 +20,6 @@ import javafx.stage.Stage;
  * Permite iniciar sesión o registrar clientes desde cualquier pantalla,
  * utilizando una sesión centralizada.
  *
- * @author Rodrigo Arregin
  */
 public class AccesoController {
 
