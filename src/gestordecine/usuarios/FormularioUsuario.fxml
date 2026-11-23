@@ -11,7 +11,7 @@
 <?import javafx.scene.control.ScrollPane?>
 
 <!--
-    Formulario de usuario del administrador: permite modificar nombre,
+    Formulario de usuario del administrador: permite corregir DNI, nombre,
     apellido, correo, contraseña y rol de un usuario registrado.
     La controla FormularioUsuarioController. Está dentro de un ScrollPane
     para que se pueda desplazar si la ventana es chica.
@@ -57,13 +57,13 @@
             <Label text="Datos del usuario"
                    styleClass="titulo-seccion"/>
 
-            <!-- DNI: no se puede modificar porque identifica al usuario -->
+            <!-- DNI: el administrador puede corregirlo sin perder las reservas. -->
             <VBox spacing="6">
                 <Label text="DNI"
                        styleClass="subtitulo-pagina"/>
 
                 <TextField fx:id="campoDni"
-                           editable="false"
+                           editable="true"
                            styleClass="campo-cinema"/>
             </VBox>
 

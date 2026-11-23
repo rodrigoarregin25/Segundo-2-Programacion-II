@@ -18,8 +18,8 @@ import javafx.scene.control.TextField;
  * Controlador del formulario de administración de usuarios.
  *
  * Permite registrar nuevos usuarios y modificar los datos de usuarios
- * existentes, incluyendo nombre, apellido, correo electrónico, contraseña y
- * rol.
+ * existentes, incluyendo DNI, nombre, apellido, correo electrónico,
+ * contraseña y rol.
  *
  * Verifica que exista una sesión administrativa antes de permitir el acceso a
  * las operaciones de registro y edición.
@@ -168,6 +168,7 @@ public class FormularioUsuarioController {
 
         tituloFormulario.setText("Editar usuario");
 
+        campoDni.setEditable(true);
         campoDni.setText(
                 String.valueOf(usuario.getDni())
         );
@@ -190,8 +191,8 @@ public class FormularioUsuarioController {
      * Comprueba que el usuario autenticado exista dentro de la copia, tenga rol
      * de administrador y se encuentre activo.
      *
-     * En modo edición, utiliza ServicioDeReservas para modificar los datos del
-     * usuario identificado por su DNI.
+     * En modo edición, utiliza ServicioDeReservas para corregir los datos del
+     * usuario identificado por su DNI original, sin perder reservas.
      *
      * En modo registro, valida el formato del DNI, comprueba que se haya
      * seleccionado un rol y crea un nuevo Cliente.
@@ -211,6 +212,16 @@ public class FormularioUsuarioController {
         ocultarError();
 
         try {
+
+            // Leer el DNI tanto para altas como para correcciones.
+            int nuevoDni;
+            try {
+                nuevoDni = Integer.parseInt(campoDni.getText().trim());
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException(
+                        "El DNI debe ser un número válido"
+                );
+            }
 
             // Trabajar sobre una copia del cine.
             Cine cineTrabajo = cine.copiar();
@@ -238,6 +249,7 @@ public class FormularioUsuarioController {
                 // EDITAR USUARIO EXISTENTE
                 servicio.editarUsuario(
                         dniUsuario,
+                        nuevoDni,
                         campoNombre.getText(),
                         campoApellido.getText(),
                         campoEmail.getText(),
@@ -249,21 +261,6 @@ public class FormularioUsuarioController {
             } else {
 
                 // REGISTRAR NUEVO USUARIO
-                int dni;
-
-                try {
-
-                    dni = Integer.parseInt(
-                            campoDni.getText().trim()
-                    );
-
-                } catch (NumberFormatException e) {
-
-                    throw new IllegalArgumentException(
-                            "El DNI debe ser un número válido"
-                    );
-                }
-
                 if (comboRol.getValue() == null) {
 
                     throw new IllegalArgumentException(
@@ -272,7 +269,7 @@ public class FormularioUsuarioController {
                 }
 
                 Cliente nuevoUsuario = new Cliente(
-                        dni,
+                        nuevoDni,
                         campoNombre.getText(),
                         campoApellido.getText(),
                         campoEmail.getText(),
@@ -283,30 +280,23 @@ public class FormularioUsuarioController {
                 servicio.registrarCliente(nuevoUsuario);
             }
 
-            // Guardar los cambios.
+            // Guardar los cambios antes de modificar el estado activo.
             persistencia.guardar(cineTrabajo);
 
-            // Actualizar el cine activo.
-            principalController.actualizarCine(cineTrabajo);
-
-            // Actualizar la sesión si se editó el propio usuario.
+            // Si el administrador corrigió su propio DNI, actualizar la
+            // sesión ANTES de actualizarCine(), que la busca por DNI.
             if (modoEdicion) {
-
-                Cliente clienteActual
-                        = SesionCliente.getClienteActual();
-
+                Cliente clienteActual = SesionCliente.getClienteActual();
                 if (clienteActual != null
                         && clienteActual.getDni() == dniUsuario) {
-
                     Cliente usuarioActualizado
-                            = cineTrabajo.getServicioDeReservas()
-                                    .buscarClientePorDni(dniUsuario);
-
-                    SesionCliente.iniciarSesion(
-                            usuarioActualizado
-                    );
+                            = servicio.buscarClientePorDni(nuevoDni);
+                    SesionCliente.iniciarSesion(usuarioActualizado);
                 }
             }
+
+            // Actualizar el cine activo con una sesión ya sincronizada.
+            principalController.actualizarCine(cineTrabajo);
 
             // Actualizar el menú y volver al listado.
             principalController.actualizarMenuCuenta();

@@ -499,14 +499,15 @@ public class ServicioDeReservas implements Serializable {
     /**
      * Modifica los datos de un usuario registrado.
      *
-     * Solo los administradores pueden editar usuarios. El DNI permanece sin
-     * cambios porque identifica al usuario. Si la nueva contraseña está vacía,
-     * se conserva la actual.
+     * Solo los administradores pueden editar usuarios. Permite corregir el DNI
+     * si no pertenece a otra cuenta, conservando las referencias de las reservas
+     * existentes. Si la nueva contraseña está vacía, se conserva la actual.
      *
      * Impide que un administrador cambie su propio rol y que el sistema quede
      * sin administradores.
      *
-     * @param dniUsuario DNI del usuario que se desea modificar.
+     * @param dniUsuario DNI actual del usuario que se desea modificar.
+     * @param nuevoDni DNI corregido que tendrá el usuario.
      * @param nombre Nuevo nombre.
      * @param apellido Nuevo apellido.
      * @param email Nuevo correo electrónico.
@@ -516,7 +517,7 @@ public class ServicioDeReservas implements Serializable {
      * @throws IllegalArgumentException Si los datos son inválidos.
      * @throws IllegalStateException Si el solicitante no tiene permisos.
      */
-    public void editarUsuario(int dniUsuario, String nombre, String apellido,
+    public void editarUsuario(int dniUsuario, int nuevoDni, String nombre, String apellido,
             String email, String nuevaContrasenia, Rol nuevoRol,
             Cliente solicitante) {
 
@@ -542,6 +543,13 @@ public class ServicioDeReservas implements Serializable {
         if (usuario == null) {
             throw new IllegalArgumentException(
                     "El usuario seleccionado no existe"
+            );
+        }
+
+        // No permitir que un DNI nuevo identifique a otra cuenta.
+        if (nuevoDni != dniUsuario && buscarClientePorDni(nuevoDni) != null) {
+            throw new IllegalArgumentException(
+                    "Ya existe un usuario con ese DNI"
             );
         }
 
@@ -581,7 +589,7 @@ public class ServicioDeReservas implements Serializable {
         // VALIDAR TODOS LOS DATOS ANTES DE MODIFICAR EL USUARIO
         // El constructor reutiliza las validaciones existentes.
         new Cliente(
-                usuario.getDni(),
+                nuevoDni,
                 nombre,
                 apellido,
                 email,
@@ -601,6 +609,20 @@ public class ServicioDeReservas implements Serializable {
         }
 
         usuario.setRol(nuevoRol);
+
+        // Mantener también las reservas históricas que pudieran guardar
+        // otra instancia del Cliente con su DNI anterior.
+        if (nuevoDni != dniUsuario) {
+            for (Reserva reserva : reservas) {
+                Cliente clienteReserva = reserva.getCliente();
+                if (clienteReserva != usuario
+                        && clienteReserva.getDni() == dniUsuario) {
+                    clienteReserva.corregirDni(nuevoDni);
+                }
+            }
+            // Las reservas que comparten la instancia se actualizan solas.
+            usuario.corregirDni(nuevoDni);
+        }
     }
 
     /**

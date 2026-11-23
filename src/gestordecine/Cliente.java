@@ -175,6 +175,29 @@ public class Cliente implements Serializable {
     }
 
     /**
+     * Corrige el DNI de un usuario ya registrado.
+     *
+     * La operación no es pública: ServicioDeReservas debe comprobar previamente
+     * la identidad del usuario, los permisos y la ausencia de DNI duplicados.
+     *
+     * @param nuevoDni DNI corregido.
+     * @throws IllegalArgumentException Si el DNI no está entre 1 y 99999999.
+     */
+    void corregirDni(int nuevoDni) {
+        if (nuevoDni <= 0) {
+            throw new IllegalArgumentException(
+                    "El número de DNI debe ser mayor a cero"
+            );
+        }
+        if (nuevoDni > DNI_MAXIMO) {
+            throw new IllegalArgumentException(
+                    "El DNI no puede tener más de 8 dígitos"
+            );
+        }
+        this.dni = nuevoDni;
+    }
+
+    /**
      * Obtiene el nombre del usuario.
      * @return Nombre del usuario.
      */
