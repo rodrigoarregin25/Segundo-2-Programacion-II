@@ -10,6 +10,12 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ComboBox?>
 
+<!--
+    Pantalla de administración de usuarios (solo para administradores):
+    tabla con los usuarios registrados, búsqueda, filtro por rol y botones
+    para crear, editar y activar o desactivar usuarios.
+    La controla UsuariosController.
+-->
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="gestordecine.usuarios.UsuariosController"
       spacing="25"
@@ -31,6 +37,7 @@
 
             </VBox>
 
+            <!-- Espacio flexible: empuja el botón Volver hacia la derecha -->
             <Region HBox.hgrow="ALWAYS"/>
 
             <Button text="← Volver"
@@ -53,6 +60,8 @@
                     styleClass="boton-secundario"
                     onAction="#editarUsuario"/>
 
+            <!-- El controlador cambia su texto según el usuario seleccionado
+                 (Desactivar o Reactivar) -->
             <Button fx:id="botonEstado"
                     text="Desactivar usuario"
                     prefWidth="160"
@@ -90,7 +99,7 @@
 
         </HBox>
 
-        <!-- FILTROS -->
+        <!-- FILTROS: búsqueda por texto y filtro por rol -->
         <HBox alignment="CENTER_LEFT" spacing="12">
 
             <TextField fx:id="campoBusqueda"
@@ -110,7 +119,7 @@
                wrapText="true"
                styleClass="mensaje-error"/>
 
-        <!-- TABLA -->
+        <!-- TABLA: las columnas se completan desde UsuariosController -->
         <TableView fx:id="tablaUsuarios"
                    VBox.vgrow="ALWAYS"
                    styleClass="tabla-peliculas, tabla-admin-usuarios">

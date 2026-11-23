@@ -9,6 +9,13 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.ScrollPane?>
 
+<!--
+    Pantalla de nueva reserva: a la izquierda se elige la película, la
+    función, la cantidad de entradas por tipo y las butacas en el plano de
+    la sala; a la derecha están la sesión del cliente y el resumen de la
+    compra.
+    La controla NuevaReservaController.
+-->
 <ScrollPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="gestordecine.controladores.NuevaReservaController"
             fitToWidth="true"
@@ -26,6 +33,7 @@
         <HBox spacing="25">
 
             <!-- SELECCIÓN DE FUNCIÓN, ENTRADAS Y BUTACAS -->
+            <!-- Se bloquea entera si no hay sesión iniciada (lo hace el controlador) -->
             <VBox fx:id="tarjetaCompra"
                   spacing="12"
                   styleClass="tarjeta-contenido"
@@ -37,6 +45,7 @@
                 <Label text="Función" style="-fx-text-fill: #CBD5E1;"/>
                 <ComboBox fx:id="comboFuncion" maxWidth="Infinity"/>
 
+                <!-- Un desplegable por tipo de entrada (cantidad de 0 a 10) -->
                 <Label text="Cantidad de entradas por tipo"
                        style="-fx-text-fill: #CBD5E1;"/>
                 <HBox spacing="12">
@@ -54,7 +63,7 @@
                     </VBox>
                 </HBox>
 
-                <!-- LEYENDA -->
+                <!-- LEYENDA: colores de las butacas (cuadraditos de ejemplo) -->
                 <HBox spacing="15">
                     <HBox spacing="6">
                         <Region prefWidth="16" prefHeight="16"
@@ -73,6 +82,7 @@
                     </HBox>
                 </HBox>
 
+                <!-- Acá se dibuja el plano de la sala (método dibujarButacas) -->
                 <VBox fx:id="contenedorButacas" spacing="12"/>
             </VBox>
 
@@ -82,6 +92,7 @@
                   prefWidth="360">
 
                 <!-- INGRESO CENTRALIZADO: YA NO HAY FORMULARIO DUPLICADO -->
+                <!-- Se muestra solo si no hay sesión; abre el formulario de acceso -->
                 <Button fx:id="botonAbrirAcceso"
                         text="Ingresar / Registrarse"
                         styleClass="boton-primario"
@@ -89,6 +100,7 @@
                         onAction="#abrirAcceso"/>
 
                 <!-- INFORMACIÓN DEL CLIENTE AUTENTICADO -->
+                <!-- Oculto hasta que hay una sesión iniciada -->
                 <VBox fx:id="panelSesion"
                       spacing="10"
                       visible="false"
@@ -106,12 +118,14 @@
                 <!-- RESUMEN Y CONFIRMACIÓN -->
                 <VBox fx:id="panelResumen" spacing="10">
                     <Label text="Tu reserva" styleClass="titulo-seccion"/>
+                    <!-- Butacas elegidas con su tipo y precio -->
                     <ListView fx:id="listaEntradas"
                               prefHeight="130"
                               styleClass="lista-salas"/>
                     <Label fx:id="etiquetaTotal"
                            text="Total: $0.0"
                            style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+                    <!-- Mensaje de error: oculto hasta que el controlador lo muestra -->
                     <Label fx:id="mensajeError"
                            visible="false"
                            managed="false"

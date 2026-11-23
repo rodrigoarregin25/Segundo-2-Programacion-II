@@ -9,6 +9,12 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.ComboBox?>
 
+<!--
+    Pantalla de administración de películas (solo para administradores):
+    tabla con las películas registradas, filtro por estado y botones para
+    crear, editar y desactivar o restaurar películas.
+    La controla PeliculasController.
+-->
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="gestordecine.controladores.PeliculasController"
       spacing="25"
@@ -28,6 +34,7 @@
                        styleClass="subtitulo-pagina"/>
             </VBox>
 
+            <!-- Espacio flexible: empuja el botón Volver hacia la derecha -->
             <Region HBox.hgrow="ALWAYS"/>
 
             <Button text="← Volver"
@@ -50,6 +57,8 @@
                     styleClass="boton-secundario"
                     onAction="#editarPelicula"/>
 
+            <!-- El controlador cambia su texto según la película seleccionada
+                 (Desactivar o Restaurar) -->
             <Button fx:id="botonEstado"
                     text="Desactivar película"
                     prefWidth="160"
@@ -74,7 +83,7 @@
           VBox.vgrow="ALWAYS"
           styleClass="tarjeta-contenido">
 
-        <!-- TÍTULO Y FILTRO -->
+        <!-- TÍTULO Y FILTRO: Activas, Inactivas o Todas -->
         <HBox alignment="CENTER_LEFT" spacing="12">
 
             <Label text="Películas registradas"
@@ -91,7 +100,7 @@
 
         </HBox>
 
-        <!-- TABLA -->
+        <!-- TABLA: las columnas se completan desde PeliculasController -->
         <TableView fx:id="tablaPeliculas"
                    VBox.vgrow="ALWAYS"
                    styleClass="tabla-peliculas, tabla-admin-peliculas">
@@ -136,7 +145,7 @@
 
         </TableView>
 
-        <!-- MENSAJE DE ERROR -->
+        <!-- MENSAJE DE ERROR: oculto hasta que el controlador lo muestra -->
         <Label fx:id="mensajeEstado"
                text=""
                visible="false"

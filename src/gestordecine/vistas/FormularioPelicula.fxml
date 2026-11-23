@@ -13,6 +13,13 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.FlowPane?>
 
+<!--
+    Formulario de películas: sirve para registrar una película nueva o para
+    editar una existente. Tiene los datos generales, los géneros, los actores,
+    la sinopsis y el póster.
+    Lo controla FormularioPeliculaController. Está dentro de un ScrollPane
+    para poder bajar si el formulario no entra en la ventana.
+-->
 <ScrollPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="gestordecine.controladores.FormularioPeliculaController"
             fitToWidth="true"
@@ -22,6 +29,7 @@
 
     <VBox spacing="16" styleClass="contenido-formulario-compacto">
 
+        <!-- ENCABEZADO: el título cambia cuando se está editando -->
         <VBox spacing="5">
             <Label fx:id="tituloFormulario"
                    text="Registrar película"
@@ -30,6 +38,7 @@
                    styleClass="subtitulo-pagina"/>
         </VBox>
 
+        <!-- FORMULARIO -->
         <VBox spacing="14"
               maxWidth="850"
               styleClass="tarjeta-formulario-compacto">
@@ -45,6 +54,7 @@
                            styleClass="campo-formulario"/>
             </VBox>
 
+            <!-- Grilla de dos columnas del mismo ancho (50 % cada una) -->
             <GridPane hgap="16" vgap="12">
 
                 <columnConstraints>
@@ -108,7 +118,7 @@
 
                 </VBox>
 
-                <!-- TERCERA FILA: PUNTUACIÓN -->
+                <!-- TERCERA FILA: PUNTUACIÓN (ocupa las dos columnas) -->
 
                 <VBox spacing="5"
                       GridPane.columnIndex="0"
@@ -135,6 +145,7 @@
                     <Label text="Géneros"
                            styleClass="etiqueta-formulario"/>
 
+                    <!-- Los botones de géneros se crean desde Java (cargarGeneros) -->
                     <FlowPane fx:id="contenedorGeneros"
                               hgap="10"
                               vgap="10"
@@ -168,7 +179,7 @@
                           styleClass="campo-formulario"/>
             </VBox>
 
-            <!-- POSTER -->
+            <!-- POSTER: vista previa y botón para elegir la imagen -->
 
             <VBox spacing="10">
 
@@ -201,11 +212,13 @@
 
             </VBox>
 
+            <!-- Mensaje de error: el controlador escribe acá el motivo -->
             <Label fx:id="mensajeError"
                    text=""
                    wrapText="true"
                    styleClass="mensaje-error"/>
 
+            <!-- ACCIONES -->
             <HBox spacing="12" alignment="CENTER_RIGHT">
                 <Button text="Cancelar"
                         styleClass="boton-secundario"

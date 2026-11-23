@@ -16,9 +16,13 @@ public abstract class Entrada implements Serializable {
     private double precioBase;
 
     /**
-     * Que hace: crea una entrada para una butaca con un precio base Parametros:
-     * butaca (Butaca), precioBase (double) Lanza: IllegalArgumentException si
-     * la butaca es nula o el precio es menor o igual a cero
+     * Crea una entrada para una butaca con un precio base.
+     *
+     * @param butaca Butaca a la que corresponde la entrada.
+     * @param precioBase Precio base con el que se vende la entrada, mayor a cero.
+     * @throws IllegalArgumentException Si la butaca es nula.
+     * @throws IllegalArgumentException Si el precio base no es un número válido
+     * mayor a cero.
      */
     public Entrada(Butaca butaca, double precioBase) {
         if (butaca == null) {
@@ -33,27 +37,33 @@ public abstract class Entrada implements Serializable {
     }
 
     /**
-     * Que hace: calcula el precio final de la entrada segun su tipo Retorna: el
-     * precio final (double)
+     * Calcula el precio final de la entrada según su tipo. Cada subclase lo
+     * resuelve a su manera.
+     *
+     * @return El precio final de la entrada.
      */
     public abstract double calcularPrecioFinal();
 
     /**
-     * Que hace: devuelve el nombre del tipo de entrada Retorna: el tipo, por
-     * ejemplo "General" (String)
+     * Devuelve el nombre del tipo de entrada.
+     *
+     * @return El tipo de entrada, por ejemplo "General".
      */
     public abstract String getTipo();
 
     /**
-     * Que hace: devuelve la butaca de la entrada Retorna: la butaca (Butaca)
+     * Devuelve la butaca de la entrada.
+     *
+     * @return La butaca de la entrada.
      */
     public Butaca getButaca() {
         return butaca;
     }
 
     /**
-     * Que hace: devuelve el precio base de la entrada Retorna: el precio base
-     * (double)
+     * Devuelve el precio base de la entrada.
+     *
+     * @return El precio base de la entrada.
      */
     public double getPrecioBase() {
         return precioBase;

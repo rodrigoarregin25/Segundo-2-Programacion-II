@@ -4,6 +4,12 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<!--
+    Pantalla de acceso: inicio de sesión y registro de clientes.
+    La controla AccesoController. Por defecto muestra solo DNI y
+    contraseña; al tocar "No tengo cuenta, registrarme" aparecen los
+    campos extra del registro (nombre, apellido y correo).
+-->
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="gestordecine.sesion.AccesoController"
       spacing="15"
@@ -14,6 +20,7 @@
         <Insets top="25" right="25" bottom="25" left="25"/>
     </padding>
 
+    <!-- Título: el controlador lo cambia entre "Iniciar sesión" y "Registrarse" -->
     <Label fx:id="tituloAcceso"
            text="Iniciar sesión"
            style="-fx-text-fill: white; -fx-font-size: 24px; -fx-font-weight: bold;"/>
@@ -21,6 +28,7 @@
     <Label text="Ingresá con tu cuenta de CINEMA"
            style="-fx-text-fill: #94A3B8; -fx-font-size: 13px;"/>
 
+    <!-- Campos que se usan siempre (login y registro) -->
     <Label text="DNI"
            style="-fx-text-fill: white; -fx-font-weight: bold;"/>
 
@@ -35,6 +43,7 @@
                    styleClass="campo-cinema"
                    promptText="Ingresá tu contraseña"/>
 
+    <!-- Campos extra del registro: empiezan ocultos (visible y managed en false) -->
     <VBox fx:id="camposRegistro"
           spacing="10"
           visible="false"
@@ -60,6 +69,7 @@
 
     </VBox>
 
+    <!-- Mensaje de error: oculto hasta que el controlador lo muestra -->
     <Label fx:id="mensajeError"
            visible="false"
            managed="false"
@@ -68,12 +78,14 @@
            maxWidth="Infinity"
            style="-fx-text-fill: #EF4444;"/>
 
+    <!-- Botón principal: llama al método ingresar() del controlador -->
     <Button fx:id="botonIngresar"
             text="Ingresar"
             onAction="#ingresar"
             maxWidth="Infinity"
             style="-fx-background-color: #2563EB; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 12; -fx-background-radius: 7; -fx-cursor: hand;"/>
 
+    <!-- Cambia entre modo login y modo registro: llama a alternarModo() -->
     <Button fx:id="botonAlternar"
             text="No tengo cuenta, registrarme"
             onAction="#alternarModo"
@@ -81,4 +93,3 @@
             style="-fx-background-color: transparent; -fx-text-fill: #93C5FD; -fx-cursor: hand;"/>
 
 </VBox>
-

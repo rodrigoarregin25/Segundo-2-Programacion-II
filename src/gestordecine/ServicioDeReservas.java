@@ -30,25 +30,31 @@ public class ServicioDeReservas implements Serializable {
     }
 
     /**
-     * Que hace: devuelve una copia de la lista de reservas Retorna: las
-     * reservas (ArrayList de Reserva)
+     * Devuelve una copia de la lista de reservas.
+     *
+     * @return Una copia de las reservas.
      */
     public ArrayList<Reserva> getReservas() {
         return new ArrayList<>(reservas);
     }
 
     /**
-     * Que hace: devuelve una copia de la lista de clientes Retorna: los
-     * clientes (ArrayList de Cliente)
+     * Devuelve una copia de la lista de clientes.
+     *
+     * @return Una copia de los clientes.
      */
     public ArrayList<Cliente> getClientes() {
         return new ArrayList<>(clientes);
     }
 
+
     /**
-     * Que hace: dice si una butaca ya esta ocupada en una funcion por una
-     * reserva confirmada Parametros: funcion (Funcion), butaca (Butaca)
-     * Retorna: true si esta ocupada, false si esta libre
+     * Dice si una butaca ya está ocupada en una función por una reserva
+     * confirmada. Las reservas canceladas no cuentan.
+     *
+     * @param funcion Función que se consulta.
+     * @param butaca Butaca que se quiere comprobar.
+     * @return true si está ocupada, false si está libre.
      */
     public boolean estaOcupada(Funcion funcion, Butaca butaca) {
         for (Reserva reserva : reservas) {
@@ -66,10 +72,13 @@ public class ServicioDeReservas implements Serializable {
     }
 
     /**
-     * Que hace: registra un cliente nuevo Parametros: cliente (Cliente) Lanza:
-     * IllegalArgumentException si el cliente es nulo o ya existe uno con ese
-     * DNI
+     * Registra un cliente nuevo.
+     *
+     * @param cliente Cliente que se quiere registrar.
+     * @throws IllegalArgumentException Si el cliente es nulo.
+     * @throws IllegalArgumentException Si ya existe un cliente con ese DNI.
      */
+    
     public void registrarCliente(Cliente cliente) {
         if (cliente == null) {
             throw new IllegalArgumentException("El cliente no puede ser nulo");
@@ -80,10 +89,14 @@ public class ServicioDeReservas implements Serializable {
         clientes.add(cliente);
     }
 
-    /**
-     * Que hace: busca un cliente por su DNI Parametros: dni (int) Retorna: el
-     * cliente, o null si no existe ninguno con ese DNI
+
+        /**
+     * Busca un cliente por su DNI.
+     *
+     * @param dni DNI del cliente que se busca.
+     * @return El cliente, o null si no existe ninguno con ese DNI.
      */
+
     public Cliente buscarClientePorDni(int dni) {
         for (Cliente cliente : clientes) {
             if (cliente.getDni() == dni) {
@@ -93,12 +106,16 @@ public class ServicioDeReservas implements Serializable {
         return null;
     }
 
+
     /**
-     * Que hace: se asegura de que exista al menos un administrador. Si no hay
-     * ninguno, crea la cuenta inicial (DNI y contrasenia de las constantes). Si
-     * ese DNI ya lo usa otro cliente, no toca nada. Retorna: true si creo el
-     * administrador (hay que guardar los datos), false si no hizo falta
+     * Se asegura de que exista al menos un administrador. Si no hay ninguno,
+     * crea la cuenta inicial (con el DNI y la contraseña de las constantes). Si
+     * ese DNI ya lo usa otro cliente, no toca nada.
+     *
+     * @return true si creó el administrador (hay que guardar los datos), false
+     * si no hizo falta.
      */
+    
     public boolean asegurarAdministrador() {
         for (Cliente cliente : clientes) {
             if (cliente.esAdministrador()) {
@@ -116,12 +133,14 @@ public class ServicioDeReservas implements Serializable {
     }
 
     /**
-     * Que hace: devuelve las reservas que puede consultar un usuario. El
-     * administrador ve todas; el cliente solo las propias. Parametros:
-     * solicitante (Cliente que consulta) Retorna: las reservas visibles
-     * (ArrayList de Reserva) Lanza: IllegalArgumentException si el solicitante
-     * es nulo
+     * Devuelve las reservas que puede consultar un usuario. El administrador
+     * ve todas; el cliente solo las propias.
+     *
+     * @param solicitante Cliente que consulta las reservas.
+     * @return Las reservas visibles para ese usuario.
+     * @throws IllegalArgumentException Si el solicitante es nulo.
      */
+    
     public ArrayList<Reserva> buscarReservasVisibles(Cliente solicitante) {
         if (solicitante == null) {
             throw new IllegalArgumentException("Debe iniciar sesion para ver reservas");
@@ -135,12 +154,16 @@ public class ServicioDeReservas implements Serializable {
     }
 
     /**
-     * Que hace: cancela una reserva comprobando los permisos. El administrador
-     * puede cancelar cualquiera; el cliente solo las suyas. Parametros: codigo
-     * (String), solicitante (Cliente que pide cancelar) Lanza:
-     * IllegalArgumentException si no hay sesion o la reserva no existe,
-     * IllegalStateException si el cliente intenta cancelar una reserva ajena
+     * Cancela una reserva comprobando los permisos. El administrador puede
+     * cancelar cualquiera; el cliente solo las suyas.
+     *
+     * @param codigo Código de la reserva que se quiere cancelar.
+     * @param solicitante Cliente que pide la cancelación.
+     * @throws IllegalArgumentException Si no hay sesión o la reserva no existe.
+     * @throws IllegalStateException Si el cliente intenta cancelar una reserva
+     * de otro cliente.
      */
+    
     public void cancelarReserva(String codigo, Cliente solicitante) {
         if (solicitante == null) {
             throw new IllegalArgumentException("Debe iniciar sesion para cancelar una reserva");
@@ -160,15 +183,21 @@ public class ServicioDeReservas implements Serializable {
     }
 
     /**
-     * Que hace: valida y confirma una reserva. Comprueba que el cliente este
-     * registrado, que la funcion y la sala esten activas y que la funcion no
-     * haya comenzado. Tambien que las butacas sean de la sala, no esten
-     * repetidas ni ocupadas, y que el precio coincida con el de la funcion.
-     * Parametros: cliente (Cliente), funcion (Funcion), entradas (ArrayList de
-     * Entrada) Retorna: la reserva creada y confirmada (Reserva) Lanza:
-     * IllegalArgumentException si algun dato o entrada es invalido,
-     * IllegalStateException si la funcion o la sala no estan disponibles
+     * Valida y confirma una reserva. Comprueba que el cliente esté registrado,
+     * que la función y la sala estén activas y que la función no haya
+     * comenzado. También que las butacas sean de la sala, no estén repetidas
+     * ni ocupadas, y que el precio coincida con el de la función.
+     *
+     * @param cliente Cliente que hace la reserva.
+     * @param funcion Función que se reserva.
+     * @param entradas Entradas con las butacas elegidas.
+     * @return La reserva creada y confirmada.
+     * @throws IllegalArgumentException Si algún dato o alguna entrada es
+     * inválido.
+     * @throws IllegalStateException Si la función o la sala no están
+     * disponibles.
      */
+    
     public Reserva confirmarReserva(Cliente cliente, Funcion funcion, ArrayList<Entrada> entradas) {
 
         // validaciones de los datos
@@ -252,9 +281,12 @@ public class ServicioDeReservas implements Serializable {
     }
 
     /**
-     * Que hace: busca una reserva por su codigo Parametros: codigo (String)
-     * Retorna: la reserva, o null si no existe ninguna con ese codigo
+     * Busca una reserva por su código.
+     *
+     * @param codigo Código de la reserva que se busca.
+     * @return La reserva, o null si no existe ninguna con ese código.
      */
+    
     public Reserva buscarPorCodigo(String codigo) {
         for (Reserva reserva : reservas) {
             if (reserva.getCodigoReserva().equals(codigo)) {
@@ -264,11 +296,14 @@ public class ServicioDeReservas implements Serializable {
         return null;
     }
 
+
     /**
-     * Que hace: busca todas las reservas de un cliente por su DNI Parametros:
-     * dni (int) Retorna: las reservas del cliente (ArrayList de Reserva), vacia
-     * si no tiene
+     * Busca todas las reservas de un cliente por su DNI.
+     *
+     * @param dni DNI del cliente.
+     * @return Las reservas del cliente, o una lista vacía si no tiene.
      */
+    
     public ArrayList<Reserva> buscarPorDni(int dni) {
         ArrayList<Reserva> encontradas = new ArrayList<>();
         for (Reserva reserva : reservas) {
@@ -280,10 +315,12 @@ public class ServicioDeReservas implements Serializable {
     }
 
     /**
-     * Que hace: cancela la reserva con ese codigo, lo que libera sus butacas.
-     * No se puede cancelar si la funcion ya comenzo. Parametros: codigo
-     * (String) Lanza: IllegalArgumentException si no existe la reserva, si ya
-     * estaba cancelada o si la funcion ya comenzo
+     * Cancela la reserva con ese código, lo que libera sus butacas. No se puede
+     * cancelar si la función ya comenzó.
+     *
+     * @param codigo Código de la reserva que se quiere cancelar.
+     * @throws IllegalArgumentException Si no existe la reserva, si ya estaba
+     * cancelada o si la función ya comenzó.
      */
     public void cancelarReserva(String codigo) {
         Reserva reserva = buscarPorCodigo(codigo);
@@ -300,9 +337,11 @@ public class ServicioDeReservas implements Serializable {
     }
 
     /**
-     * Que hace: arma el comprobante de una reserva con todos sus datos
-     * Parametros: reserva (Reserva) Retorna: el texto del comprobante (String)
-     * Lanza: IllegalArgumentException si la reserva es nula
+     * Arma el comprobante de una reserva con todos sus datos.
+     *
+     * @param reserva Reserva de la que se arma el comprobante.
+     * @return El texto del comprobante.
+     * @throws IllegalArgumentException Si la reserva es nula.
      */
     public String generarComprobante(Reserva reserva) {
         if (reserva == null) {
@@ -337,18 +376,21 @@ public class ServicioDeReservas implements Serializable {
     }
 
     /**
-     * Que hace: vuelve a cargar los codigos de reserva ya usados, a partir de
-     * las reservas del servicio. Se llama despues de cargar los datos guardados
+     * Vuelve a cargar los códigos de reserva ya usados, a partir de las
+     * reservas del servicio. Se llama después de cargar los datos guardados.
      */
+    
+    
     public void recargarCodigos() {
         Reserva.recargarCodigos(reservas);
     }
-
     /**
-     * Que hace: dice si una funcion tiene alguna reserva, confirmada o
-     * cancelada Parametros: funcion (Funcion) Retorna: true si tiene al menos
-     * una reserva, false si no tiene ninguna
+     * Dice si una función tiene alguna reserva, confirmada o cancelada.
+     *
+     * @param funcion Función que se consulta.
+     * @return true si tiene al menos una reserva, false si no tiene ninguna.
      */
+    
     public boolean tieneReservas(Funcion funcion) {
         for (Reserva reserva : reservas) {
             if (reserva.getFuncion().getIdFuncion() == funcion.getIdFuncion()) {

@@ -96,9 +96,9 @@ public class NuevaReservaController {
     }
 
     /**
-     * Que hace: carga las cantidades (0 a 10) y avisa cuando se elige otra
-     * pelicula, otra funcion o se cambia una cantidad. JavaFX lo llama solo al
-     * abrir la pantalla.
+     * Carga las cantidades (0 a 10) y avisa cuando se elige otra película,
+     * otra función o se cambia una cantidad. JavaFX lo llama solo al abrir la
+     * pantalla.
      */
     @FXML
     private void initialize() {
@@ -208,10 +208,21 @@ public class NuevaReservaController {
         actualizarSesion();
     }
 
+    /**
+     * Guarda el controlador principal, que se usa para abrir el acceso, cerrar
+     * sesión y actualizar el cine.
+     *
+     * @param principalController Controlador de la ventana principal.
+     */
     public void setPrincipalController(PrincipalController principalController) {
         this.principalController = principalController;
     }
 
+    /**
+     * Abre el acceso cuando se llega desde la cartelera sin haber iniciado
+     * sesión. Si el usuario cancela el acceso, vuelve a la cartelera. Si ya
+     * tiene sesión, no hace nada.
+     */
     public void abrirAccesoDesdeCartelera() {
 
         // Si ya inició sesión, puede reservar directamente.
@@ -226,10 +237,11 @@ public class NuevaReservaController {
     }
 
     /**
-     * Que hace: deja elegidas la pelicula y la funcion que se pasan, por
-     * ejemplo cuando se llega desde el detalle de una pelicula. Se llama
-     * despues de configurar. Parametros: funcion (la funcion que se quiere
-     * reservar).
+     * Deja elegidas la película y la función que se pasan, por ejemplo cuando
+     * se llega desde el detalle de una película. Se llama después de
+     * configurar.
+     *
+     * @param funcion Función que se quiere reservar.
      */
     public void preseleccionarFuncion(Funcion funcion) {
         for (int i = 0; i < peliculasDisponibles.size(); i++) {
@@ -305,8 +317,10 @@ public class NuevaReservaController {
     }
 
     /**
-     * Que hace: carga en el desplegable las funciones futuras y activas de una
-     * pelicula. Parametros: pelicula (la pelicula elegida).
+     * Carga en el desplegable las funciones futuras y activas de una película,
+     * dejando afuera las que no tienen butacas disponibles.
+     *
+     * @param pelicula Película elegida.
      */
     private void cargarFunciones(Pelicula pelicula) {
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
@@ -345,8 +359,9 @@ public class NuevaReservaController {
     }
 
     /**
-     * Que hace: al elegir una funcion, borra lo marcado y redibuja el plano.
-     * Parametros: funcion (la funcion elegida).
+     * Al elegir una función, borra lo marcado y redibuja el plano de la sala.
+     *
+     * @param funcion Función elegida.
      */
     private void elegirFuncion(Funcion funcion) {
         funcionElegida = funcion;
@@ -357,8 +372,9 @@ public class NuevaReservaController {
     }
 
     /**
-     * Que hace: suma las entradas de los tres tipos. Retorna: la cantidad total
-     * de entradas elegida.
+     * Suma las entradas de los tres tipos (general, estudiante y jubilado).
+     *
+     * @return La cantidad total de entradas elegida.
      */
     private int obtenerTotalEntradas() {
         return comboGeneral.getSelectionModel().getSelectedIndex()
@@ -367,8 +383,8 @@ public class NuevaReservaController {
     }
 
     /**
-     * Que hace: cuando baja la cantidad de entradas, saca las ultimas butacas
-     * marcadas que sobran. Lo que ya estaba bien marcado se conserva.
+     * Cuando baja la cantidad de entradas, saca las últimas butacas marcadas
+     * que sobran. Lo que ya estaba bien marcado se conserva.
      */
     private void ajustarSeleccion() {
         int total = obtenerTotalEntradas();
@@ -383,8 +399,8 @@ public class NuevaReservaController {
     }
 
     /**
-     * Que hace: dibuja el plano de la sala de la funcion elegida, con los
-     * pasillos segun la distribucion (ej: 4-8-4).
+     * Dibuja el plano de la sala de la función elegida, con los pasillos según
+     * la distribución (por ejemplo 4-8-4).
      */
     private void dibujarButacas() {
         contenedorButacas.getChildren().clear();
@@ -442,10 +458,12 @@ public class NuevaReservaController {
     }
 
     /**
-     * Que hace: crea el cuadradito de una butaca. Gris si esta ocupada, verde
-     * si esta seleccionada, y al hacer clic la marca o la desmarca. Parametros:
-     * butaca (la butaca), numero (el numero que se muestra). Retorna: el Label
-     * que representa la butaca.
+     * Crea el cuadradito de una butaca. Es gris si está ocupada y verde si
+     * está seleccionada. Al hacer click la marca o la desmarca.
+     *
+     * @param butaca Butaca que se dibuja.
+     * @param numero Número que se muestra en el cuadradito.
+     * @return El Label que representa la butaca.
      */
     private Label crearButacaVisual(Butaca butaca, int numero) {
         Label etiqueta = new Label(String.valueOf(numero));
@@ -467,9 +485,11 @@ public class NuevaReservaController {
     }
 
     /**
-     * Que hace: marca la butaca o la desmarca si ya estaba marcada. Las
-     * ocupadas no se pueden marcar, y tampoco mas butacas que la cantidad total
-     * de entradas elegida. Parametros: butaca (la butaca donde se hizo clic).
+     * Marca la butaca o la desmarca si ya estaba marcada. Las ocupadas no se
+     * pueden marcar, y tampoco más butacas que la cantidad total de entradas
+     * elegida.
+     *
+     * @param butaca Butaca donde se hizo click.
      */
     private void alternarButaca(Butaca butaca) {
         ocultarError();
@@ -495,10 +515,11 @@ public class NuevaReservaController {
     }
 
     /**
-     * Que hace: arma las entradas a partir de las butacas marcadas. Las
-     * primeras son generales, despues estudiantes y al final jubilados, segun
-     * las cantidades elegidas. Retorna: la lista de entradas (ArrayList de
-     * Entrada).
+     * Arma las entradas a partir de las butacas marcadas. Las primeras son
+     * generales, después estudiantes y al final jubilados, según las
+     * cantidades elegidas.
+     *
+     * @return La lista de entradas (vacía si no hay función elegida).
      */
     private ArrayList<Entrada> construirEntradas() {
         ArrayList<Entrada> entradas = new ArrayList<>();
@@ -526,7 +547,7 @@ public class NuevaReservaController {
     }
 
     /**
-     * Que hace: actualiza la lista de butacas marcadas y el total.
+     * Actualiza la lista de butacas marcadas y el total a pagar.
      */
     private void actualizarResumen() {
         ArrayList<String> textos = new ArrayList<>();
@@ -543,10 +564,12 @@ public class NuevaReservaController {
     }
 
     /**
-     * Que hace: confirma la reserva con las butacas marcadas para el cliente
-     * que inicio sesion. Muestra el comprobante en una ventana y limpia la
-     * pantalla. Se trabaja sobre una copia del cine: si algo falla, no se
-     * guarda nada.
+     * Confirma la reserva con las butacas marcadas para el cliente que inició
+     * sesión. Muestra el comprobante en una ventana y limpia la pantalla.
+     *
+     * Trabaja sobre una copia del cine: si algo falla, no se guarda nada. Los
+     * errores de reglas (butaca ocupada, datos inválidos) y los de datos
+     * (archivo o copia) se muestran en pantalla.
      */
     @FXML
     private void confirmarReserva() {
@@ -612,8 +635,8 @@ public class NuevaReservaController {
     }
 
     /**
-     * Que hace: deja la compra como nueva: borra las butacas marcadas y vuelve
-     * la cantidad a 1 entrada general. La sesion sigue iniciada.
+     * Deja la compra como nueva: borra las butacas marcadas y vuelve la
+     * cantidad a 1 entrada general. La sesión sigue iniciada.
      */
     private void limpiarPantalla() {
         butacasMarcadas.clear();
@@ -653,12 +676,20 @@ public class NuevaReservaController {
         volverCarteleraSiCancela = false;
     }
 
+    /**
+     * Muestra un mensaje de error en la pantalla.
+     *
+     * @param mensaje Texto del error que se quiere mostrar.
+     */
     private void mostrarError(String mensaje) {
         mensajeError.setText(mensaje);
         mensajeError.setVisible(true);
         mensajeError.setManaged(true);
     }
 
+    /**
+     * Oculta el mensaje de error de la pantalla.
+     */
     private void ocultarError() {
         mensajeError.setVisible(false);
         mensajeError.setManaged(false);

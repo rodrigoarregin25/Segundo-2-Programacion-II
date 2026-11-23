@@ -19,8 +19,6 @@ import javafx.stage.Window;
  *
  * Permite informar errores y operaciones exitosas mediante
  * ventanas modales con el diseño visual del sistema.
- *
- * @author Rodrigo Arregin
  */
 public class DialogoCinema {
 

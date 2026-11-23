@@ -12,11 +12,17 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.shape.SVGPath?>
 
+<!--
+    Pantalla de cartelera: muestra una tarjeta por cada película activa y
+    permite filtrarlas por título, género y fecha.
+    La controla CarteleraController.
+-->
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="gestordecine.controladores.CarteleraController"
       spacing="20"
       styleClass="contenido-principal">
 
+    <!-- ENCABEZADO -->
     <Label text="Cartelera"
            styleClass="titulo-pagina"/>
 
@@ -24,6 +30,8 @@
            styleClass="subtitulo-pagina"/>
     
 
+    <!-- FILTROS: título, género y fecha. Al cambiar cualquiera, el
+         controlador vuelve a armar las tarjetas -->
     <HBox alignment="CENTER_LEFT"
           spacing="15"
           styleClass="filtros-cartelera">
@@ -49,6 +57,8 @@
                     promptText="Todas las fechas"
                     styleClass="filtro-cartelera-unificado"/>
 
+        <!-- Botón con ícono de tacho: quita el filtro de fecha (limpiarFecha).
+             El ícono es un dibujo vectorial (SVGPath), no una imagen -->
         <Button prefWidth="40"
                 minWidth="40"
                 maxWidth="40"
@@ -71,11 +81,14 @@
     </HBox>
 
 
+    <!-- LISTA DE PELÍCULAS: con scroll vertical, sin barra horizontal -->
     <ScrollPane fitToWidth="true"
                 hbarPolicy="NEVER"
                 VBox.vgrow="ALWAYS"
                 styleClass="scroll-cartelera">
 
+        <!-- Las tarjetas se agregan desde Java (mostrarPeliculas). El FlowPane
+             las acomoda en filas y baja a la siguiente cuando no hay lugar -->
         <FlowPane fx:id="contenedorPeliculas"
                   hgap="20"
                   vgap="20"

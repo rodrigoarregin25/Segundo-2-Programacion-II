@@ -8,8 +8,6 @@ import gestordecine.Rol;
  *
  * Permite iniciar sesión, consultar el cliente autenticado y cerrar sesión sin
  * modificar los datos persistidos.
- *
- * @author Rodrigo Arregin
  */
 public final class SesionCliente {
 
@@ -76,8 +74,9 @@ public final class SesionCliente {
     }
 
     /**
-     * Que hace: devuelve el rol del usuario que tiene la sesion iniciada
-     * Retorna: el rol (Rol), o null si no hay sesion
+     * Devuelve el rol del usuario que tiene la sesión iniciada.
+     *
+     * @return El rol del usuario, o null si no hay sesión.
      */
     public static Rol getRolActual() {
         if (clienteActual == null) {
@@ -87,25 +86,28 @@ public final class SesionCliente {
     }
 
     /**
-     * Que hace: dice si el usuario con sesion iniciada es administrador
-     * Retorna: true si hay sesion y es administrador, false si no
+     * Dice si el usuario con sesión iniciada es administrador.
+     *
+     * @return true si hay sesión y es administrador, false si no.
      */
     public static boolean esAdministrador() {
         return haySesion() && clienteActual.esAdministrador();
     }
 
     /**
-     * Que hace: dice si el usuario con sesion iniciada es un cliente comun
-     * Retorna: true si hay sesion y es cliente, false si no
+     * Dice si el usuario con sesión iniciada es un cliente común.
+     *
+     * @return true si hay sesión y es cliente, false si no.
      */
     public static boolean esCliente() {
         return haySesion() && clienteActual.esCliente();
     }
 
     /**
-     * Que hace: comprueba que quien tiene la sesion sea administrador. Se usa
-     * antes de abrir o ejecutar algo de administracion. Lanza:
-     * IllegalStateException si no hay sesion o no es administrador
+     * Comprueba que quien tiene la sesión sea administrador. Se usa antes de
+     * abrir o ejecutar algo de administración.
+     *
+     * @throws IllegalStateException Si no hay sesión o no es administrador.
      */
     public static void exigirAdministrador() {
         if (!esAdministrador()) {

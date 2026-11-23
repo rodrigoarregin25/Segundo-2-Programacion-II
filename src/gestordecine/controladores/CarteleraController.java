@@ -24,6 +24,13 @@ import java.time.LocalDateTime;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.DateCell;
 
+
+/**
+ * Controlador de la pantalla de cartelera. Muestra una tarjeta por cada
+ * película activa y permite filtrarlas por título, género y fecha. Al hacer
+ * click en una tarjeta se abre el detalle de la película.
+ */
+
 public class CarteleraController {
 
     @FXML
@@ -39,6 +46,14 @@ public class CarteleraController {
 
     private Cine cine;
     private PrincipalController principalController;
+    
+    
+    /**
+     * Guarda el controlador principal, que se usa para pasar a la pantalla de
+     * detalle cuando se hace click en una película.
+     *
+     * @param principalController Controlador de la ventana principal.
+     */
 
     public void setPrincipalController(PrincipalController principalController) {
         this.principalController = principalController;
@@ -90,12 +105,13 @@ public class CarteleraController {
         mostrarPeliculas();
     }
 
-    /**
+     /**
      * Muestra las películas activas que cumplen con los filtros de título,
      * género y fecha seleccionados.
      *
      * Si se selecciona una fecha, solamente muestra películas que tengan al
-     * menos una función futura y activa ese día, en una sala activa.
+     * menos una función futura y activa ese día, en una sala activa. Si
+     * ninguna película cumple los filtros, muestra un aviso en pantalla.
      */
     private void mostrarPeliculas() {
 
@@ -247,6 +263,14 @@ public class CarteleraController {
         }
     }
 
+    /**
+     * Arma un texto con los géneros de una película, separados por coma. Si no
+     * tiene géneros, devuelve "Sin género".
+     *
+     * @param pelicula Película de la que se quieren los géneros.
+     * @return Los géneros como texto, por ejemplo "Acción, Drama".
+     */
+    
     private String formatearGeneros(Pelicula pelicula) {
 
         ArrayList<Genero> generos = pelicula.getGeneros();

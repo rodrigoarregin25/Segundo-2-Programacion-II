@@ -41,11 +41,22 @@ import gestordecine.usuarios.FormularioUsuarioController;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 
+/**
+ * Controlador de la ventana principal. Guarda el cine activo y se encarga de
+ * la navegación: carga cada pantalla en el centro de la ventana, le pasa los
+ * datos que necesita y controla qué opciones del menú ve cada usuario según
+ * su rol.
+ */
 public class PrincipalController {
 
     private Cine cine;
     private PersistenciaCine persistencia;
 
+    /**
+     * Cambia el cine activo.
+     *
+     * @param cine Cine que se quiere usar.
+     */
     public void setCine(Cine cine) {
         this.cine = cine;
         this.persistencia = persistencia;
@@ -85,6 +96,10 @@ public class PrincipalController {
     @FXML
     private Button botonCartelera;
 
+    /**
+     * Se ejecuta sola cuando JavaFX termina de cargar la ventana. Le pone el
+     * ícono a cada botón del menú.
+     */
     @FXML
     private void initialize() {
         aplicarIcono(botonMisReservas);
@@ -99,10 +114,12 @@ public class PrincipalController {
     }
 
     /**
-     * Que hace: comprueba que el usuario con sesion sea administrador. Si no lo
-     * es, lo manda a la Cartelera. Se usa al principio de cada pantalla de
-     * administracion, ademas de ocultar los botones del menu. Retorna: true si
-     * NO tiene permisos (hay que cortar), false si es admin
+     * Comprueba que el usuario con sesión sea administrador. Si no lo es, lo
+     * manda a la cartelera. Se usa al principio de cada pantalla de
+     * administración, además de ocultar los botones del menú.
+     *
+     * @return true si NO tiene permisos (hay que cortar), false si es
+     * administrador.
      */
     private boolean sinPermisoAdministrador() {
         if (SesionCliente.esAdministrador()) {
@@ -113,6 +130,10 @@ public class PrincipalController {
         return true;
     }
 
+    /**
+     * Abre la pantalla de administración de películas. Solo para
+     * administradores.
+     */
     @FXML
     public void mostrarPeliculas() {
 
@@ -139,6 +160,13 @@ public class PrincipalController {
         }
     }
 
+    /**
+     * Guarda el cine y la persistencia con los que va a trabajar la ventana, y
+     * actualiza el menú según la sesión.
+     *
+     * @param cine Cine con los datos cargados.
+     * @param persistencia Objeto que guarda los datos en el archivo.
+     */
     public void configurar(Cine cine, PersistenciaCine persistencia) {
         this.cine = cine;
         this.persistencia = persistencia;
@@ -179,18 +207,30 @@ public class PrincipalController {
     }
 
     /**
-     * Que hace: devuelve el cine actual, con los ultimos cambios guardados
-     * Retorna: el cine (Cine)
+     * Devuelve el cine actual, con los últimos cambios guardados.
+     *
+     * @return El cine en uso.
      */
     public Cine obtenerCineActual() {
         return cine;
     }
 
+    /**
+     * Vuelve a cargar el cine desde el archivo.
+     *
+     * @throws IOException Si no se puede leer el archivo.
+     * @throws ClassNotFoundException Si el archivo tiene una clase que no se
+     * encuentra.
+     */
     public void recuperarCineGuardado() throws IOException, ClassNotFoundException {
 
         this.cine = persistencia.cargarOCrear();
     }
 
+    /**
+     * Abre el formulario para registrar una película nueva. Solo para
+     * administradores.
+     */
     public void mostrarFormularioPelicula() {
 
         if (sinPermisoAdministrador()) {
@@ -216,6 +256,12 @@ public class PrincipalController {
         }
     }
 
+    /**
+     * Abre el formulario para editar una película existente. Solo para
+     * administradores.
+     *
+     * @param pelicula Película que se quiere editar.
+     */
     public void mostrarFormularioEditarPelicula(Pelicula pelicula) {
 
         if (sinPermisoAdministrador()) {
@@ -242,6 +288,9 @@ public class PrincipalController {
         }
     }
 
+    /**
+     * Abre la pantalla de administración de salas. Solo para administradores.
+     */
     @FXML
     public void mostrarSalas() {
 
@@ -268,7 +317,8 @@ public class PrincipalController {
     }
 
     /**
-     * Que hace: abre la pantalla para consultar y cancelar reservas.
+     * Abre la pantalla para consultar y cancelar reservas. Solo para
+     * administradores.
      */
     @FXML
     public void mostrarReservas() {
@@ -297,7 +347,8 @@ public class PrincipalController {
     }
 
     /**
-     * Que hace: abre la pantalla de funciones en el centro de la ventana.
+     * Abre la pantalla de funciones en el centro de la ventana. Solo para
+     * administradores.
      */
     @FXML
     public void mostrarFunciones() {
@@ -326,7 +377,8 @@ public class PrincipalController {
     }
 
     /**
-     * Que hace: abre el formulario para programar una funcion nueva.
+     * Abre el formulario para programar una función nueva. Solo para
+     * administradores.
      */
     public void mostrarFormularioFuncion() {
 
@@ -354,8 +406,10 @@ public class PrincipalController {
     }
 
     /**
-     * Que hace: abre el formulario para editar el precio de una funcion
-     * existente. Parametros: funcion (la funcion a editar).
+     * Abre el formulario para editar el precio de una función existente. Solo
+     * para administradores.
+     *
+     * @param funcion Función que se quiere editar.
      */
     public void mostrarFormularioEditarFuncion(Funcion funcion) {
 
@@ -383,6 +437,10 @@ public class PrincipalController {
         }
     }
 
+    /**
+     * Abre el formulario para registrar una sala nueva. Solo para
+     * administradores.
+     */
     public void mostrarFormularioSala() {
 
         if (sinPermisoAdministrador()) {
@@ -408,6 +466,12 @@ public class PrincipalController {
         }
     }
 
+    /**
+     * Abre el formulario para editar una sala existente. Solo para
+     * administradores.
+     *
+     * @param sala Sala que se quiere editar.
+     */
     public void mostrarFormularioEditarSala(Sala sala) {
 
         if (sinPermisoAdministrador()) {
@@ -434,6 +498,10 @@ public class PrincipalController {
         }
     }
 
+    /**
+     * Abre la cartelera en el centro de la ventana. Puede verla cualquier
+     * usuario, con o sin sesión.
+     */
     @FXML
     public void mostrarCartelera() {
 
@@ -455,6 +523,11 @@ public class PrincipalController {
         }
     }
 
+    /**
+     * Abre el detalle de una película, con sus datos y sus funciones.
+     *
+     * @param pelicula Película que se quiere ver.
+     */
     public void mostrarDetallePelicula(Pelicula pelicula) {
 
         try {
@@ -477,6 +550,9 @@ public class PrincipalController {
         }
     }
 
+    /**
+     * Abre la pantalla para hacer una reserva nueva.
+     */
     @FXML
     public void mostrarNuevaReserva() {
 
@@ -499,6 +575,13 @@ public class PrincipalController {
         }
     }
 
+    /**
+     * Abre la pantalla de nueva reserva con una función ya elegida, por
+     * ejemplo cuando se llega desde el detalle de una película. Si no hay
+     * sesión iniciada, pide el acceso.
+     *
+     * @param funcion Función que se quiere reservar.
+     */
     public void mostrarNuevaReservaConFuncion(Funcion funcion) {
 
         try {
@@ -848,6 +931,11 @@ public class PrincipalController {
         mostrarCartelera();
     }
 
+    /**
+     * Crea el ícono (una flechita azul) que llevan los botones del menú.
+     *
+     * @return El Label con el ícono.
+     */
     private Label crearIconoMenu() {
         Label icono = new Label("▸");
         icono.setStyle(
@@ -858,6 +946,11 @@ public class PrincipalController {
         return icono;
     }
 
+    /**
+     * Le pone el ícono del menú a un botón, si el botón existe.
+     *
+     * @param boton Botón al que se le quiere poner el ícono.
+     */
     private void aplicarIcono(Button boton) {
         if (boton != null) {
             boton.setGraphic(crearIconoMenu());

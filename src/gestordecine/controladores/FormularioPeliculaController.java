@@ -22,6 +22,14 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.FlowPane;
 
+
+/**
+ * Controlador del formulario de películas. Sirve para registrar una película
+ * nueva o para editar una existente, según se haya llamado o no a
+ * configurarEdicion. Valida los datos, copia el póster a la carpeta posters y
+ * guarda los cambios en el archivo.
+ */
+
 public class FormularioPeliculaController {
 
     private Cine cine;
@@ -63,6 +71,14 @@ public class FormularioPeliculaController {
     private FlowPane contenedorGeneros;
 
     private final Map<Genero, ToggleButton> botonesGenero = new HashMap<>();
+    
+    /**
+     * Guarda los objetos que necesita el formulario para trabajar.
+     *
+     * @param cine Cine con las películas.
+     * @param persistencia Objeto que guarda los datos en el archivo.
+     * @param principalController Controlador de la ventana principal.
+     */
 
     public void configurar(
             Cine cine,
@@ -73,7 +89,15 @@ public class FormularioPeliculaController {
         this.persistencia = persistencia;
         this.principalController = principalController;
     }
-
+    
+    /**
+     * Prepara el formulario para editar una película: cambia los textos, carga
+     * sus datos en los campos, muestra el póster y marca sus géneros. La
+     * duración queda deshabilitada porque no se puede modificar.
+     *
+     * @param pelicula Película que se quiere editar.
+     */
+    
     public void configurarEdicion(Pelicula pelicula) {
 
         this.peliculaEnEdicion = pelicula;
@@ -125,11 +149,20 @@ public class FormularioPeliculaController {
             }
         }
     }
+    
+    /**
+     * Cancela el formulario y vuelve a la lista de películas sin guardar nada.
+     */
 
     @FXML
     private void cancelar() {
         principalController.mostrarPeliculas();
     }
+    
+     /**
+     * Abre el selector de archivos para elegir el póster (JPG o PNG). Si se
+     * elige uno, guarda el archivo y lo muestra como vista previa.
+     */
 
     @FXML
     private void seleccionarPoster() {
@@ -159,6 +192,15 @@ public class FormularioPeliculaController {
             );
         }
     }
+    
+    /**
+     * Registra una película nueva o guarda los cambios de una existente.
+     *
+     * Trabaja sobre una copia del cine y recién cuando se guarda el archivo
+     * reemplaza el cine activo, así no queda nada a medias si algo falla. Si
+     * hay un error, lo muestra en pantalla y borra el póster nuevo que se
+     * hubiera copiado.
+     */
 
     @FXML
     private void guardarPelicula() {
@@ -299,6 +341,16 @@ public class FormularioPeliculaController {
             }
         }
     }
+    
+    /**
+     * Copia el póster elegido a la carpeta posters con un nombre único (id de
+     * la película más un código aleatorio), para que no se pisen entre sí.
+     *
+     * @param idPelicula Id de la película a la que pertenece el póster.
+     * @return El nombre del archivo copiado.
+     * @throws IOException Si no se puede crear la carpeta o copiar el archivo.
+     * @throws IllegalArgumentException Si no se eligió ningún póster.
+     */
 
     private String guardarPoster(int idPelicula) throws IOException {
 
@@ -333,6 +385,11 @@ public class FormularioPeliculaController {
         return nombreArchivo;
     }
     
+    /**
+     * Crea un botón para cada género y los agrega al formulario. Los guarda en
+     * un mapa para poder marcarlos y leerlos después.
+     */
+    
     private void cargarGeneros() {
         contenedorGeneros.getChildren().clear();
         botonesGenero.clear();
@@ -345,12 +402,21 @@ public class FormularioPeliculaController {
             contenedorGeneros.getChildren().add(boton);
         }
     }
-
+    
+    /**
+     * Se ejecuta sola cuando JavaFX termina de cargar el formulario. Carga los
+     * botones de géneros.
+     */
     @FXML
     private void initialize() {
         cargarGeneros();
     }
-
+    
+    /**
+     * Devuelve los géneros que están marcados en el formulario.
+     *
+     * @return Lista con los géneros seleccionados (puede estar vacía).
+     */
     private ArrayList<Genero> obtenerGenerosSeleccionados() {
 
         ArrayList<Genero> seleccionados = new ArrayList<>();

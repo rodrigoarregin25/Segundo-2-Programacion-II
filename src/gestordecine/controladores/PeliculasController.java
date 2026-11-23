@@ -19,12 +19,24 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 
+/**
+ * Controlador de la pantalla de administración de películas. Muestra las
+ * películas en una tabla con filtro por estado (activas, inactivas o todas) y
+ * permite crear, editar, desactivar y restaurar películas.
+ */
 public class PeliculasController {
 
     private Cine cine;
     private PrincipalController principalController;
     private PersistenciaCine persistencia;
 
+    /**
+     * Carga las películas en la tabla y registra el filtro por estado. Al
+     * abrir, muestra solo las activas.
+     *
+     * @param cine Cine que contiene las películas.
+     * @param persistencia Objeto que guarda los datos en el archivo.
+     */
     public void configurar(Cine cine, PersistenciaCine persistencia) {
         this.cine = cine;
         this.persistencia = persistencia;
@@ -54,6 +66,12 @@ public class PeliculasController {
         peliculasFiltradas.setPredicate(Pelicula::isActiva);
     }
 
+    /**
+     * Guarda el controlador principal, que se usa para cambiar de pantalla y
+     * actualizar el cine.
+     *
+     * @param principalController Controlador de la ventana principal.
+     */
     public void setPrincipalController(PrincipalController principalController) {
         this.principalController = principalController;
     }
@@ -94,6 +112,12 @@ public class PeliculasController {
     @FXML
     private Button botonEstado;
 
+    /**
+     * Se ejecuta sola cuando JavaFX termina de cargar la pantalla. Define qué
+     * dato muestra cada columna de la tabla, carga las opciones del filtro y
+     * cambia el texto del botón según la película seleccionada (Desactivar o
+     * Restaurar).
+     */
     @FXML
     private void initialize() {
 
@@ -201,11 +225,18 @@ public class PeliculasController {
         );
     }
 
+    /**
+     * Abre el formulario para registrar una película nueva.
+     */
     @FXML
     private void nuevaPelicula() {
         principalController.mostrarFormularioPelicula();
     }
 
+    /**
+     * Abre el formulario para editar la película seleccionada en la tabla. Si
+     * no hay ninguna seleccionada, muestra un aviso.
+     */
     @FXML
     private void editarPelicula() {
 
@@ -219,6 +250,13 @@ public class PeliculasController {
         principalController.mostrarFormularioEditarPelicula(seleccionada);
     }
 
+    /**
+     * Desactiva la película seleccionada, o la restaura si ya estaba inactiva.
+     *
+     * Trabaja sobre una copia del cine y recién cuando se guarda el archivo
+     * reemplaza el cine activo. Si el cine no permite el cambio (por ejemplo,
+     * por funciones asociadas), muestra el motivo en un diálogo.
+     */
     @FXML
     private void desactivarPelicula() {
 
@@ -256,12 +294,24 @@ public class PeliculasController {
         }
     }
 
+    /**
+     * Muestra un mensaje en la pantalla.
+     *
+     * @param mensaje Texto que se quiere mostrar.
+     */
     private void mostrarMensaje(String mensaje) {
         mensajeEstado.setText(mensaje);
         mensajeEstado.setVisible(true);
         mensajeEstado.setManaged(true);
     }
 
+    /**
+     * Arma un texto con los géneros de una película, separados por coma. Si no
+     * tiene géneros, devuelve "Sin género".
+     *
+     * @param pelicula Película de la que se quieren los géneros.
+     * @return Los géneros como texto, por ejemplo "Acción, Drama".
+     */
     private String formatearGeneros(Pelicula pelicula) {
 
         if (pelicula.getGeneros().isEmpty()) {
