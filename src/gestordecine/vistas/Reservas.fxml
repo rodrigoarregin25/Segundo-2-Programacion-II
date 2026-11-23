@@ -10,15 +10,34 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.TextField?>
 
+<!--
+    ADMINISTRACIÓN DE RESERVAS
+
+    Define la interfaz para consultar las reservas registradas en CINEMA.
+
+    Permite buscar reservas por código o DNI, visualizar comprobantes,
+    cancelar reservas confirmadas y exportar el historial a un archivo CSV.
+
+    La lógica de búsqueda, cancelación, exportación y navegación
+    se encuentra en ReservasController.
+-->
+
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="gestordecine.controladores.ReservasController"
       spacing="25"
       styleClass="contenido-principal">
 
-    <!-- ENCABEZADO PRINCIPAL -->
+    <!--
+        ENCABEZADO PRINCIPAL
+
+        Contiene el título, la descripción de la pantalla
+        y los botones para navegar y administrar reservas.
+    -->
+
     <VBox spacing="10">
 
-        <!-- PRIMERA FILA: INFORMACIÓN Y VOLVER -->
+        <!-- PRIMERA FILA: INFORMACIÓN Y NAVEGACIÓN -->
+
         <HBox alignment="CENTER_LEFT" spacing="20">
 
             <VBox spacing="8">
@@ -31,6 +50,7 @@
 
             </VBox>
 
+            <!-- Desplaza el botón Volver hacia la derecha. -->
             <Region HBox.hgrow="ALWAYS"/>
 
             <Button text="← Volver"
@@ -41,20 +61,29 @@
 
         </HBox>
 
-        <!-- SEGUNDA FILA: ACCIONES -->
+        <!--
+            SEGUNDA FILA: ACCIONES SOBRE RESERVAS
+
+            Ver comprobante: muestra el ticket de la reserva seleccionada.
+            Cancelar reserva: solicita confirmación y cancela la reserva.
+
+            Los botones se habilitan o deshabilitan desde ReservasController
+            según exista una selección y el estado de la reserva.
+        -->
+
         <HBox alignment="CENTER_RIGHT" spacing="12">
 
             <Region HBox.hgrow="ALWAYS"/>
 
-            <Button
-                fx:id="botonComprobante"
-                text="Ver comprobante"
-                prefWidth="160"
-                minWidth="160"
-                maxWidth="160"
-                styleClass="boton-secundario"
-                onAction="#verComprobante"/>
-            
+            <Button fx:id="botonComprobante"
+                    text="Ver comprobante"
+                    prefWidth="160"
+                    minWidth="160"
+                    maxWidth="160"
+                    prefHeight="45"
+                    styleClass="boton-secundario"
+                    onAction="#verComprobante"/>
+
             <Button fx:id="botonCancelar"
                     text="Cancelar reserva"
                     prefWidth="160"
@@ -62,16 +91,32 @@
                     prefHeight="45"
                     styleClass="boton-peligro"
                     onAction="#cancelarReserva"/>
+
         </HBox>
 
     </VBox>
 
-    <!-- PANEL DE RESERVAS -->
+    <!--
+        PANEL PRINCIPAL DE RESERVAS
+
+        Agrupa el título del listado, la exportación CSV,
+        los filtros de búsqueda, la tabla y los mensajes de error.
+
+        VBox.vgrow permite aprovechar el espacio vertical disponible.
+    -->
+
     <VBox spacing="12"
           styleClass="tarjeta-contenido"
           VBox.vgrow="ALWAYS">
 
-        <!-- PRIMERA FILA: TÍTULO Y EXPORTACIÓN -->
+        <!--
+            PRIMERA FILA: TÍTULO Y EXPORTACIÓN
+
+            El botón Exportar CSV permite guardar todas las reservas,
+            tanto confirmadas como canceladas, sin importar
+            los filtros aplicados en la tabla.
+        -->
+
         <HBox alignment="CENTER_LEFT" spacing="12">
 
             <Label text="Reservas encontradas"
@@ -85,16 +130,27 @@
 
         </HBox>
 
-        <!-- SEGUNDA FILA: FILTROS DE BÚSQUEDA -->
+        <!--
+            SEGUNDA FILA: FILTROS DE BÚSQUEDA
+
+            Permite seleccionar el criterio de búsqueda (código o DNI)
+            e ingresar el valor que se desea consultar.
+
+            Buscar: ejecuta el método buscar().
+            Ver todas: limpia el campo y vuelve a cargar las reservas.
+        -->
+
         <HBox spacing="10"
               alignment="CENTER_LEFT">
 
             <Label text="Buscar por"
                    style="-fx-text-fill: #CBD5E1;"/>
 
+            <!-- Criterio utilizado para buscar reservas. -->
             <ComboBox fx:id="comboCriterio"
                       prefWidth="140"/>
 
+            <!-- Código de reserva o DNI ingresado por el usuario. -->
             <TextField fx:id="campoBusqueda"
                        prefWidth="260"
                        promptText="Dejalo vacío para ver todas"/>
@@ -109,53 +165,74 @@
 
         </HBox>
 
-        <!-- TERCERA FILA: TABLA ADMINISTRATIVA -->
+        <!--
+            TERCERA FILA: TABLA ADMINISTRATIVA
+
+            Muestra todas las reservas que cumplen el criterio
+            de búsqueda seleccionado.
+
+            Cada TableColumn está vinculada con un atributo
+            del controlador mediante fx:id.
+
+            ReservasController configura cómo se obtiene
+            y presenta la información de cada columna.
+        -->
+
         <TableView fx:id="listaReservas"
                    VBox.vgrow="ALWAYS"
                    styleClass="tabla-peliculas, tabla-reservas">
 
             <columns>
 
+                <!-- Estado actual de la reserva. -->
                 <TableColumn fx:id="colEstado"
                              text="Estado"
                              minWidth="65"
                              prefWidth="65"/>
 
+                <!-- Código único de reserva. -->
                 <TableColumn fx:id="colCodigo"
                              text="Código"
                              minWidth="85"
                              prefWidth="95"/>
 
+                <!-- Película asociada a la función reservada. -->
                 <TableColumn fx:id="colPelicula"
                              text="Película"
                              minWidth="230"
                              prefWidth="360"/>
 
+                <!-- Fecha y hora de la función. -->
                 <TableColumn fx:id="colFecha"
                              text="Fecha y hora"
                              minWidth="145"
                              prefWidth="165"/>
 
+                <!-- Sala donde se proyecta la película. -->
                 <TableColumn fx:id="colSala"
                              text="Sala"
                              minWidth="85"
                              prefWidth="100"/>
 
+                <!-- Nombre y apellido del cliente. -->
                 <TableColumn fx:id="colCliente"
                              text="Cliente"
                              minWidth="150"
                              prefWidth="200"/>
 
+                <!-- Documento de identidad del cliente. -->
                 <TableColumn fx:id="colDni"
                              text="DNI"
                              minWidth="100"
                              prefWidth="115"/>
 
+                <!-- Cantidad de entradas incluidas en la reserva. -->
                 <TableColumn fx:id="colEntradas"
                              text="Entradas"
                              minWidth="80"
                              prefWidth="95"/>
 
+                <!-- Importe total registrado en la reserva. -->
                 <TableColumn fx:id="colTotal"
                              text="Total"
                              minWidth="125"
@@ -165,7 +242,16 @@
 
         </TableView>
 
-        <!-- MENSAJE DE ERROR -->
+        <!--
+            MENSAJES DE ERROR
+
+            Permanece oculto inicialmente.
+
+            ReservasController modifica el texto y la visibilidad
+            cuando ocurre un error de búsqueda, cancelación
+            o persistencia.
+        -->
+
         <Label fx:id="mensajeError"
                visible="false"
                managed="false"
