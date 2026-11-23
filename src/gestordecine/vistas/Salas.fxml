@@ -129,3 +129,45 @@
 
                     <TableColumn fx:id="columnaNombre"
                                  text="Nombre"
+                                 minWidth="150"
+                                 prefWidth="185"/>
+
+                    <TableColumn fx:id="columnaCapacidad"
+                                 text="Capacidad"
+                                 minWidth="95"
+                                 prefWidth="110"/>
+
+                </columns>
+
+            </TableView>
+
+        </VBox>
+
+        <!-- DISTRIBUCIÓN DE BUTACAS -->
+        <!-- Al elegir una sala en la tabla, mostrarDistribucion dibuja acá
+             su plano de butacas -->
+        <VBox spacing="20"
+              HBox.hgrow="ALWAYS"
+              styleClass="tarjeta-contenido">
+
+            <Label text="Distribución de butacas"
+                   styleClass="titulo-seccion"/>
+
+            <Label fx:id="nombreSalaSeleccionada"
+                   text="Seleccioná una sala para ver su distribución"
+                   styleClass="subtitulo-pagina"/>
+
+            <VBox fx:id="contenedorButacas"
+                  alignment="TOP_CENTER"
+                  spacing="12"
+                  VBox.vgrow="ALWAYS"/>
+
+            <Label fx:id="cantidadButacas"
+                   text=""
+                   styleClass="subtitulo-pagina"/>
+
+        </VBox>
+
+    </HBox>
+
+</VBox>
