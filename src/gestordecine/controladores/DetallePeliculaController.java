@@ -1,3 +1,4 @@
+
 package gestordecine.controladores;
 
 import gestordecine.Cine;
@@ -23,6 +24,19 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 
+/**
+ * Controlador de la pantalla de detalle de una película.
+ *
+ * Muestra la información de la película seleccionada, incluyendo
+ * su póster, título, géneros, duración, puntuación, sinopsis,
+ * director, actores y clasificación.
+ *
+ * También permite consultar las fechas y horarios disponibles,
+ * mostrando las butacas libres de cada función y permitiendo
+ * iniciar una reserva cuando existan lugares disponibles.
+ *
+ * Se comunica con PrincipalController para gestionar la navegación.
+ */
 public class DetallePeliculaController {
 
     private List<Funcion> funcionesDisponibles;
@@ -67,15 +81,39 @@ public class DetallePeliculaController {
 
     private PrincipalController principalController;
 
+    /**
+     * Asigna el controlador principal para permitir la navegación
+     * hacia otras pantallas del sistema.
+     *
+     * @param principalController Controlador principal de la aplicación.
+     */
     public void setPrincipalController(PrincipalController principalController) {
         this.principalController = principalController;
     }
 
+    /**
+     * Regresa a la cartelera de películas mediante el controlador principal.
+     *
+     * Se ejecuta al utilizar la opción de volver desde el detalle.
+     */
     @FXML
     private void volverCartelera() {
         principalController.mostrarCartelera();
     }
 
+    /**
+     * Configura la pantalla con los datos de la película seleccionada.
+     *
+     * Muestra la información general de la película y carga su póster
+     * si el archivo existe en la carpeta correspondiente.
+     *
+     * Finalmente, obtiene y muestra las fechas de las funciones
+     * disponibles para dicha película.
+     *
+     * @param pelicula Película cuyo detalle se desea mostrar.
+     * 
+     * @param cine Cine que contiene las funciones y el servicio de reservas.
+     */
     public void configurar(Pelicula pelicula, Cine cine) {
 
         this.servicioDeReservas = cine.getServicioDeReservas();
@@ -118,10 +156,21 @@ public class DetallePeliculaController {
             imagenPoster.setImage(imagen);
         }
 
-// Las funciones deben cargarse siempre, exista o no el póster.
+        // Las funciones se cargan aunque no exista el póster.
         mostrarFechas(pelicula, cine);
     }
 
+    /**
+     * Obtiene los géneros de una película y los convierte
+     * en una cadena de texto separada por comas.
+     *
+     * Si la película no posee géneros, devuelve el texto "Sin género".
+     *
+     * @param pelicula Película cuyos géneros se desean formatear.
+     * 
+     * @return Cadena con los géneros separados por comas
+     *         o "Sin género" si la lista está vacía.
+     */
     private String formatearGeneros(Pelicula pelicula) {
 
         if (pelicula.getGeneros().isEmpty()) {
@@ -134,10 +183,17 @@ public class DetallePeliculaController {
     }
 
     /**
-     * Muestra los horarios correspondientes a la fecha seleccionada.
+     * Muestra los horarios de las funciones correspondientes
+     * a la fecha seleccionada.
      *
-     * Indica la cantidad de butacas disponibles en cada función. Si una función
-     * está agotada, impide seleccionarla para reservar.
+     * Genera una tarjeta por cada función con su hora, formato,
+     * idioma, sala, precio y cantidad de butacas disponibles.
+     *
+     * Si una función está agotada, muestra su estado e impide
+     * seleccionarla para iniciar una reserva.
+     *
+     * Si tiene butacas disponibles, permite acceder al proceso
+     * de reserva mediante PrincipalController.
      */
     private void mostrarHorarios() {
 
@@ -228,11 +284,32 @@ public class DetallePeliculaController {
         }
     }
 
+    /**
+     * Obtiene y muestra las fechas disponibles para una película.
+     *
+     * Filtra las funciones registradas para incluir únicamente
+     * aquellas que correspondan a la película seleccionada,
+     * sean futuras y estén activas, al igual que sus salas.
+     *
+     * Ordena las funciones por fecha y hora, obtiene las fechas
+     * sin repetir y crea un botón para cada una.
+     *
+     * Al seleccionar una fecha, actualiza los horarios mediante
+     * mostrarHorarios(). Si existen funciones disponibles,
+     * selecciona automáticamente la primera fecha.
+     *
+     * Si no existen funciones, oculta la sección de horarios
+     * y muestra el mensaje correspondiente.
+     *
+     * @param pelicula Película cuyas funciones se desean consultar.
+     * 
+     * @param cine Cine que contiene las funciones registradas.
+     */
     private void mostrarFechas(Pelicula pelicula, Cine cine) {
 
         contenedorFechas.getChildren().clear();
 
-        // Obtener las funciones futuras y activas de la película
+        // Obtener las funciones futuras y activas de la película.
         funcionesDisponibles = cine.getFunciones().stream()
                 .filter(funcion
                         -> funcion.getPelicula().getIdPelicula()
@@ -244,13 +321,13 @@ public class DetallePeliculaController {
                 .sorted(Comparator.comparing(Funcion::getFechaHora))
                 .toList();
 
-        // Obtener fechas únicas, ordenadas
+        // Obtener fechas únicas, ordenadas.
         List<LocalDate> fechas = funcionesDisponibles.stream()
                 .map(funcion -> funcion.getFechaHora().toLocalDate())
                 .distinct()
                 .toList();
 
-        // Mostrar u ocultar la sección según existan funciones
+        // Mostrar u ocultar la sección según existan funciones.
         boolean hayFunciones = !funcionesDisponibles.isEmpty();
 
         seccionHorarios.setVisible(hayFunciones);
@@ -281,7 +358,7 @@ public class DetallePeliculaController {
             contenedorFechas.getChildren().add(botonFecha);
         }
 
-        // Seleccionar automáticamente la primera fecha disponible
+        // Seleccionar automáticamente la primera fecha disponible.
         if (!fechas.isEmpty()) {
             fechaSeleccionada = fechas.get(0);
             mostrarHorarios();
