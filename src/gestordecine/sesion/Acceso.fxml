@@ -83,6 +83,7 @@
             text="Ingresar"
             onAction="#ingresar"
             maxWidth="Infinity"
+            defaultButton="true"
             style="-fx-background-color: #2563EB; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 12; -fx-background-radius: 7; -fx-cursor: hand;"/>
 
     <!-- Cambia entre modo login y modo registro: llama a alternarModo() -->
