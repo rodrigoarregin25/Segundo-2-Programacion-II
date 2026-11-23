@@ -17,11 +17,11 @@ Trabajo Final de Programación II · Tecnicatura Universitaria en Programación
 Ing. Daniel Benítez · Cristian Corsaro
 
 **Alumnos**<br>
-Gimena Díaz · Rodrigo Arregin
+Jimena Díaz · Rodrigo Arregin
 
 <br>
 
-[Funcionalidades](#funcionalidades) · [Instalación](#instalación-y-ejecución) · [Usuarios](#carga-inicial-y-usuarios) · [Conceptos](#conceptos-aplicados) · [Estructura](#estructura-del-proyecto)
+[Funcionalidades](#funcionalidades) · [Instalación](#instalación-y-ejecución) · [Usuarios](#carga-inicial-y-usuarios) · [Conceptos](#conceptos-aplicados) · [Diagrama](#diagrama-de-clases) · [Estructura](#estructura-del-proyecto)
 
 </div>
 
@@ -122,6 +122,16 @@ Si `cine_app.dat` no se puede leer, el programa muestra un cartel con la ruta de
 
 ---
 
+## Diagrama de clases
+
+Diagrama completo del modelo: entradas, películas, salas, funciones, reservas, clientes y el repositorio genérico.
+
+![Diagrama de clases de Gestor de Cine](docs/diagrama_clases_completo.png)
+
+El diagrama editable (UMLet) está en [`docs/diagrama_clases_completo.uxf`](docs/diagrama_clases_completo.uxf).
+
+---
+
 ## Estructura del proyecto
 
 ```
@@ -132,13 +142,19 @@ gestorDeCine/
 │   │                    Entrada (abstracta), EntradaGeneral,
 │   │                    EntradaEstudiante, EntradaJubilados,
 │   │                    Desactivable, RegistroDuplicadoException,
-│   │                    PersistenciaCine
-│   ├── (pantallas)      controladores JavaFX y archivos .fxml
+│   │                    PersistenciaCine, GestorDeCine (main)
+│   ├── controladores/   controladores JavaFX de las pantallas
+│   ├── vistas/          pantallas .fxml (cartelera, películas, salas,
+│   │                    funciones, reservas, formularios)
+│   ├── estilos/         estilos.css
 │   ├── sesion/          sesión del usuario y pantalla de acceso
 │   ├── misreservas/     pantalla "Mis reservas" del cliente
 │   ├── usuarios/        administración de usuarios
 │   ├── persistencia/    exportación de reservas a CSV
 │   └── repositorios/    repositorio genérico Repositorio<T>
+├── capturas/            capturas de las pantallas principales
+├── evidencias/          casos de verificación con su evidencia
+├── docs/                informe y diagrama de clases
 ├── posters/             imágenes de las películas
 ├── cine_app.dat         datos guardados
 └── nbproject/           configuración de NetBeans
