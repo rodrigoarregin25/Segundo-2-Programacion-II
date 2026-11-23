@@ -10,6 +10,12 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.ScrollPane?>
 
+<!--
+    Formulario de usuario del administrador: permite modificar nombre,
+    apellido, correo, contraseña y rol de un usuario registrado.
+    La controla FormularioUsuarioController. Está dentro de un ScrollPane
+    para que se pueda desplazar si la ventana es chica.
+-->
 <ScrollPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="gestordecine.usuarios.FormularioUsuarioController"
             fitToWidth="true"
@@ -32,6 +38,7 @@
 
             </VBox>
 
+            <!-- Espacio flexible: empuja el botón Volver hacia la derecha -->
             <Region HBox.hgrow="ALWAYS"/>
 
             <Button text="← Volver"
@@ -50,7 +57,7 @@
             <Label text="Datos del usuario"
                    styleClass="titulo-seccion"/>
 
-            <!-- DNI -->
+            <!-- DNI: no se puede modificar porque identifica al usuario -->
             <VBox spacing="6">
                 <Label text="DNI"
                        styleClass="subtitulo-pagina"/>
@@ -92,7 +99,7 @@
                            styleClass="campo-cinema"/>
             </VBox>
 
-            <!-- CONTRASEÑA -->
+            <!-- CONTRASEÑA: si se deja vacía, se conserva la actual -->
             <VBox spacing="6">
                 <Label text="Nueva contraseña"
                        styleClass="subtitulo-pagina"/>
@@ -111,7 +118,7 @@
                           maxWidth="Infinity"/>
             </VBox>
 
-            <!-- MENSAJES -->
+            <!-- MENSAJES: oculto hasta que el controlador muestra un error -->
             <Label fx:id="mensajeError"
                    visible="false"
                    managed="false"
@@ -123,6 +130,7 @@
 
                 <Region HBox.hgrow="ALWAYS"/>
 
+                <!-- Cancelar y Volver llaman al mismo método: no se guarda nada -->
                 <Button text="Cancelar"
                         prefWidth="140"
                         prefHeight="42"

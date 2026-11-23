@@ -11,7 +11,21 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
+/**
+ * Clase principal de la aplicación. Carga los datos del cine desde el archivo
+ * y abre la ventana con la cartelera.
+ */
+
 public class GestorDeCine extends Application {
+    
+    /**
+     * Arranca la aplicación. Lee el cine desde cine_app.dat (o lo crea si no
+     * existe), carga la pantalla principal y muestra la cartelera. Si el
+     * archivo no se puede leer, avisa y cierra la aplicación sin tocarlo.
+     *
+     * @param stage Ventana principal de la aplicación.
+     * @throws Exception Si falla la carga de la pantalla principal.
+     */
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -48,8 +62,10 @@ public class GestorDeCine extends Application {
     }
 
     /**
-     * Que hace: avisa en una ventana que no se pudo leer el archivo de datos
-     * Parametros: error (Exception que se produjo al leer o guardar)
+     * Avisa en una ventana que no se pudo leer el archivo de datos. Muestra la
+     * ruta completa del archivo y el detalle del error.
+     *
+     * @param error Excepción que se produjo al leer el archivo.
      */
     private void mostrarErrorDeArchivo(Exception error) {
         File archivo = new File("cine_app.dat");
@@ -63,6 +79,13 @@ public class GestorDeCine extends Application {
                 + "\n\nDetalle: " + error.getMessage());
         alerta.showAndWait();
     }
+    
+    /**
+     * Punto de entrada del programa. Lanza la aplicación JavaFX.
+     *
+     * @param args Argumentos de la línea de comandos. Se le pasan a launch,
+     * pero la aplicación no necesita ninguno.
+     */
 
     public static void main(String[] args) {
         launch(args);

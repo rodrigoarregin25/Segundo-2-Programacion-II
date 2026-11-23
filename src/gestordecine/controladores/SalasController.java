@@ -26,12 +26,25 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 
+/**
+ * Controlador de la pantalla de administración de salas. Muestra las salas en
+ * una tabla con filtro por estado (activas, inactivas o todas) y, al elegir
+ * una, dibuja su distribución de butacas. Permite crear, editar, desactivar y
+ * restaurar salas.
+ */
 public class SalasController {
 
     private Cine cine;
     private PrincipalController principalController;
     private PersistenciaCine persistencia;
 
+    /**
+     * Carga las salas en la tabla y registra el filtro por estado. Al abrir,
+     * muestra solo las activas y selecciona la primera.
+     *
+     * @param cine Cine que contiene las salas.
+     * @param persistencia Objeto que guarda los datos en el archivo.
+     */
     public void configurar(Cine cine, PersistenciaCine persistencia) {
 
         this.cine = cine;
@@ -84,6 +97,13 @@ public class SalasController {
     private static final double ANCHO_PASILLO = 26;
     private static final double ANCHO_ETIQUETA_FILA = 24;
 
+    /**
+     * Dibuja el plano de la sala: el nombre, la capacidad, la pantalla y las
+     * filas de butacas con sus pasillos según la distribución (por ejemplo
+     * 4-8-4).
+     *
+     * @param sala Sala que se quiere mostrar.
+     */
     private void mostrarDistribucion(Sala sala) {
 
         nombreSalaSeleccionada.setText(
@@ -164,6 +184,14 @@ public class SalasController {
         }
     }
 
+    /**
+     * Calcula el ancho que ocupa una fila de butacas, sumando las butacas, los
+     * pasillos y el espacio entre elementos. Sirve para que la pantalla curva
+     * tenga el mismo ancho que la fila.
+     *
+     * @param sala Sala de la que se calcula el ancho.
+     * @return El ancho de la fila, en píxeles.
+     */
     private double calcularAnchoBloqueButacas(Sala sala) {
 
         String[] bloques = sala.getDistribucionButacas().split("-");
@@ -182,6 +210,12 @@ public class SalasController {
                 + ((totalElementos - 1) * ESPACIO_ENTRE_ELEMENTOS);
     }
 
+    /**
+     * Se ejecuta sola cuando JavaFX termina de cargar la pantalla. Define qué
+     * dato muestra cada columna de la tabla, carga las opciones del filtro y
+     * hace que, al elegir una sala, se dibuje su plano y el botón cambie entre
+     * Desactivar y Restaurar.
+     */
     @FXML
     private void initialize() {
 
@@ -276,10 +310,23 @@ public class SalasController {
         );
     }
 
+    /**
+     * Guarda el controlador principal, que se usa para cambiar de pantalla y
+     * actualizar el cine.
+     *
+     * @param principalController Controlador de la ventana principal.
+     */
     public void setPrincipalController(PrincipalController principalController) {
         this.principalController = principalController;
     }
 
+    /**
+     * Crea la pantalla curva que se dibuja arriba del plano de la sala: un
+     * arco con el texto PANTALLA, del mismo ancho que una fila de butacas.
+     *
+     * @param sala Sala de la que se toma el ancho.
+     * @return El contenedor con el arco y el texto.
+     */
     private StackPane crearPantallaCurva(Sala sala) {
 
         double ancho = calcularAnchoBloqueButacas(sala);
@@ -308,6 +355,9 @@ public class SalasController {
         return contenedor;
     }
 
+    /**
+     * Abre el formulario para registrar una sala nueva.
+     */
     @FXML
     private void nuevaSala() {
         principalController.mostrarFormularioSala();
@@ -343,12 +393,21 @@ public class SalasController {
     @FXML
     private TableColumn<Sala, String> columnaCapacidad;
 
+    /**
+     * Muestra un mensaje de error en la pantalla.
+     *
+     * @param mensaje Texto del error que se quiere mostrar.
+     */
     private void mostrarError(String mensaje) {
         mensajeError.setText(mensaje);
         mensajeError.setVisible(true);
         mensajeError.setManaged(true);
     }
 
+    /**
+     * Abre el formulario para editar la sala seleccionada en la tabla. Si no
+     * hay ninguna seleccionada, no hace nada.
+     */
     @FXML
     private void editarSala() {
 
@@ -362,6 +421,13 @@ public class SalasController {
         principalController.mostrarFormularioEditarSala(seleccionada);
     }
 
+    /**
+     * Desactiva la sala seleccionada, o la restaura si ya estaba inactiva.
+     *
+     * Trabaja sobre una copia del cine y recién cuando se guarda el archivo
+     * reemplaza el cine activo. Si el cine no permite el cambio (por ejemplo,
+     * por funciones asociadas), muestra el motivo en un diálogo.
+     */
     @FXML
     private void cambiarEstadoSala() {
 
@@ -411,6 +477,12 @@ public class SalasController {
         }
     }
 
+    /**
+     * Muestra una alerta de advertencia con el estilo de la aplicación y un
+     * botón "Entendido".
+     *
+     * @param mensaje Texto que se muestra en la alerta.
+     */
     private void mostrarAlerta(String mensaje) {
 
         Alert alerta = new Alert(Alert.AlertType.WARNING);

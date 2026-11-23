@@ -168,7 +168,6 @@ public class Cliente implements Serializable {
 
     /**
      * Obtiene el DNI del usuario.
-     *
      * @return DNI del usuario.
      */
     public int getDni() {
@@ -177,7 +176,6 @@ public class Cliente implements Serializable {
 
     /**
      * Obtiene el nombre del usuario.
-     *
      * @return Nombre del usuario.
      */
     public String getNombre() {
@@ -186,7 +184,6 @@ public class Cliente implements Serializable {
 
     /**
      * Obtiene el apellido del usuario.
-     *
      * @return Apellido del usuario.
      */
     public String getApellido() {
@@ -195,7 +192,6 @@ public class Cliente implements Serializable {
 
     /**
      * Obtiene el correo electrónico del usuario.
-     *
      * @return Correo electrónico del usuario.
      */
     public String getEmail() {
@@ -204,7 +200,6 @@ public class Cliente implements Serializable {
 
     /**
      * Obtiene la contraseña del usuario.
-     *
      * @return Contraseña del usuario.
      */
     public String getContrasenia() {
@@ -213,10 +208,8 @@ public class Cliente implements Serializable {
 
     /**
      * Obtiene el rol asignado al usuario.
-     *
      * Los usuarios guardados antes de incorporar roles se consideran CLIENTE
      * cuando su rol es null.
-     *
      * @return Rol del usuario.
      */
     public Rol getRol() {
@@ -230,7 +223,6 @@ public class Cliente implements Serializable {
 
     /**
      * Comprueba si el usuario es administrador.
-     *
      * @return true si tiene rol ADMINISTRADOR, false en caso contrario.
      */
     public boolean esAdministrador() {
@@ -239,7 +231,6 @@ public class Cliente implements Serializable {
 
     /**
      * Comprueba si el usuario es cliente.
-     *
      * @return true si tiene rol CLIENTE, false en caso contrario.
      */
     public boolean esCliente() {
@@ -248,7 +239,6 @@ public class Cliente implements Serializable {
 
     /**
      * Compara dos usuarios utilizando su DNI.
-     *
      * @param otroObjeto Objeto que se desea comparar.
      * @return true si ambos usuarios tienen el mismo DNI.
      */
@@ -270,7 +260,6 @@ public class Cliente implements Serializable {
 
     /**
      * Calcula el código hash del usuario a partir de su DNI.
-     *
      * @return Código hash del usuario.
      */
     @Override
@@ -280,7 +269,6 @@ public class Cliente implements Serializable {
 
     /**
      * Modifica el rol asignado al usuario.
-     *
      * @param nuevoRol Nuevo rol del usuario.
      * @throws IllegalArgumentException Si el rol es nulo.
      */
@@ -297,7 +285,6 @@ public class Cliente implements Serializable {
 
     /**
      * Modifica el nombre del usuario.
-     *
      * @param nombre Nuevo nombre.
      * @throws IllegalArgumentException Si el nombre es nulo o está vacío.
      */
@@ -314,7 +301,7 @@ public class Cliente implements Serializable {
 
     /**
      * Modifica el apellido del usuario.
-     *
+     
      * @param apellido Nuevo apellido.
      * @throws IllegalArgumentException Si el apellido es nulo o está vacío.
      */
@@ -331,7 +318,6 @@ public class Cliente implements Serializable {
 
     /**
      * Modifica el correo electrónico del usuario.
-     *
      * @param email Nuevo correo electrónico.
      * @throws IllegalArgumentException Si el correo no es válido.
      */
@@ -348,9 +334,7 @@ public class Cliente implements Serializable {
 
     /**
      * Modifica la contraseña del usuario.
-     *
      * Aplica las mismas validaciones que el constructor.
-     *
      * @param contrasenia Nueva contraseña.
      * @throws IllegalArgumentException Si la contraseña es nula, está vacía o
      * tiene menos de cuatro caracteres.
@@ -375,10 +359,8 @@ public class Cliente implements Serializable {
 
     /**
      * Indica si el usuario está habilitado para acceder a CINEMA.
-     *
      * Los usuarios registrados antes de incorporar este atributo se consideran
      * activos.
-     *
      * @return true si el usuario está activo, false en caso contrario.
      */
     public boolean isActivo() {

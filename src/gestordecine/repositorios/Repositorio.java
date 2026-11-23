@@ -1,4 +1,3 @@
-
 package gestordecine.repositorios;
 
 import java.util.ArrayList;
@@ -22,6 +21,7 @@ public class Repositorio<T> {
      * Inicializa el repositorio utilizando una lista existente.
      *
      * @param elementos Lista sobre la que se realizarán las operaciones.
+     * @throws IllegalArgumentException Si la lista es nula.
      */
     public Repositorio(List<T> elementos) {
 
@@ -54,6 +54,7 @@ public class Repositorio<T> {
      * @param condicion Condición utilizada para realizar la búsqueda.
      * 
      * @return Elemento encontrado o null si no existe.
+     * @throws IllegalArgumentException Si la condición es nula.
      */
     public T buscar(Predicate<T> condicion) {
 

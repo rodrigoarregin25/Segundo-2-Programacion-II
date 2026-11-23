@@ -8,25 +8,34 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.DatePicker?>
 
+<!--
+    Formulario de funciones: sirve para programar una función nueva o para
+    editar el precio de una existente.
+    Lo controla FormularioFuncionController.
+-->
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="gestordecine.controladores.FormularioFuncionController"
       spacing="25"
       styleClass="contenido-principal">
 
+    <!-- ENCABEZADO: el título cambia cuando se está editando -->
     <VBox spacing="5">
         <Label fx:id="tituloFormulario" text="Nueva función" styleClass="titulo-pagina"/>
         <Label text="Completá los datos de la función"
                styleClass="subtitulo-pagina"/>
     </VBox>
 
+    <!-- FORMULARIO -->
     <VBox spacing="10" styleClass="tarjeta-contenido" maxWidth="520">
 
+        <!-- Película y sala: se eligen de una lista -->
         <Label text="Película" style="-fx-text-fill: #CBD5E1;"/>
         <ComboBox fx:id="comboPelicula" maxWidth="Infinity"/>
 
         <Label text="Sala" style="-fx-text-fill: #CBD5E1;"/>
         <ComboBox fx:id="comboSala" maxWidth="Infinity"/>
 
+        <!-- Fecha y hora de inicio: la hora se arma con dos listas (hora y minutos) -->
         <Label text="Fecha" style="-fx-text-fill: #CBD5E1;"/>
         <DatePicker fx:id="selectorFecha" maxWidth="Infinity"/>
 
@@ -46,10 +55,12 @@
         <Label text="Idioma" style="-fx-text-fill: #CBD5E1;"/>
         <ComboBox fx:id="comboIdioma" maxWidth="Infinity"/>
 
+        <!-- Mensaje de error: oculto hasta que el controlador lo muestra -->
         <Label fx:id="mensajeError" visible="false" managed="false"
                wrapText="true"
                style="-fx-text-fill: #EF4444;"/>
 
+        <!-- ACCIONES -->
         <HBox spacing="10">
             <Button text="Cancelar"
                     styleClass="boton-secundario"

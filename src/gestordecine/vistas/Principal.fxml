@@ -9,6 +9,12 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.shape.SVGPath?>
 
+<!--
+    Ventana principal de CINEMA. Tiene un menú lateral a la izquierda y un
+    centro donde PrincipalController va cargando cada pantalla (cartelera,
+    reservas, películas, etc.).
+    La controla PrincipalController.
+-->
 <BorderPane fx:id="contenedorPrincipal"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="gestordecine.controladores.PrincipalController"
@@ -17,6 +23,7 @@
             stylesheets="@../estilos/estilos.css"
             styleClass="ventana-principal">
 
+    <!-- MENÚ LATERAL -->
     <left>
 
         <VBox spacing="10"
@@ -31,7 +38,7 @@
                 <Label text="CINEMA"
                        styleClass="logo-cine"/>
 
-                <!-- LOGO CINEMATOGRÁFICO -->
+                <!-- LOGO CINEMATOGRÁFICO: dibujo vectorial (SVGPath), no una imagen -->
                 <StackPane styleClass="contenedor-logo-cinema"
                            prefWidth="85"
                            prefHeight="70"
@@ -56,6 +63,10 @@
             </VBox>
 
             <!-- NAVEGACIÓN -->
+            <!-- Cartelera la ve cualquiera. El resto empieza oculto
+                 (visible y managed en false) y actualizarMenuCuenta lo
+                 muestra según el rol: Mis reservas para el cliente; Reservas,
+                 Películas, Salas, Funciones y Usuarios para el administrador -->
             <VBox spacing="7"
                   styleClass="grupo-navegacion">
 
@@ -108,10 +119,12 @@
 
             </VBox>
 
-            <!-- ESPACIO FLEXIBLE -->
+            <!-- ESPACIO FLEXIBLE: empuja el panel de sesión hacia abajo -->
             <Region VBox.vgrow="ALWAYS"/>
 
             <!-- SESIÓN -->
+            <!-- Sin sesión se ve "Iniciar sesión". Con sesión se ven el nombre
+                 del usuario y "Cerrar sesión" -->
             <VBox spacing="8"
                   styleClass="panel-sesion-cinema">
 
@@ -141,6 +154,8 @@
 
     </left>
 
+    <!-- CENTRO: este contenido es solo el inicial; cada mostrarXxx() de
+         PrincipalController lo reemplaza con setCenter(pantalla) -->
     <center>
 
         <VBox spacing="15"
