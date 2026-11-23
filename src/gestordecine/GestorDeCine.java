@@ -1,5 +1,6 @@
 package gestordecine;
 
+import gestordecine.controladores.PrincipalController;
 import java.io.File;
 import java.io.IOException;
 import javafx.application.Application;
@@ -29,7 +30,7 @@ public class GestorDeCine extends Application {
         }
 
         FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("Principal.fxml")
+                getClass().getResource("/gestordecine/vistas/Principal.fxml")
         );
 
         Parent raiz = loader.load();

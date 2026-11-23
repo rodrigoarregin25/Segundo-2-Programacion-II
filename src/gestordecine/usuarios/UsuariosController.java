@@ -2,7 +2,7 @@ package gestordecine.usuarios;
 
 import gestordecine.Cine;
 import gestordecine.Cliente;
-import gestordecine.PrincipalController;
+import gestordecine.controladores.PrincipalController;
 import gestordecine.sesion.SesionCliente;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -287,7 +287,7 @@ public class UsuariosController {
         }
 
         if (seleccionado == null) {
-            botonEstado.setText("Eliminar usuario");
+            botonEstado.setText("Desactivar usuario");
             botonEstado.setDisable(true);
             return;
         }
@@ -295,7 +295,7 @@ public class UsuariosController {
         botonEstado.setDisable(false);
 
         if (seleccionado.isActivo()) {
-            botonEstado.setText("Eliminar usuario");
+            botonEstado.setText("Desactivar usuario");
         } else {
             botonEstado.setText("Restaurar usuario");
         }

@@ -1,5 +1,9 @@
-package gestordecine;
+package gestordecine.controladores;
 
+import gestordecine.Cine;
+import gestordecine.Funcion;
+import gestordecine.Genero;
+import gestordecine.Pelicula;
 import javafx.fxml.FXML;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.control.Label;

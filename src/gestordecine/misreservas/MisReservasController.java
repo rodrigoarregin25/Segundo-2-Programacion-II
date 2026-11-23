@@ -2,8 +2,8 @@ package gestordecine.misreservas;
 
 import gestordecine.Cine;
 import gestordecine.Cliente;
-import gestordecine.NuevaReservaController;
-import gestordecine.PrincipalController;
+import gestordecine.controladores.NuevaReservaController;
+import gestordecine.controladores.PrincipalController;
 import gestordecine.Reserva;
 
 import java.time.format.DateTimeFormatter;

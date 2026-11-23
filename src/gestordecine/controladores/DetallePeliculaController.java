@@ -1,5 +1,10 @@
-package gestordecine;
+package gestordecine.controladores;
 
+import gestordecine.Cine;
+import gestordecine.Funcion;
+import gestordecine.Genero;
+import gestordecine.Pelicula;
+import gestordecine.ServicioDeReservas;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;

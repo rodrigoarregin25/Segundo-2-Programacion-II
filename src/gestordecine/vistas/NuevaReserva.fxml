@@ -10,7 +10,7 @@
 <?import javafx.scene.control.ScrollPane?>
 
 <ScrollPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="gestordecine.NuevaReservaController"
+            fx:controller="gestordecine.controladores.NuevaReservaController"
             fitToWidth="true"
             style="-fx-background: transparent; -fx-background-color: transparent;">
 

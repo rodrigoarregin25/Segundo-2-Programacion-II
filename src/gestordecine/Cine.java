@@ -551,6 +551,12 @@ public class Cine implements Serializable {
             throw new IllegalArgumentException("La funcion no existe");
         }
 
+        if (!funcion.getFechaHora().isAfter(LocalDateTime.now())) {
+            throw new IllegalStateException(
+                    "No se puede editar una función que ya comenzó."
+            );
+        }
+
         funcion.setPrecio(nuevoPrecio);
     }
 
@@ -698,6 +704,76 @@ public class Cine implements Serializable {
 
         // Reactivar solamente si todas las validaciones fueron exitosas
         funcion.reactivar();
+    }
+
+    /**
+     * Modifica una función sin reservas, conservando su ID. Valida los datos y
+     * evita superposiciones de horarios.
+     */
+    public void editarFuncion(int idFuncion, int idSala, int idPelicula,
+            double precio, LocalDateTime fechaHora,
+            String formato, String idioma) {
+
+        Funcion actual = buscarFuncionPorId(idFuncion);
+
+        if (actual == null) {
+            throw new IllegalArgumentException("La función no existe");
+        }
+
+        if (servicioDeReservas.tieneReservas(actual)) {
+            throw new IllegalStateException(
+                    "No se puede modificar la programación de una función con reservas"
+            );
+        }
+
+        if (!actual.isActiva()) {
+            throw new IllegalStateException(
+                    "No se puede reprogramar una función desactivada"
+            );
+        }
+
+        Sala sala = buscarSalaPorId(idSala);
+        Pelicula pelicula = buscarPeliculaPorId(idPelicula);
+
+        if (sala == null || !sala.isActiva()) {
+            throw new IllegalArgumentException("Seleccione una sala activa");
+        }
+
+        if (pelicula == null || !pelicula.isActiva()) {
+            throw new IllegalArgumentException("Seleccione una película activa");
+        }
+
+        // El constructor valida fecha, formato, idioma y precio.
+        Funcion propuesta = new Funcion(
+                idFuncion, sala, pelicula, precio,
+                fechaHora, formato, idioma
+        );
+
+        // Controlar superposiciones, excluyendo la función editada.
+        for (Funcion existente : funciones) {
+
+            if (existente.getIdFuncion() == idFuncion
+                    || !existente.isActiva()) {
+                continue;
+            }
+
+            if (existente.getSala().getIdSala() != idSala) {
+                continue;
+            }
+
+            boolean superposicion
+                    = propuesta.getFechaHora().isBefore(existente.getFechaHoraFin())
+                    && propuesta.getFechaHoraFin().isAfter(existente.getFechaHora());
+
+            if (superposicion) {
+                throw new IllegalArgumentException(
+                        "Ya existe otra función en esa sala y horario"
+                );
+            }
+        }
+
+        // Aplicar todos los cambios una vez validados.
+        actual.actualizarDatos(propuesta);
     }
 
 }

@@ -1,5 +1,11 @@
-package gestordecine;
+package gestordecine.controladores;
 
+import gestordecine.Cine;
+import gestordecine.DialogoCinema;
+import gestordecine.PersistenciaCine;
+import gestordecine.Reserva;
+import gestordecine.ServicioDeReservas;
+import gestordecine.VentanaComprobante;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -334,7 +340,7 @@ public class ReservasController {
 
         // Mismo estilo oscuro que usan los otros carteles del sistema
         confirmacion.getDialogPane().getStylesheets().add(
-                getClass().getResource("estilos.css").toExternalForm()
+                getClass().getResource("/gestordecine/estilos/estilos.css").toExternalForm()
         );
         confirmacion.getDialogPane().getStyleClass().add("alerta-cinema");
 

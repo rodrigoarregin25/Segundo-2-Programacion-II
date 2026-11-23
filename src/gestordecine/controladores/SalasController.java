@@ -1,5 +1,9 @@
-package gestordecine;
+package gestordecine.controladores;
 
+import gestordecine.Cine;
+import gestordecine.DialogoCinema;
+import gestordecine.PersistenciaCine;
+import gestordecine.Sala;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -417,7 +421,7 @@ public class SalasController {
 
         // Aplicar el CSS de la aplicación
         alerta.getDialogPane().getStylesheets().add(
-                getClass().getResource("estilos.css").toExternalForm()
+                getClass().getResource("/gestordecine/estilos/estilos.css").toExternalForm()
         );
 
         alerta.getDialogPane().getStyleClass().add("alerta-cinema");

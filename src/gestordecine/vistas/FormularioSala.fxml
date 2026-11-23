@@ -7,7 +7,7 @@
 <?import javafx.scene.control.Button?>
 
 <VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="gestordecine.FormularioSalaController"
+      fx:controller="gestordecine.controladores.FormularioSalaController"
       spacing="20"
       styleClass="contenido-principal">
 
