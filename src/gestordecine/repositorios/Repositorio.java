@@ -13,7 +13,6 @@ import java.util.function.Predicate;
  * el almacenamiento de los elementos.
  *
  * @param <T> Tipo de elemento administrado por el repositorio.
- * @author Rodrigo Arregin
  */
 public class Repositorio<T> {
 
@@ -37,6 +36,7 @@ public class Repositorio<T> {
      * Agrega un elemento a la colección.
      *
      * @param elemento Elemento que se desea agregar.
+     * 
      * @throws IllegalArgumentException Si el elemento es nulo.
      */
     public void agregar(T elemento) {
@@ -52,6 +52,7 @@ public class Repositorio<T> {
      * Busca el primer elemento que cumple una condición.
      *
      * @param condicion Condición utilizada para realizar la búsqueda.
+     * 
      * @return Elemento encontrado o null si no existe.
      */
     public T buscar(Predicate<T> condicion) {
