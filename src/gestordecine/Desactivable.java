@@ -1,25 +1,28 @@
 package gestordecine;
 
 /**
- * clases que no se borran, sino que se desactivan 
- *  Asi se conserva el historial y las reservas existentes no pierden
- * sus referencias.
+ * Define el comportamiento de los elementos que pueden desactivarse y
+ * reactivarse sin ser eliminados del sistema.
+ *
+ * Permite conservar el historial y mantener las referencias de las reservas
+ * existentes.
  */
 public interface Desactivable {
 
     /**
-     * Que hace: dice si el elemento esta activo
-     * Retorna: true si esta activo, false si esta desactivado
+     * Indica si el elemento se encuentra activo.
+     *
+     * @return true si está activo, false si está desactivado.
      */
     boolean isActiva();
 
     /**
-     * Que hace: desactiva el elemento (no se borra)
+     * Desactiva el elemento sin eliminarlo del sistema.
      */
     void desactivar();
 
     /**
-     * Que hace: vuelve a activar el elemento
+     * Reactiva un elemento previamente desactivado.
      */
     void reactivar();
 }
