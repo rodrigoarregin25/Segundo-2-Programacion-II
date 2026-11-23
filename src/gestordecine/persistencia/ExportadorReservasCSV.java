@@ -1,4 +1,3 @@
-
 package gestordecine.persistencia;
 
 import gestordecine.Reserva;
@@ -15,38 +14,37 @@ import java.util.stream.Collectors;
 import java.util.Arrays;
 
 /**
- * Clase encargada de exportar las reservas registradas en CINEMA
- * a un archivo CSV.
+ * Clase encargada de exportar las reservas registradas en CINEMA a un archivo
+ * CSV.
  *
- * La exportación incluye reservas confirmadas y canceladas, sin modificar
- * su estado ni la disponibilidad de las butacas.
+ * La exportación incluye reservas confirmadas y canceladas, sin modificar su
+ * estado ni la disponibilidad de las butacas.
  *
- * El archivo CSV se utiliza únicamente para consultar información.
- * La persistencia principal continúa realizándose mediante el
- * archivo serializado del cine.
+ * El archivo CSV se utiliza únicamente para consultar información. La
+ * persistencia principal continúa realizándose mediante el archivo serializado
+ * del cine.
  *
- * @author Rodrigo Arregin
  */
 public class ExportadorReservasCSV {
 
     /**
      * Formato utilizado para representar la fecha y hora de las funciones.
      */
-    private static final DateTimeFormatter FORMATO_FECHA =
-            DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    private static final DateTimeFormatter FORMATO_FECHA
+            = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     /**
      * Exporta una lista de reservas a un archivo CSV.
      *
-     * Cada reserva se escribe en una fila con su código, estado,
-     * cliente, DNI, película, sala, fecha, butacas, tipos de entrada
-     * e importe total.
+     * Cada reserva se escribe en una fila con su código, estado, cliente, DNI,
+     * película, sala, fecha, butacas, tipos de entrada e importe total.
      *
-     * Si el archivo ya existe, reemplaza su contenido con la nueva
-     * exportación. El archivo se cierra automáticamente al finalizar.
+     * Si el archivo ya existe, reemplaza su contenido con la nueva exportación.
+     * El archivo se cierra automáticamente al finalizar.
      *
      * @param reservas Lista de reservas que se desea exportar.
      * @param ruta Ruta donde se guardará el archivo CSV.
+     *
      * @throws IOException Si ocurre un error al crear o escribir el archivo.
      */
     public static void exportar(List<Reserva> reservas, Path ruta)
@@ -80,7 +78,7 @@ public class ExportadorReservasCSV {
                     reserva.getCodigoReserva(),
                     reserva.isConfirmada() ? "CONFIRMADA" : "CANCELADA",
                     reserva.getCliente().getNombre() + " "
-                            + reserva.getCliente().getApellido(),
+                    + reserva.getCliente().getApellido(),
                     String.valueOf(reserva.getCliente().getDni()),
                     reserva.getFuncion().getPelicula().getTituloPelicula(),
                     reserva.getFuncion().getSala().getNombreSala(),
@@ -105,10 +103,11 @@ public class ExportadorReservasCSV {
     /**
      * Prepara un texto para escribirlo correctamente en una columna CSV.
      *
-     * Encierra el texto entre comillas dobles y duplica las comillas
-     * internas para evitar problemas con los separadores del archivo.
+     * Encierra el texto entre comillas dobles y duplica las comillas internas
+     * para evitar problemas con los separadores del archivo.
      *
      * @param texto Texto que se desea preparar para el archivo CSV.
+     *
      * @return Texto escapado o una cadena vacía si el valor es nulo.
      */
     private static String escapar(String texto) {

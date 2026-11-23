@@ -1,42 +1,42 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package gestordecine;
 
 /**
- * Entrada de estudiante. Tiene un descuento del 20% sobre el precio base.
+ * Representa una entrada de estudiante. Aplica un descuento del 20% sobre el
+ * precio base.
  */
+public class EntradaEstudiante extends Entrada {
 
-public class EntradaEstudiante extends Entrada{
-    
     private static final double DESCUENTO = 0.20;
 
     /**
-     * Que hace: crea una entrada de estudiante para una butaca con su precio base
-     * Parametros: butaca (Butaca), precioBase (double)
-     * Lanza: IllegalArgumentException si la butaca es nula o el precio base es menor o igual a 0
+     * Crea una entrada de estudiante asociada a una butaca.
+     *
+     * @param butaca Butaca correspondiente a la entrada.
+     * @param precioBase Precio base de la entrada.
+     * @throws IllegalArgumentException Si la butaca es nula o el precio base es
+     * menor o igual a cero.
      */
-    
- public EntradaEstudiante (Butaca butaca, double precioBase){
-     super(butaca, precioBase);
- }
-   /**
-     * Que hace: calcula el precio final aplicando el descuento de estudiante
-     * Retorna: el precio base menos el 20% (double)
-     */
-    @Override 
-    public double calcularPrecioFinal (){
-        return getPrecioBase() * (1 - DESCUENTO);
- }
- 
-   /**
-    * Que hace: devuelve el nombre del tipo de entrada
-    * Retorna: "Entrada Estudiante" (String)
-    */
-    @Override
-public String getTipo() {
-    return "Entrada Estudiante";
+    public EntradaEstudiante(Butaca butaca, double precioBase) {
+        super(butaca, precioBase);
     }
-    
+
+    /**
+     * Calcula el precio final aplicando un descuento del 20%.
+     *
+     * @return Precio base con el descuento aplicado.
+     */
+    @Override
+    public double calcularPrecioFinal() {
+        return getPrecioBase() * (1 - DESCUENTO);
+    }
+
+    /**
+     * Devuelve el nombre del tipo de entrada.
+     *
+     * @return El texto "Entrada Estudiante".
+     */
+    @Override
+    public String getTipo() {
+        return "Entrada Estudiante";
+    }
 }

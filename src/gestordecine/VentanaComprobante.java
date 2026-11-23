@@ -12,8 +12,8 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 /**
- * Muestra el comprobante de una reserva en una ventana emergente con
- * formato de ticket. Se usa desde Nueva reserva y desde Reservas.
+ * Muestra el comprobante de una reserva en una ventana emergente con formato de
+ * ticket. Se usa desde Nueva reserva y desde Reservas.
  */
 public class VentanaComprobante {
 
@@ -21,10 +21,22 @@ public class VentanaComprobante {
     }
 
     /**
-     * Que hace: abre una ventana con el comprobante de la reserva.
-     * Parametros: reserva (la reserva a mostrar).
+     * Muestra el comprobante de una reserva en una ventana emergente.
+     *
+     * Presenta los datos del cliente, función, entradas, importe total y estado
+     * actual de la reserva, ya sea confirmada o cancelada.
+     *
+     * @param reserva Reserva cuyos datos se mostrarán.
+     *
+     * @throws IllegalArgumentException Si la reserva es nula.
      */
     public static void mostrar(Reserva reserva) {
+
+        if (reserva == null) {
+            throw new IllegalArgumentException(
+                    "La reserva no puede ser nula"
+            );
+        }
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         Funcion funcion = reserva.getFuncion();
         Cliente cliente = reserva.getCliente();
@@ -97,10 +109,15 @@ public class VentanaComprobante {
     }
 
     /**
-     * Que hace: crea una fila con un texto a la izquierda y otro a la derecha.
-     * Parametros: izquierda (String), derecha (String), destacada (true para
-     * mostrarla mas grande, como el total).
-     * Retorna: el HBox con la fila.
+     * Crea una fila horizontal con un texto a la izquierda y otro a la derecha,
+     * separados por un espacio flexible.
+     *
+     * @param izquierda Texto que se muestra a la izquierda.
+     * @param derecha Texto que se muestra a la derecha.
+     * @param destacada Indica si los textos deben resaltarse, como ocurre con
+     * el importe total.
+     *
+     * @return Un HBox que contiene los textos y el espacio flexible.
      */
     private static HBox crearFila(String izquierda, String derecha, boolean destacada) {
         Label textoIzquierda = new Label(izquierda);
@@ -121,8 +138,11 @@ public class VentanaComprobante {
     }
 
     /**
-     * Que hace: crea una linea horizontal fina para separar secciones.
-     * Retorna: la linea (Region).
+     * Crea una línea horizontal para separar visualmente las secciones del
+     * comprobante.
+     *
+     * @return Un Region de un píxel de altura que representa la línea
+     * divisoria.
      */
     private static Region crearLinea() {
         Region linea = new Region();
@@ -133,9 +153,14 @@ public class VentanaComprobante {
     }
 
     /**
-     * Que hace: escribe un importe con puntos y coma, por ejemplo $15.000,00
-     * Parametros: importe (double).
-     * Retorna: el importe como texto (String).
+     * Convierte un importe numérico a texto utilizando el formato monetario
+     * argentino.
+     *
+     * Por ejemplo, 15000 se representa como $15.000,00.
+     *
+     * @param importe Importe que se desea formatear.
+     *
+     * @return Una cadena de texto con el importe formateado.
      */
     private static String darFormatoDinero(double importe) {
         return String.format(Locale.of("es", "AR"), "$%,.2f", importe);

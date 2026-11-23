@@ -7,9 +7,16 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.ArrayList;
 
 /**
- * Reserva de un cliente para una funcion. Tiene un codigo unico (R + digitos al
- * azar), una lista de entradas (una por butaca) y puede estar confirmada o
- * cancelada.
+ * Representa una reserva realizada por un cliente para una función del cine.
+ *
+ * Cada reserva posee un código único formado por la letra R y cinco dígitos
+ * aleatorios, un cliente, una función y una lista de entradas asociadas a las
+ * butacas seleccionadas.
+ *
+ * Permite agregar entradas, calcular el importe total y cancelar una reserva
+ * sin eliminarla del sistema, conservando su información en el historial.
+ *
+ * Implementa Serializable para permitir su persistencia.
  */
 public class Reserva implements Serializable {
 
@@ -31,10 +38,15 @@ public class Reserva implements Serializable {
     private ArrayList<Entrada> entradas;
 
     /**
-     * Que hace: crea una reserva confirmada para un cliente y una funcion
-     * Parametros: cliente (Cliente), funcion (Funcion) Lanza:
-     * IllegalArgumentException si el cliente o la funcion son nulos, o si la
-     * funcion ya comenzo
+     * Crea una reserva confirmada para un cliente y una función futura.
+     *
+     * Genera un código de reserva que no se encuentre entre los códigos
+     * utilizados e inicializa la lista de entradas vacía.
+     *
+     * @param cliente Cliente que realiza la reserva.
+     * @param funcion Función para la cual se realiza la reserva.
+     * @throws IllegalArgumentException Si el cliente o la función son nulos, o
+     * si la función ya comenzó.
      */
     public Reserva(Cliente cliente, Funcion funcion) {
 
@@ -48,7 +60,7 @@ public class Reserva implements Serializable {
             throw new IllegalArgumentException("La funcion ya comenzo");
         }
 
-        String codigoNuevo; // genero el codigo digito por digito, y repito si ya existe
+        String codigoNuevo;
         do {
             codigoNuevo = "R";
             for (int i = 0; i < CANTIDAD_DIGITOS; i++) {
@@ -57,7 +69,6 @@ public class Reserva implements Serializable {
         } while (codigosUsados.contains(codigoNuevo));
         codigosUsados.add(codigoNuevo);
 
-        // guardo los datos de la reserva (siempre arranca confirmada)
         this.cliente = cliente;
         this.funcion = funcion;
         this.confirmada = true;
@@ -66,16 +77,20 @@ public class Reserva implements Serializable {
     }
 
     /**
-     * Que hace: dice si la reserva esta confirmada Retorna: true si esta
-     * confirmada, false si esta cancelada
+     * Indica si la reserva se encuentra confirmada.
+     *
+     * @return true si está confirmada, false si está cancelada.
      */
     public boolean isConfirmada() {
         return confirmada;
     }
 
     /**
-     * Que hace: cancela la reserva (queda en el historial, no se borra) Lanza:
-     * IllegalArgumentException si la reserva ya estaba cancelada
+     * Cancela la reserva sin eliminarla del sistema.
+     *
+     * La reserva permanece registrada para conservar el historial.
+     *
+     * @throws IllegalArgumentException Si la reserva ya se encuentra cancelada.
      */
     public void cancelar() {
         if (!confirmada) {
@@ -85,10 +100,17 @@ public class Reserva implements Serializable {
     }
 
     /**
-     * Que hace: agrega una entrada a la reserva y actualiza el importe total
-     * Parametros: entrada (Entrada) Lanza: IllegalArgumentException si la
-     * entrada es nula, si la reserva esta cancelada o si la butaca ya esta en
-     * esta reserva
+     * Agrega una entrada a la reserva y actualiza el importe total.
+     *
+     * Verifica que la entrada no sea nula, que la reserva esté confirmada y que
+     * la butaca no se encuentre repetida dentro de la misma reserva.
+     *
+     * El importe total se incrementa utilizando el precio final de la entrada,
+     * incluyendo los descuentos que correspondan.
+     *
+     * @param entrada Entrada que se desea agregar a la reserva.
+     * @throws IllegalArgumentException Si la entrada es nula, la reserva está
+     * cancelada o la butaca ya se encuentra en la reserva.
      */
     public void agregarEntrada(Entrada entrada) {
 
@@ -104,51 +126,57 @@ public class Reserva implements Serializable {
                 throw new IllegalArgumentException("La butaca ya esta en esta reserva");
             }
         }
-        entradas.add(entrada); // la agrego y sumo su precio final al total
+        entradas.add(entrada);
         importeTotal = importeTotal + entrada.calcularPrecioFinal();
     }
 
     /**
-     * Que hace: devuelve el codigo de la reserva Retorna: el codigo (String)
+     * @return Código único de la reserva.
      */
     public String getCodigoReserva() {
         return codigoReserva;
     }
 
     /**
-     * Que hace: devuelve el cliente de la reserva Retorna: el cliente (Cliente)
+     * @return Cliente asociado a la reserva.
      */
     public Cliente getCliente() {
         return cliente;
     }
 
     /**
-     * Que hace: devuelve la funcion de la reserva Retorna: la funcion (Funcion)
+     * @return Función correspondiente a la reserva.
      */
     public Funcion getFuncion() {
         return funcion;
     }
 
     /**
-     * Que hace: devuelve el importe total de la reserva Retorna: el importe
-     * total (double)
+     * @return Importe total de las entradas agregadas a la reserva.
      */
     public double getImporteTotal() {
         return importeTotal;
     }
 
     /**
-     * Que hace: devuelve una copia de la lista de entradas de la reserva
-     * Retorna: las entradas (ArrayList de Entrada)
+     * Obtiene las entradas asociadas a la reserva.
+     *
+     * @return Una nueva lista con las entradas registradas.
      */
     public ArrayList<Entrada> getEntradas() {
         return new ArrayList<>(entradas);
     }
 
     /**
-     * Que hace: vuelve a cargar los codigos ya usados a partir de las reservas
-     * guardadas, para que no se repitan al abrir el programa de nuevo
-     * Parametros: reservasGuardadas (ArrayList de Reserva)
+     * Recarga los códigos de reserva utilizados a partir de las reservas
+     * almacenadas previamente.
+     *
+     * Limpia el conjunto de códigos registrados en memoria y agrega los códigos
+     * de las reservas recibidas para evitar que se repitan al generar nuevas
+     * reservas.
+     *
+     * @param reservasGuardadas Lista de reservas cuyos códigos deben
+     * recuperarse.
      */
     public static void recargarCodigos(ArrayList<Reserva> reservasGuardadas) {
         codigosUsados.clear();
@@ -156,5 +184,4 @@ public class Reserva implements Serializable {
             codigosUsados.add(reserva.getCodigoReserva());
         }
     }
-
 }

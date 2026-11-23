@@ -6,52 +6,59 @@ import gestordecine.PersistenciaCine;
 import gestordecine.Reserva;
 import gestordecine.ServicioDeReservas;
 import gestordecine.VentanaComprobante;
+import gestordecine.persistencia.ExportadorReservasCSV;
+import java.io.File;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Locale;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
-import gestordecine.persistencia.ExportadorReservasCSV;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableCell;
-import javafx.beans.property.SimpleStringProperty;
-import java.io.File;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 
+/**
+ * Controlador de la pantalla de administración de reservas del cine.
+ *
+ * Permite consultar todas las reservas registradas, buscar por código o DNI,
+ * visualizar comprobantes y cancelar reservas confirmadas.
+ *
+ * También permite exportar el historial completo de reservas a un archivo CSV,
+ * incluyendo tanto las confirmadas como las canceladas.
+ *
+ * Para cancelar una reserva, trabaja sobre una copia del cine y persiste los
+ * cambios antes de actualizar el estado de la aplicación.
+ *
+ * Se comunica con PrincipalController para gestionar la navegación y utiliza
+ * ServicioDeReservas para consultar y cancelar reservas.
+ */
 public class ReservasController {
 
+    // Referencias al sistema.
     private Cine cine;
     private PersistenciaCine persistencia;
     private PrincipalController principalController;
 
+    // Componentes de búsqueda.
     @FXML
     private ComboBox<String> comboCriterio;
+
     @FXML
     private TextField campoBusqueda;
+
+    // Tabla de reservas.
     @FXML
     private TableView<Reserva> listaReservas;
-    @FXML
-    private Label mensajeError;
-    @FXML
-    private Button botonComprobante;
-    @FXML
-    private Button botonCancelar;
+
     @FXML
     private TableColumn<Reserva, String> colEstado;
 
@@ -79,12 +86,28 @@ public class ReservasController {
     @FXML
     private TableColumn<Reserva, String> colTotal;
 
+    // Botones y mensajes.
+    @FXML
+    private Button botonComprobante;
+
+    @FXML
+    private Button botonCancelar;
+
+    @FXML
+    private Label mensajeError;
+
     /**
-     * Configura los criterios de búsqueda y las columnas de la tabla
-     * administrativa de reservas.
+     * Inicializa los componentes de la pantalla de reservas.
      *
-     * También actualiza los botones según la reserva seleccionada por el
-     * administrador.
+     * Configura los criterios de búsqueda, las columnas de la tabla y los
+     * formatos utilizados para mostrar fechas e importes.
+     *
+     * También establece la representación visual del estado de cada reserva y
+     * registra un listener para habilitar o deshabilitar las acciones según la
+     * reserva seleccionada.
+     *
+     * JavaFX ejecuta este método automáticamente después de cargar los
+     * componentes definidos en el archivo FXML.
      */
     @FXML
     private void initialize() {
@@ -106,23 +129,23 @@ public class ReservasController {
                 )
         );
 
-        colEstado.setCellValueFactory(datos
-                -> new SimpleStringProperty(
-                        datos.getValue().isConfirmada()
-                        ? "CONFIRMADA" : "CANCELADA"
-                )
-        );
-
-        colEstado.setCellFactory(columna -> new TableCell<Reserva, String>() {
+        colEstado.setCellFactory(columna
+                -> new TableCell<Reserva, String>() {
 
             @Override
             protected void updateItem(String estado, boolean vacia) {
+
                 super.updateItem(estado, vacia);
 
                 if (vacia || estado == null) {
+
                     setText(null);
                     setGraphic(null);
-                    getStyleClass().removeAll("estado-activo", "estado-inactivo");
+
+                    getStyleClass().removeAll(
+                            "estado-activo", "estado-inactivo"
+                    );
+
                     return;
                 }
 
@@ -130,8 +153,13 @@ public class ReservasController {
 
                 setText(confirmada ? "A" : "✕");
 
-                getStyleClass().removeAll("estado-activo", "estado-inactivo");
-                getStyleClass().add(confirmada ? "estado-activo" : "estado-inactivo");
+                getStyleClass().removeAll(
+                        "estado-activo", "estado-inactivo"
+                );
+
+                getStyleClass().add(
+                        confirmada ? "estado-activo" : "estado-inactivo"
+                );
             }
         });
 
@@ -145,24 +173,30 @@ public class ReservasController {
         // PELÍCULA
         colPelicula.setCellValueFactory(datos
                 -> new SimpleStringProperty(
-                        datos.getValue().getFuncion()
-                                .getPelicula().getTituloPelicula()
+                        datos.getValue()
+                                .getFuncion()
+                                .getPelicula()
+                                .getTituloPelicula()
                 )
         );
 
         // FECHA Y HORA
         colFecha.setCellValueFactory(datos
                 -> new SimpleStringProperty(
-                        datos.getValue().getFuncion()
-                                .getFechaHora().format(formatoFecha)
+                        datos.getValue()
+                                .getFuncion()
+                                .getFechaHora()
+                                .format(formatoFecha)
                 )
         );
 
         // SALA
         colSala.setCellValueFactory(datos
                 -> new SimpleStringProperty(
-                        datos.getValue().getFuncion()
-                                .getSala().getNombreSala()
+                        datos.getValue()
+                                .getFuncion()
+                                .getSala()
+                                .getNombreSala()
                 )
         );
 
@@ -204,7 +238,7 @@ public class ReservasController {
                 )
         );
 
-        // HABILITAR ACCIONES SEGÚN LA SELECCIÓN
+        // Actualizar las acciones según la reserva seleccionada.
         listaReservas.getSelectionModel()
                 .selectedItemProperty()
                 .addListener((observable, anterior, nueva)
@@ -215,51 +249,97 @@ public class ReservasController {
                 new Label("No hay reservas para mostrar")
         );
 
-        // Distribuir las columnas para ocupar el ancho disponible.
+        // Distribuir las columnas dentro de la tabla.
         listaReservas.setColumnResizePolicy(
                 TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN
         );
     }
 
     /**
-     * Que hace: recibe el cine y la persistencia y muestra todas las reservas.
-     * Parametros: cine (el cine actual), persistencia (para guardar cambios).
+     * Configura la pantalla con las referencias necesarias.
+     *
+     * Recibe el cine actual y el administrador de persistencia. Posteriormente,
+     * carga las reservas registradas en la tabla.
+     *
+     * @param cine Cine que contiene el servicio de reservas.
+     * @param persistencia Objeto encargado de guardar el estado del cine.
      */
     public void configurar(Cine cine, PersistenciaCine persistencia) {
+
         this.cine = cine;
         this.persistencia = persistencia;
+
         buscar();
     }
 
-    public void setPrincipalController(PrincipalController principalController) {
+    /**
+     * Asigna el controlador principal de la aplicación.
+     *
+     * Permite navegar hacia otras pantallas y actualizar el estado del cine
+     * después de realizar modificaciones.
+     *
+     * @param principalController Controlador principal de CINEMA.
+     */
+    public void setPrincipalController(
+            PrincipalController principalController) {
+
         this.principalController = principalController;
     }
 
     /**
-     * Que hace: busca reservas por codigo o por DNI. Si el campo esta vacio,
-     * muestra todas las reservas.
+     * Busca reservas según el criterio seleccionado.
+     *
+     * Permite buscar una reserva por su código o consultar las reservas
+     * asociadas a un DNI.
+     *
+     * Si el campo de búsqueda está vacío, muestra todas las reservas
+     * registradas, sin importar su estado.
+     *
+     * Si el DNI no tiene un formato numérico válido, o no se encuentran
+     * resultados, informa el error mediante una etiqueta dentro de la pantalla.
      */
     @FXML
     private void buscar() {
+
         ocultarError();
 
         ServicioDeReservas servicio = cine.getServicioDeReservas();
+
         String texto = campoBusqueda.getText().trim();
+
         ArrayList<Reserva> resultado;
 
         try {
+
             if (texto.isEmpty()) {
+
+                // Mostrar todas las reservas.
                 resultado = servicio.getReservas();
-            } else if (comboCriterio.getSelectionModel().getSelectedIndex() == 0) {
+
+            } else if (comboCriterio.getSelectionModel()
+                    .getSelectedIndex() == 0) {
+
+                // Buscar por código de reserva.
                 resultado = new ArrayList<>();
-                Reserva encontrada = servicio.buscarPorCodigo(texto.toUpperCase());
+
+                Reserva encontrada = servicio.buscarPorCodigo(
+                        texto.toUpperCase()
+                );
+
                 if (encontrada != null) {
                     resultado.add(encontrada);
                 }
+
             } else {
-                resultado = servicio.buscarPorDni(Integer.parseInt(texto));
+
+                // Buscar reservas por DNI.
+                resultado = servicio.buscarPorDni(
+                        Integer.parseInt(texto)
+                );
             }
+
         } catch (NumberFormatException e) {
+
             mostrarError("El DNI debe ser un numero");
             return;
         }
@@ -271,39 +351,74 @@ public class ReservasController {
         }
     }
 
+    /**
+     * Restablece el listado completo de reservas.
+     *
+     * Limpia el campo de búsqueda y ejecuta nuevamente el método buscar() para
+     * mostrar todos los registros.
+     */
     @FXML
     private void verTodas() {
+
         campoBusqueda.clear();
         buscar();
     }
 
     /**
-     * Que hace: muestra las reservas en la lista, una tarjeta por reserva.
-     * Parametros: reservas (las reservas a mostrar).
+     * Muestra las reservas recibidas en la tabla.
+     *
+     * Convierte la lista en una colección observable, elimina la selección
+     * anterior y deshabilita las acciones asociadas a una reserva.
+     *
+     * @param reservas Lista de reservas que se desean mostrar.
      */
     private void mostrarLista(ArrayList<Reserva> reservas) {
-        listaReservas.setItems(FXCollections.observableArrayList(reservas));
+
+        listaReservas.setItems(
+                FXCollections.observableArrayList(reservas)
+        );
+
         listaReservas.getSelectionModel().clearSelection();
+
         mostrarSeleccion(null);
     }
 
     /**
-     * Que hace: al elegir una reserva de la lista, habilita los botones. El
-     * boton de cancelar solo se habilita si la reserva esta confirmada.
-     * Parametros: reserva (la reserva elegida, null si no hay ninguna).
+     * Actualiza los botones según la reserva seleccionada.
+     *
+     * Permite visualizar el comprobante cuando existe una reserva seleccionada.
+     *
+     * El botón de cancelación solamente se habilita si la reserva seleccionada
+     * está confirmada.
+     *
+     * @param reserva Reserva seleccionada, o null si no existe selección.
      */
     private void mostrarSeleccion(Reserva reserva) {
-        botonComprobante.setDisable(reserva == null);
-        botonCancelar.setDisable(reserva == null || !reserva.isConfirmada());
+
+        botonComprobante.setDisable(
+                reserva == null
+        );
+
+        botonCancelar.setDisable(
+                reserva == null || !reserva.isConfirmada()
+        );
     }
 
     /**
-     * Que hace: muestra el comprobante de la reserva seleccionada en una
-     * ventana emergente con formato de ticket.
+     * Muestra el comprobante de la reserva seleccionada.
+     *
+     * Utiliza VentanaComprobante para presentar una ventana emergente con los
+     * datos de la reserva, incluyendo su estado actual, entradas e importe
+     * total.
+     *
+     * Si no existe una reserva seleccionada, no realiza ninguna operación.
      */
     @FXML
     private void verComprobante() {
-        Reserva seleccionada = listaReservas.getSelectionModel().getSelectedItem();
+
+        Reserva seleccionada
+                = listaReservas.getSelectionModel().getSelectedItem();
+
         if (seleccionada == null) {
             return;
         }
@@ -312,141 +427,198 @@ public class ReservasController {
     }
 
     /**
-     * Que hace: pide confirmacion y cancela la reserva seleccionada. La reserva
-     * no se borra: queda como cancelada y sus butacas se liberan. Se trabaja
-     * sobre una copia del cine.
+     * Cancela la reserva seleccionada después de solicitar confirmación.
+     *
+     * Presenta un diálogo que permite confirmar o rechazar la cancelación.
+     *
+     * Si se confirma, genera una copia del cine y utiliza ServicioDeReservas
+     * para cancelar la reserva mediante su código.
+     *
+     * La reserva no se elimina del historial y sus butacas vuelven a estar
+     * disponibles para futuras compras.
+     *
+     * Después de persistir los cambios, actualiza el cine activo, recarga la
+     * tabla y vuelve a seleccionar la reserva cancelada.
+     *
+     * Si ocurre un error, lo informa dentro de la pantalla.
      */
     @FXML
     private void cancelarReserva() {
+
         ocultarError();
 
-        Reserva seleccionada = listaReservas.getSelectionModel().getSelectedItem();
+        Reserva seleccionada
+                = listaReservas.getSelectionModel().getSelectedItem();
+
         if (seleccionada == null) {
+
             mostrarError("Seleccione una reserva");
             return;
         }
 
-        // Pedir confirmacion antes de cancelar (igual que en Mis reservas)
-        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+        // Solicitar confirmación antes de cancelar.
+        Alert confirmacion = new Alert(
+                Alert.AlertType.CONFIRMATION
+        );
 
         confirmacion.setTitle("Cancelar reserva");
-        confirmacion.setHeaderText("¿Querés cancelar esta reserva?");
+
+        confirmacion.setHeaderText(
+                "¿Querés cancelar esta reserva?"
+        );
+
         confirmacion.setContentText(
                 "Código: " + seleccionada.getCodigoReserva()
                 + "\nEsta operación liberará las butacas reservadas."
         );
 
-        confirmacion.initOwner(listaReservas.getScene().getWindow());
-
-        // Mismo estilo oscuro que usan los otros carteles del sistema
-        confirmacion.getDialogPane().getStylesheets().add(
-                getClass().getResource("/gestordecine/estilos/estilos.css").toExternalForm()
+        confirmacion.initOwner(
+                listaReservas.getScene().getWindow()
         );
-        confirmacion.getDialogPane().getStyleClass().add("alerta-cinema");
 
+        // Aplicar el estilo visual de CINEMA.
+        confirmacion.getDialogPane().getStylesheets().add(
+                getClass().getResource(
+                        "/gestordecine/estilos/estilos.css"
+                ).toExternalForm()
+        );
+
+        confirmacion.getDialogPane()
+                .getStyleClass()
+                .add("alerta-cinema");
+
+        // Personalizar el botón de confirmación.
         Button botonSi = (Button) confirmacion.getDialogPane()
                 .lookupButton(ButtonType.OK);
-        botonSi.setText("Sí, cancelar");
-        botonSi.getStyleClass().add("boton-alerta-cinema");
 
+        botonSi.setText("Sí, cancelar");
+
+        botonSi.getStyleClass().add(
+                "boton-alerta-cinema"
+        );
+
+        // Personalizar el botón para conservar la reserva.
         Button botonNo = (Button) confirmacion.getDialogPane()
                 .lookupButton(ButtonType.CANCEL);
+
         botonNo.setText("Conservar");
-        botonNo.getStyleClass().add("boton-alerta-cinema");
+
+        botonNo.getStyleClass().add(
+                "boton-alerta-cinema"
+        );
 
         ButtonType respuesta = confirmacion.showAndWait()
                 .orElse(ButtonType.CANCEL);
 
+        // No realizar cambios si el usuario no confirma.
         if (respuesta != ButtonType.OK) {
             return;
         }
 
         try {
+
             String codigo = seleccionada.getCodigoReserva();
 
+            // Trabajar sobre una copia del cine.
             Cine cineTrabajo = cine.copiar();
-            cineTrabajo.getServicioDeReservas().cancelarReserva(codigo);
 
+            // Cancelar la reserva sobre la copia.
+            cineTrabajo.getServicioDeReservas()
+                    .cancelarReserva(codigo);
+
+            // Persistir antes de actualizar el cine activo.
             persistencia.guardar(cineTrabajo);
+
             principalController.actualizarCine(cineTrabajo);
+
             this.cine = cineTrabajo;
 
-            // Se vuelve a cargar la lista y se deja marcada la misma reserva
+            // Recargar la tabla de reservas.
             buscar();
+
+            // Volver a seleccionar la reserva cancelada.
             for (Reserva reserva : listaReservas.getItems()) {
+
                 if (reserva.getCodigoReserva().equals(codigo)) {
-                    listaReservas.getSelectionModel().select(reserva);
+
+                    listaReservas.getSelectionModel()
+                            .select(reserva);
                 }
             }
 
         } catch (IOException | ClassNotFoundException e) {
-            // Error de datos (archivo / copia), distinto de un error de reglas
-            mostrarError("Error al guardar los datos: " + e.getMessage());
+
+            mostrarError(
+                    "Error al guardar los datos: " + e.getMessage()
+            );
+
         } catch (Exception e) {
-            // Error de reglas de negocio
+
             mostrarError(e.getMessage());
         }
     }
 
+    /**
+     * Abre la pantalla de registro de una nueva reserva.
+     *
+     * Utiliza PrincipalController para realizar la navegación hacia el
+     * formulario correspondiente.
+     */
     @FXML
     private void nuevaReserva() {
+
         principalController.mostrarNuevaReserva();
     }
 
-    private void mostrarError(String mensaje) {
-        mensajeError.setText(mensaje);
-        mensajeError.setVisible(true);
-        mensajeError.setManaged(true);
-    }
-
-    private void ocultarError() {
-        mensajeError.setVisible(false);
-        mensajeError.setManaged(false);
-    }
-
     /**
-     * Exporta todas las reservas registradas en el cine a un archivo CSV.
+     * Exporta todas las reservas del cine a un archivo CSV.
      *
-     * Permite seleccionar el nombre y la ubicación del archivo. La exportación
-     * incluye reservas confirmadas y canceladas, independientemente del filtro
-     * aplicado en la pantalla.
+     * Abre un selector de archivos para que el usuario indique el nombre y la
+     * ubicación donde se guardará la exportación.
+     *
+     * Incluye tanto reservas confirmadas como canceladas, independientemente
+     * del criterio de búsqueda utilizado en la pantalla.
+     *
+     * Si el usuario cancela el selector, no realiza ninguna operación.
+     *
+     * Si la exportación finaliza correctamente, muestra un mensaje de
+     * confirmación. Si ocurre un error de escritura, lo informa mediante un
+     * diálogo.
      *
      * No modifica las reservas ni el archivo de persistencia del cine.
-     *
-     * @throws IOException Si ocurre un error al escribir el archivo, capturado
-     * e informado dentro del método.
      */
     @FXML
     private void exportarCSV() {
 
         ocultarError();
 
-        // Crear el selector de archivos.
+        // Configurar el selector de archivos.
         FileChooser selector = new FileChooser();
 
         selector.setTitle("Exportar reservas");
+
         selector.setInitialFileName("reservas.csv");
 
-        // Permitir guardar archivos CSV.
         selector.getExtensionFilters().add(
                 new FileChooser.ExtensionFilter(
-                        "Archivos CSV (*.csv)", "*.csv"
+                        "Archivos CSV (*.csv)",
+                        "*.csv"
                 )
         );
 
-        // Abrir el selector de ubicación.
+        // Solicitar la ubicación del archivo.
         File archivo = selector.showSaveDialog(
                 listaReservas.getScene().getWindow()
         );
 
-        // Si el usuario cancela, no se realiza ninguna operación.
+        // No exportar si el usuario cancela.
         if (archivo == null) {
             return;
         }
 
         try {
 
-            // Exportar todas las reservas, no solamente las filtradas.
+            // Exportar todas las reservas registradas.
             ExportadorReservasCSV.exportar(
                     cine.getServicioDeReservas().getReservas(),
                     archivo.toPath()
@@ -463,7 +635,8 @@ public class ReservasController {
             DialogoCinema.mostrarError(
                     listaReservas.getScene().getWindow(),
                     "Error al exportar reservas",
-                    "No se pudo generar el archivo CSV: " + e.getMessage()
+                    "No se pudo generar el archivo CSV: "
+                    + e.getMessage()
             );
 
             e.printStackTrace();
@@ -471,10 +644,38 @@ public class ReservasController {
     }
 
     /**
-     * Regresa a la cartelera principal.
+     * Regresa a la pantalla anterior mediante el controlador principal.
      */
     @FXML
     private void volver() {
+
         principalController.volver();
+    }
+
+    /**
+     * Muestra un mensaje de error dentro de la pantalla.
+     *
+     * Asigna el texto recibido a la etiqueta correspondiente y permite que se
+     * visualice en la interfaz.
+     *
+     * @param mensaje Texto del error que se desea mostrar.
+     */
+    private void mostrarError(String mensaje) {
+
+        mensajeError.setText(mensaje);
+        mensajeError.setVisible(true);
+        mensajeError.setManaged(true);
+    }
+
+    /**
+     * Oculta el mensaje de error de la pantalla.
+     *
+     * También evita que la etiqueta ocupe espacio dentro de la distribución de
+     * la interfaz.
+     */
+    private void ocultarError() {
+
+        mensajeError.setVisible(false);
+        mensajeError.setManaged(false);
     }
 }

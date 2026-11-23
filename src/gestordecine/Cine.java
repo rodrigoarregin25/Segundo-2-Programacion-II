@@ -11,6 +11,17 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import gestordecine.repositorios.Repositorio;
 
+/**
+ *
+ * Representa el sistema principal del cine.
+ *
+ * Administra las peliculas, salas y funciones, permitiendo su registro,
+ * busqueda, modificacion y desactivacion.
+ *
+ * Tambien coordina la gestion de reservas mediante ServicioDeReservas, valida
+ * las reglas de negocio y permite generar una copia del estado del cine para
+ * realizar modificaciones antes de persistirlas.
+ */
 public class Cine implements Serializable {
 
     private final ArrayList<Pelicula> peliculas;
@@ -26,22 +37,47 @@ public class Cine implements Serializable {
         this.servicioDeReservas = new ServicioDeReservas();
     }
 
+    /**
+     * @return Una nueva lista con las películas registradas.
+     */
     public ArrayList<Pelicula> getPeliculas() {
         return new ArrayList<>(peliculas);
     }
 
+    /**
+     * @return Una nueva lista con las salas registradas.
+     */
     public ArrayList<Sala> getSalas() {
         return new ArrayList<>(salas);
     }
 
+    /**
+     * @return Una nueva lista con las funciones registradas.
+     */
     public ArrayList<Funcion> getFunciones() {
         return new ArrayList<>(funciones);
     }
 
+    /**
+     * @return El servicio de reservas asociado al cine.
+     */
     public ServicioDeReservas getServicioDeReservas() {
         return servicioDeReservas;
     }
 
+    /**
+     * Crea una copia independiente del estado actual del cine mediante
+     * serialización y deserialización en memoria.
+     *
+     * Permite realizar modificaciones sobre la copia sin afectar al objeto
+     * original hasta que los cambios sean validados y persistidos.
+     *
+     * @return Una copia del objeto Cine con su estado actual.
+     * @throws IOException Si ocurre un error durante la serialización o
+     * deserialización del objeto.
+     * @throws ClassNotFoundException Si no se encuentra alguna clase necesaria
+     * para reconstruir el objeto.
+     */
     public Cine copiar() throws IOException, ClassNotFoundException {
 
         ByteArrayOutputStream memoria = new ByteArrayOutputStream();
@@ -100,6 +136,7 @@ public class Cine implements Serializable {
      * mismo ID o nombre.
      *
      * @param sala Sala que se desea registrar.
+     *
      * @throws IllegalArgumentException Si la sala es nula.
      * @throws RegistroDuplicadoException Si existe una sala con el mismo
      * identificador o nombre.
@@ -138,6 +175,15 @@ public class Cine implements Serializable {
         repositorio.agregar(sala);
     }
 
+    /**
+     * Desactiva una sala en el cine. Verifica que la sala no tenga funciones
+     * activas, que la sala exista y/o que la sala ya este desactivada.
+     *
+     * @param idSala Sala que se desea desactivar.
+     *
+     * @throws IllegalArgumentException Si la sala no existe.
+     * @throws IllegalStateException Si el estado de la sala no es correcto.
+     */
     public void desactivarSala(int idSala) {
 
         Sala sala = buscarSalaPorId(idSala);
@@ -168,6 +214,15 @@ public class Cine implements Serializable {
         sala.desactivar();
     }
 
+    /**
+     * Reactiva una sala en el cine. Verifica que la sala exista y/o que la sala
+     * ya este activa.
+     *
+     * @param idSala Sala que se desea activar.
+     *
+     * @throws IllegalArgumentException Si la sala no existe.
+     * @throws IllegalStateException Si el estado de la sala no es correcto.
+     */
     public void reactivarSala(int idSala) {
 
         Sala sala = buscarSalaPorId(idSala);
@@ -193,6 +248,7 @@ public class Cine implements Serializable {
      * Las funciones desactivadas no ocupan horarios.
      *
      * @param funcion Función que se desea programar.
+     *
      * @throws IllegalArgumentException Si la función es nula, si la sala o
      * película no están registradas o activas, o si existe una superposición de
      * horarios.
@@ -216,6 +272,7 @@ public class Cine implements Serializable {
             }
         }
 
+        // Verificar que la sala este en el cine.
         if (!salaEncontrada) {
             throw new IllegalArgumentException(
                     "La sala no está registrada en el cine"
@@ -239,6 +296,7 @@ public class Cine implements Serializable {
             }
         }
 
+        // Verificar que la pelicula corresponda al cine.
         if (!peliculaEncontrada) {
             throw new IllegalArgumentException(
                     "La película no está registrada en el cine"
@@ -294,42 +352,68 @@ public class Cine implements Serializable {
         repositorio.agregar(funcion);
     }
 
+    /**
+     * Busca una pelicula por su ID interno
+     *
+     * @param id Id de la pelicula que se desea buscar.
+     *
+     * @return La pelicula encontrada, caso contrario null.
+     */
     public Pelicula buscarPeliculaPorId(int id) {
 
         for (Pelicula pelicula : peliculas) {
             if (pelicula.getIdPelicula() == id) {
                 return pelicula;
             }
-
         }
 
         return null;
     }
 
+    /**
+     * Busca una sala por su ID interno
+     *
+     * @param id Id de la sala que se desea buscar.
+     *
+     * @return La sala encontrada, caso contrario null.
+     */
     public Sala buscarSalaPorId(int id) {
 
         for (Sala sala : salas) {
             if (sala.getIdSala() == id) {
                 return sala;
             }
-
         }
 
         return null;
     }
 
+    /**
+     * Busca una funcion por su ID interno
+     *
+     * @param id ID de la funcion que se desea buscar.
+     *
+     * @return La funcion encontrada, caso contrario null.
+     */
     public Funcion buscarFuncionPorId(int id) {
 
         for (Funcion funcion : funciones) {
             if (funcion.getIdFuncion() == id) {
                 return funcion;
             }
-
         }
 
         return null;
     }
 
+    /**
+     * Busca funciones de una pelicula específica.
+     *
+     * @param idPelicula Id de la pelicula que se desea buscar.
+     *
+     * @return Un ArrayList de las funciones encontradas, en caso de no hacerlo
+     * retorna un ArrayList vacio.
+     */
     public ArrayList<Funcion> buscarFuncionesPorPelicula(int idPelicula) {
         ArrayList<Funcion> resultados = new ArrayList<>();
 
@@ -340,9 +424,16 @@ public class Cine implements Serializable {
         }
 
         return resultados;
-
     }
 
+    /**
+     * Busca funciones de una sala específica.
+     *
+     * @param idSala Id de la sala sobre la que se quiere buscar.
+     *
+     * @return Un ArrayList de las funciones encontradas, en caso de no hacerlo
+     * retorna un ArrayList vacio.
+     */
     public ArrayList<Funcion> buscarFuncionesPorSala(int idSala) {
         ArrayList<Funcion> resultados = new ArrayList<>();
 
@@ -353,9 +444,18 @@ public class Cine implements Serializable {
         }
 
         return resultados;
-
     }
 
+    /**
+     * Busca funciones de una fecha específica.
+     *
+     * @param fecha fecha que se quiere buscar la funcion.
+     *
+     * @return Un ArrayList de las funciones encontradas, en caso de no hacerlo
+     * retorna un ArrayList vacio.
+     *
+     * @throws IllegalArgumentException Si la fecha es nula.
+     */
     public ArrayList<Funcion> buscarFuncionesPorFecha(LocalDate fecha) {
         ArrayList<Funcion> resultados = new ArrayList<>();
 
@@ -372,6 +472,13 @@ public class Cine implements Serializable {
         return resultados;
     }
 
+    /**
+     * Busca funciones en fechas futuras a la actual.
+     *
+     * @return Un ArrayList de las funciones encontradas, en caso de no hacerlo
+     * retorna un ArrayList vacio.
+     *
+     */
     public ArrayList<Funcion> buscarFuncionesFuturas() {
         ArrayList<Funcion> resultados = new ArrayList<>();
 
@@ -386,6 +493,27 @@ public class Cine implements Serializable {
         return resultados;
     }
 
+    /**
+     * Modifica los datos de una película existente.
+     *
+     * Valida los nuevos valores creando una instancia temporal de Pelicula y,
+     * si son correctos, actualiza los atributos de la película registrada.
+     *
+     * La duración y el identificador de la película no se modifican.
+     *
+     * @param idPelicula Id de la pelicula.
+     * @param titulo Titulo de la pelicula.
+     * @param anio Año de la pelicula.
+     * @param generos Generos de la pelicula.
+     * @param director Directores de la pelicula.
+     * @param actores Actores de la pelicula.
+     * @param sinopsis Sinopsis de la pelicula.
+     * @param puntuacion Puntuacion de la pelicula.
+     * @param clasificacion Clasificacion de la pelicula.
+     * @param poster Poster de la pelicula.
+     *
+     * @throws IllegalArgumentException si la pelicula no existe
+     */
     public void editarPelicula(
             int idPelicula,
             String titulo,
@@ -429,6 +557,17 @@ public class Cine implements Serializable {
         pelicula.setPoster(poster);
     }
 
+    /**
+     * Desactiva una película registrada.
+     *
+     * Impide la operación si la película tiene funciones pendientes o en curso.
+     *
+     * @param idPelicula Id de la pelicula que se quiere desactivar.
+     *
+     * @throws IllegalArgumentException si la pelicula no existe.
+     * @throws IllegalStateException si el estado actual de la pelicula no es
+     * apto para su desactivacion.
+     */
     public void desactivarPelicula(int idPelicula) {
 
         Pelicula pelicula = buscarPeliculaPorId(idPelicula);
@@ -452,11 +591,19 @@ public class Cine implements Serializable {
                 );
             }
         }
-
         pelicula.desactivar();
-
     }
 
+    /**
+     * Permite reactivar una pelicula llamando a al método reactivar al pasar
+     * las validaciones.
+     *
+     * @param idPelicula que se quiere reactivar.
+     *
+     * @throws IllegalArgumentException si la pelicula no existe.
+     * @throws IllegalStateException si el estado actual de la pelicula no es
+     * apto para su reativacion.
+     */
     public void reactivarPelicula(int idPelicula) {
 
         Pelicula pelicula = buscarPeliculaPorId(idPelicula);
@@ -472,6 +619,19 @@ public class Cine implements Serializable {
         pelicula.reactivar();
     }
 
+    /**
+     * Permite confirmar una reserva de funcion luego de sus validaciones.
+     *
+     * @param cliente Cliente de la reserva.
+     * @param funcion Funcion que se quiere reservar.
+     * @param entradas Array de entradas seleccionadas para la funcion.
+     *
+     * @return La reserva confirmada.
+     *
+     * @throws IllegalArgumentException si la funcion es nula o no existe.
+     * @throws IllegalStateException si el estado de la funcion no es apto para
+     * la reserva.
+     */
     public Reserva confirmarReserva(Cliente cliente, Funcion funcion, ArrayList<Entrada> entradas) {
         if (funcion == null) {
             throw new IllegalArgumentException("La funcion no puede ser nula");
@@ -485,13 +645,17 @@ public class Cine implements Serializable {
         }
 
         if (!funcion.isActiva()) {
-            throw new IllegalArgumentException("La funcion esta desactivada");
+            throw new IllegalStateException("La funcion esta desactivada");
         }
 
         return servicioDeReservas.confirmarReserva(cliente, funcion, entradas);
-
     }
 
+    /**
+     * Permite obtener el Id de la siguiente pelicula a registrar.
+     *
+     * @return El mayor identificador existente incrementado en uno.
+     */
     public int obtenerSiguienteIdPelicula() {
         int mayorId = 0;
 
@@ -504,6 +668,11 @@ public class Cine implements Serializable {
         return mayorId + 1;
     }
 
+    /**
+     * Permite obtener el Id de la siguiente sala a registrar.
+     *
+     * @return El mayor identificador existente incrementado en uno.
+     */
     public int obtenerSiguienteIdSala() {
 
         int mayorId = 0;
@@ -517,6 +686,15 @@ public class Cine implements Serializable {
         return mayorId + 1;
     }
 
+    /**
+     * Permite editar una sala existente.
+     *
+     * @param idSala Id de la sala que se quiere editar.
+     * @param nuevoNombre Nuevo nombre de la sala, es decir, luego de editar.
+     *
+     * @throws IllegalArgumentException si la sala no existe o el nombre ya
+     * existe.
+     */
     public void editarSala(int idSala, String nuevoNombre) {
 
         Sala sala = buscarSalaPorId(idSala);
@@ -539,10 +717,18 @@ public class Cine implements Serializable {
     }
 
     /**
-     * Que hace: cambia el precio de una funcion. Las reservas que ya existen
-     * conservan su importe. Parametros: idFuncion (int), nuevoPrecio (double)
-     * Lanza: IllegalArgumentException si la funcion no existe o el precio no es
-     * valido
+     * Modifica únicamente el precio de una función existente y activa.
+     *
+     * Permite actualizar el precio de futuras entradas sin alterar los importes
+     * de las reservas realizadas anteriormente.
+     *
+     * @param idFuncion Identificador de la función que se desea modificar.
+     * @param nuevoPrecio Nuevo precio que se aplicará a futuras compras.
+     *
+     * @throws IllegalArgumentException Si la función no existe o el precio
+     * ingresado no es válido.
+     * @throws IllegalStateException Si la función ya comenzó o está
+     * desactivada.
      */
     public void editarPrecioFuncion(int idFuncion, double nuevoPrecio) {
         Funcion funcion = buscarFuncionPorId(idFuncion);
@@ -557,13 +743,23 @@ public class Cine implements Serializable {
             );
         }
 
+        if (!funcion.isActiva()) {
+            throw new IllegalStateException(
+                    "No se puede modificar una función desactivada."
+            );
+        }
+
         funcion.setPrecio(nuevoPrecio);
     }
 
     /**
-     * Que hace: elimina una funcion, solo si no tiene reservas Parametros:
-     * idFuncion (int) Lanza: IllegalArgumentException si la funcion no existe o
-     * tiene reservas
+     * Elimina una función únicamente si no tiene reservas asociadas,
+     * independientemente de que estén confirmadas o canceladas.
+     *
+     * @param idFuncion Id de la funcion que se quiere eliminar.
+     *
+     * @throws IllegalArgumentException si la funcion no existe o tiene
+     * reservas.
      */
     public void eliminarFuncion(int idFuncion) {
         Funcion funcion = buscarFuncionPorId(idFuncion);
@@ -588,6 +784,7 @@ public class Cine implements Serializable {
      * el historial.
      *
      * @param idFuncion Identificador de la función.
+     *
      * @throws IllegalArgumentException Si la función no existe.
      * @throws IllegalStateException Si la función ya está desactivada, está en
      * curso o tiene reservas confirmadas pendientes.
@@ -638,9 +835,12 @@ public class Cine implements Serializable {
     }
 
     /**
-     * Que hace: vuelve a activar una funcion desactivada Parametros: idFuncion
-     * (int) Lanza: IllegalArgumentException si la funcion no existe,
-     * IllegalStateException si ya estaba activa
+     * Reactiva una funcion desactivada Parametros: idFuncion
+     *
+     * @param idFuncion Id de la funcion que se quiere reactivar.
+     *
+     * @throws IllegalArgumentException si la funcion no existe.
+     * @throws IllegalStateException si el estado de la funcion no es apto.
      */
     public void reactivarFuncion(int idFuncion) {
 
@@ -707,8 +907,24 @@ public class Cine implements Serializable {
     }
 
     /**
-     * Modifica una función sin reservas, conservando su ID. Valida los datos y
-     * evita superposiciones de horarios.
+     * Modifica los datos de una función futura y activa, conservando su ID.
+     *
+     * Impide modificar funciones con reservas asociadas y valida que la sala y
+     * la película estén activas, que los nuevos datos sean correctos y que no
+     * existan superposiciones de horarios.
+     *
+     * @param idFuncion Identificador de la función.
+     * @param idSala Identificador de la sala.
+     * @param idPelicula Identificador de la película.
+     * @param precio Nuevo precio.
+     * @param fechaHora Nueva fecha y hora de inicio.
+     * @param formato Nuevo formato de proyección.
+     * @param idioma Nuevo idioma.
+     *
+     * @throws IllegalArgumentException Si los datos no son válidos o existe una
+     * superposición de horarios.
+     * @throws IllegalStateException Si la función ya comenzó, está desactivada
+     * o tiene reservas asociadas.
      */
     public void editarFuncion(int idFuncion, int idSala, int idPelicula,
             double precio, LocalDateTime fechaHora,
@@ -718,6 +934,12 @@ public class Cine implements Serializable {
 
         if (actual == null) {
             throw new IllegalArgumentException("La función no existe");
+        }
+
+        if (!actual.getFechaHora().isAfter(LocalDateTime.now())) {
+            throw new IllegalStateException(
+                    "No se puede editar una función que ya comenzó."
+            );
         }
 
         if (servicioDeReservas.tieneReservas(actual)) {

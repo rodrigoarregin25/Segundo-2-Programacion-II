@@ -3,10 +3,20 @@ package gestordecine;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * Representa una función cinematográfica programada en el cine.
+ *
+ * Contiene la película, sala, precio, fecha y hora, formato e idioma de
+ * proyección.
+ *
+ * Implementa Desactivable para permitir su desactivación sin eliminarla del
+ * sistema, conservando las referencias de las reservas existentes.
+ *
+ * Implementa Serializable para permitir su persistencia.
+ */
 public class Funcion implements Serializable, Desactivable {
 
     private static final long serialVersionUID = -8444399254319352013L;
-
     private final int idFuncion;
     private Sala sala;
     private Pelicula pelicula;
@@ -14,9 +24,28 @@ public class Funcion implements Serializable, Desactivable {
     private LocalDateTime fechaHora;
     private String formatoPelicula;
     private String idiomaPelicula;
-    // false por defecto: en los datos guardados antes, todas las funciones siguen activas
-    private boolean desactivada;
+    private boolean desactivada; // false por defecto: en los datos guardados antes, todas las funciones siguen activas
 
+    /**
+     * Crea una función cinematográfica validando sus datos.
+     *
+     * Verifica que el identificador y el precio sean positivos, que la sala y
+     * la película no sean nulas, que la película esté activa y que la fecha y
+     * hora sean futuras.
+     *
+     * También valida que el formato y el idioma sean valores permitidos.
+     *
+     * @param idFuncion Identificador único de la función.
+     * @param sala Sala donde se proyectará la película.
+     * @param pelicula Película que se proyectará.
+     * @param precio Precio base de las entradas.
+     * @param fechaHora Fecha y hora de inicio de la función.
+     * @param formatoPelicula Formato de proyección.
+     * @param idiomaPelicula Idioma de la película.
+     *
+     * @throws IllegalArgumentException Si alguno de los datos ingresados no
+     * cumple las validaciones.
+     */
     public Funcion(int idFuncion, Sala sala, Pelicula pelicula, double precio, LocalDateTime fechaHora, String formatoPelicula, String idiomaPelicula) {
         setPrecio(precio);
 
@@ -76,6 +105,14 @@ public class Funcion implements Serializable, Desactivable {
         this.idiomaPelicula = idiomaPelicula;
     }
 
+    /**
+     * Modifica el precio base de la función.
+     *
+     * @param precio Nuevo precio de la función.
+     *
+     * @throws IllegalArgumentException Si el precio no es positivo o no es un
+     * número finito.
+     */
     public void setPrecio(double precio) {
         if (precio <= 0 || !Double.isFinite(precio)) {
             throw new IllegalArgumentException("El precio debe ser un numero positivo y valido");
@@ -83,41 +120,69 @@ public class Funcion implements Serializable, Desactivable {
         this.precio = precio;
     }
 
+    /**
+     * @return Identificador de la función.
+     */
     public int getIdFuncion() {
         return idFuncion;
     }
 
+    /**
+     * @return Sala asignada a la función.
+     */
     public Sala getSala() {
         return sala;
     }
 
+    /**
+     * @return Película asignada a la función.
+     */
     public Pelicula getPelicula() {
         return pelicula;
     }
 
+    /**
+     * @return Precio base de la función.
+     */
     public double getPrecio() {
         return precio;
     }
 
+    /**
+     * @return Fecha y hora de inicio de la función.
+     */
     public LocalDateTime getFechaHora() {
         return fechaHora;
     }
 
+    /**
+     * @return Formato de proyección de la película.
+     */
     public String getFormatoPelicula() {
         return formatoPelicula;
     }
 
+    /**
+     * @return Idioma de proyección de la película.
+     */
     public String getIdiomaPelicula() {
         return idiomaPelicula;
     }
 
+    /**
+     * Calcula la fecha y hora de finalización de la función sumando la duración
+     * de la película a su horario de inicio.
+     *
+     * @return Fecha y hora de finalización de la función.
+     */
     public LocalDateTime getFechaHoraFin() {
         return fechaHora.plusMinutes(pelicula.getDuracionPelicula());
     }
 
     /**
-     * Que hace: dice si la funcion esta activa Retorna: true si esta activa,
-     * false si esta desactivada
+     * Indica si la función se encuentra activa.
+     *
+     * @return true si está activa, false si está desactivada.
      */
     @Override
     public boolean isActiva() {
@@ -125,8 +190,7 @@ public class Funcion implements Serializable, Desactivable {
     }
 
     /**
-     * Que hace: desactiva la funcion (no se borra, las reservas quedan en el
-     * historial)
+     * Desactiva la función sin eliminarla del sistema.
      */
     @Override
     public void desactivar() {
@@ -134,7 +198,7 @@ public class Funcion implements Serializable, Desactivable {
     }
 
     /**
-     * Que hace: vuelve a activar la funcion
+     * Reactiva una función previamente desactivada.
      */
     @Override
     public void reactivar() {
@@ -142,10 +206,15 @@ public class Funcion implements Serializable, Desactivable {
     }
 
     /**
-     * Actualiza los datos de la función después de que Cine haya validado las
-     * reglas de negocio.
+     * Actualiza los datos de la función utilizando otra función cuyos valores
+     * fueron previamente validados por Cine.
      *
-     * No modifica el identificador ni el estado de activación.
+     * Modifica la sala, película, fecha y hora, formato, idioma y precio,
+     * conservando el identificador y el estado de activación.
+     *
+     * Permite mantener la identidad del objeto original y sus referencias.
+     *
+     * @param nuevosDatos Función que contiene los valores actualizados.
      */
     public void actualizarDatos(Funcion nuevosDatos) {
         this.sala = nuevosDatos.getSala();
