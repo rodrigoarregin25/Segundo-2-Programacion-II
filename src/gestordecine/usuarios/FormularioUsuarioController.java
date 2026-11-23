@@ -83,7 +83,7 @@ public class FormularioUsuarioController {
      * @param cine Cine que contiene los usuarios registrados.
      * @param persistencia Objeto encargado de guardar los cambios.
      * @param principalController Controlador principal de CINEMA.
-     * 
+     *
      * @throws IllegalStateException Si no existe una sesión administrativa.
      */
     public void configurarNuevo(
@@ -138,7 +138,7 @@ public class FormularioUsuarioController {
      * @param persistencia Objeto encargado de guardar los cambios.
      * @param principalController Controlador principal de CINEMA.
      * @param usuario Usuario que se desea editar.
-     * 
+     *
      * @throws IllegalStateException Si no existe una sesión administrativa.
      * @throws IllegalArgumentException Si el usuario recibido es nulo.
      */
