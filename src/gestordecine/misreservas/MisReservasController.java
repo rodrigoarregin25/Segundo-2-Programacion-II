@@ -2,52 +2,64 @@ package gestordecine.misreservas;
 
 import gestordecine.Cine;
 import gestordecine.Cliente;
+import gestordecine.DialogoCinema;
+import gestordecine.PersistenciaCine;
+import gestordecine.Reserva;
+import gestordecine.VentanaComprobante;
 import gestordecine.controladores.NuevaReservaController;
 import gestordecine.controladores.PrincipalController;
-import gestordecine.Reserva;
-
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import javafx.fxml.FXML;
-import javafx.geometry.Insets;
-import javafx.scene.control.Label;
-import javafx.scene.layout.VBox;
-
-import gestordecine.PersistenciaCine;
-import gestordecine.VentanaComprobante;
-import gestordecine.DialogoCinema;
 import gestordecine.sesion.SesionCliente;
-
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Locale;
 import java.util.stream.Collectors;
+import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.layout.HBox;
-import java.util.Locale;
-import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 
 /**
  * Controlador de la pantalla Mis reservas.
  *
- * Muestra únicamente las reservas asociadas al cliente que inició sesión en
- * CINEMA.
+ * Permite consultar las reservas correspondientes al cliente que inició sesión
+ * en CINEMA, incluyendo las confirmadas y las canceladas.
  *
- * @author Rodrigo Arregin
+ * Muestra los datos de cada reserva mediante tarjetas visuales y permite
+ * consultar sus comprobantes o cancelar reservas confirmadas cuyas funciones
+ * todavía no comenzaron.
+ *
+ * Antes de consultar o cancelar una reserva, comprueba que corresponda al
+ * cliente autenticado.
+ *
+ * Para realizar cancelaciones, trabaja sobre una copia del cine y persiste los
+ * cambios antes de actualizar el estado original.
+ *
+ * Se comunica con PrincipalController para actualizar el cine y gestionar la
+ * navegación.
+ *
  */
 public class MisReservasController {
 
+    // Formato utilizado para mostrar fechas y horarios.
+    private static final DateTimeFormatter FORMATO_FECHA
+            = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+    // Referencias al sistema.
     private Cine cine;
     private PrincipalController principalController;
     private PersistenciaCine persistencia;
 
-    private static final DateTimeFormatter FORMATO_FECHA
-            = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-
+    // Componentes de la interfaz.
     @FXML
     private Label etiquetaCliente;
 
@@ -55,34 +67,57 @@ public class MisReservasController {
     private VBox contenedorReservas;
 
     /**
-     * Configura la pantalla y carga las reservas del cliente autenticado.
+     * Configura la pantalla con las referencias del sistema.
      *
-     * @param cine Cine con los datos actuales.
-     * @param persistencia Administrador del archivo de datos.
-     * @param principalController Controlador de navegación principal.
+     * Recibe el cine actual, la persistencia y el controlador principal.
+     * Posteriormente, carga las reservas asociadas al cliente que tiene una
+     * sesión iniciada.
+     *
+     * @param cine Cine que contiene los clientes y sus reservas.
+     * @param persistencia Objeto encargado de guardar los cambios.
+     * @param principalController Controlador principal de la aplicación.
      */
-    public void configurar(Cine cine, PersistenciaCine persistencia,
+    public void configurar(
+            Cine cine,
+            PersistenciaCine persistencia,
             PrincipalController principalController) {
 
         this.cine = cine;
         this.persistencia = persistencia;
         this.principalController = principalController;
+
         cargarReservas();
     }
 
     /**
-     * Consulta y muestra las reservas del cliente que inició sesión. No permite
-     * visualizar las reservas de otros clientes.
+     * Consulta y muestra las reservas del cliente autenticado.
+     *
+     * Obtiene el cliente asociado a la sesión y busca sus datos actualizados
+     * dentro del servicio de reservas del cine.
+     *
+     * Si no existe una sesión, el cliente no se encuentra registrado o no posee
+     * reservas, muestra el mensaje informativo correspondiente.
+     *
+     * Si existen reservas, genera una tarjeta por cada una, incluyendo tanto
+     * las confirmadas como las canceladas.
      */
     private void cargarReservas() {
 
         contenedorReservas.getChildren().clear();
 
-        Cliente clienteSesion = NuevaReservaController.getClienteActual();
+        Cliente clienteSesion
+                = NuevaReservaController.getClienteActual();
 
         if (clienteSesion == null) {
-            etiquetaCliente.setText("No hay una sesión iniciada.");
-            mostrarMensaje("Iniciá sesión desde Nueva reserva para consultar tus compras.");
+
+            etiquetaCliente.setText(
+                    "No hay una sesión iniciada."
+            );
+
+            mostrarMensaje(
+                    "Iniciá sesión desde Nueva reserva para consultar tus compras."
+            );
+
             return;
         }
 
@@ -91,8 +126,13 @@ public class MisReservasController {
                 .buscarClientePorDni(clienteSesion.getDni());
 
         if (cliente == null) {
+
             etiquetaCliente.setText("Cliente no encontrado");
-            mostrarMensaje("No se encontró el cliente en los datos del cine.");
+
+            mostrarMensaje(
+                    "No se encontró el cliente en los datos del cine."
+            );
+
             return;
         }
 
@@ -101,29 +141,45 @@ public class MisReservasController {
                 + " | DNI " + cliente.getDni()
         );
 
-        ArrayList<Reserva> reservas = cine.getServicioDeReservas()
-                .buscarPorDni(cliente.getDni());
+        ArrayList<Reserva> reservas
+                = cine.getServicioDeReservas()
+                        .buscarPorDni(cliente.getDni());
 
         if (reservas.isEmpty()) {
-            mostrarMensaje("Todavía no tenés reservas registradas.");
+
+            mostrarMensaje(
+                    "Todavía no tenés reservas registradas."
+            );
+
             return;
         }
 
-        // Mostrar una tarjeta por cada reserva, incluidas las canceladas.
+        // Mostrar una tarjeta por cada reserva.
         for (Reserva reserva : reservas) {
-            contenedorReservas.getChildren().add(crearTarjeta(reserva));
+
+            contenedorReservas.getChildren().add(
+                    crearTarjeta(reserva)
+            );
         }
     }
 
     /**
-     * Crea una tarjeta visual con los datos de una reserva.
+     * Crea una tarjeta visual con la información de una reserva.
      *
-     * Organiza la información en secciones, diferencia el estado de
-     * confirmación y conserva las acciones de comprobante y cancelación en la
-     * parte inferior.
+     * Muestra el título de la película, código de reserva, estado, fecha y
+     * hora, sala, butacas, cantidad de entradas e importe total.
      *
-     * @param reserva Reserva que se desea mostrar.
-     * @return Tarjeta con los datos y acciones disponibles.
+     * Incluye un botón para consultar el comprobante de la reserva.
+     *
+     * Cuando la reserva está confirmada y la función todavía no comenzó,
+     * también incorpora un botón para cancelarla.
+     *
+     * Utiliza componentes JavaFX como VBox, HBox y GridPane para organizar
+     * visualmente la información.
+     *
+     * @param reserva Reserva cuyos datos se desean mostrar.
+     * 
+     * @return Contenedor VBox con los datos y acciones de la reserva.
      */
     private VBox crearTarjeta(Reserva reserva) {
 
@@ -131,7 +187,9 @@ public class MisReservasController {
 
         // ENCABEZADO: PELÍCULA Y CÓDIGO
         Label titulo = new Label(
-                reserva.getFuncion().getPelicula().getTituloPelicula()
+                reserva.getFuncion()
+                        .getPelicula()
+                        .getTituloPelicula()
         );
 
         titulo.setStyle(
@@ -139,18 +197,26 @@ public class MisReservasController {
                 + "-fx-font-size: 18px;"
                 + "-fx-font-weight: bold;"
         );
+
         titulo.setWrapText(true);
 
         Label codigo = new Label(
                 "Reserva " + reserva.getCodigoReserva()
         );
+
         codigo.setStyle(
                 "-fx-text-fill: #94A3B8;"
                 + "-fx-font-size: 12px;"
         );
 
-        VBox informacionPrincipal = new VBox(5, titulo, codigo);
-        HBox.setHgrow(informacionPrincipal, Priority.ALWAYS);
+        VBox informacionPrincipal = new VBox(
+                5, titulo, codigo
+        );
+
+        HBox.setHgrow(
+                informacionPrincipal,
+                Priority.ALWAYS
+        );
 
         // ESTADO DE LA RESERVA
         Label estado = new Label(
@@ -168,29 +234,39 @@ public class MisReservasController {
                 + "-fx-padding: 6 12;"
         );
 
-        HBox encabezado = new HBox(20, informacionPrincipal, estado);
+        HBox encabezado = new HBox(
+                20, informacionPrincipal, estado
+        );
+
         encabezado.setAlignment(Pos.CENTER_LEFT);
 
         // SEPARADOR
         Region separadorSuperior = new Region();
+
         separadorSuperior.setPrefHeight(1);
+
         separadorSuperior.setStyle(
                 "-fx-background-color: #334155;"
         );
 
         // DATOS DE LA RESERVA
         String butacas = reserva.getEntradas().stream()
-                .map(entrada -> entrada.getButaca().getIdentificador())
+                .map(entrada
+                        -> entrada.getButaca().getIdentificador())
                 .collect(Collectors.joining(", "));
 
         VBox datoFecha = crearDatoReserva(
                 "FECHA Y HORA",
-                reserva.getFuncion().getFechaHora().format(FORMATO_FECHA)
+                reserva.getFuncion()
+                        .getFechaHora()
+                        .format(FORMATO_FECHA)
         );
 
         VBox datoSala = crearDatoReserva(
                 "SALA",
-                reserva.getFuncion().getSala().getNombreSala()
+                reserva.getFuncion()
+                        .getSala()
+                        .getNombreSala()
         );
 
         VBox datoButacas = crearDatoReserva(
@@ -200,10 +276,13 @@ public class MisReservasController {
 
         VBox datoEntradas = crearDatoReserva(
                 "ENTRADAS",
-                String.valueOf(reserva.getEntradas().size())
+                String.valueOf(
+                        reserva.getEntradas().size()
+                )
         );
 
         GridPane datos = new GridPane();
+
         datos.setHgap(30);
         datos.setVgap(18);
 
@@ -213,7 +292,10 @@ public class MisReservasController {
         datos.add(datoEntradas, 1, 1);
 
         // TOTAL
-        Label etiquetaTotal = new Label("TOTAL DE LA RESERVA");
+        Label etiquetaTotal = new Label(
+                "TOTAL DE LA RESERVA"
+        );
+
         etiquetaTotal.setStyle(
                 "-fx-text-fill: #94A3B8;"
                 + "-fx-font-size: 12px;"
@@ -233,39 +315,59 @@ public class MisReservasController {
                 + "-fx-font-weight: bold;"
         );
 
-        VBox total = new VBox(5, etiquetaTotal, importeTotal);
+        VBox total = new VBox(
+                5, etiquetaTotal, importeTotal
+        );
 
-        // ACCIONES: MANTENER LOS BOTONES ABAJO A LA IZQUIERDA
-        Button botonComprobante = new Button("Ver comprobante");
-        botonComprobante.getStyleClass().add("boton-secundario");
+        // BOTÓN PARA CONSULTAR EL COMPROBANTE
+        Button botonComprobante = new Button(
+                "Ver comprobante"
+        );
+
+        botonComprobante.getStyleClass().add(
+                "boton-secundario"
+        );
+
         botonComprobante.setPrefHeight(40);
 
         botonComprobante.setOnAction(
                 evento -> verComprobante(reserva)
         );
 
-        HBox botones = new HBox(12, botonComprobante);
+        HBox botones = new HBox(
+                12, botonComprobante
+        );
+
         botones.setAlignment(Pos.CENTER_LEFT);
 
         // Solo se pueden cancelar reservas confirmadas y futuras.
         boolean puedeCancelar = confirmada
-                && reserva.getFuncion().getFechaHora()
+                && reserva.getFuncion()
+                        .getFechaHora()
                         .isAfter(LocalDateTime.now());
 
         if (puedeCancelar) {
 
-            Button botonCancelar = new Button("Cancelar reserva");
-            botonCancelar.getStyleClass().add("boton-peligro");
+            Button botonCancelar = new Button(
+                    "Cancelar reserva"
+            );
+
+            botonCancelar.getStyleClass().add(
+                    "boton-peligro"
+            );
+
             botonCancelar.setPrefHeight(40);
 
             botonCancelar.setOnAction(
                     evento -> cancelarReserva(reserva)
             );
 
-            botones.getChildren().add(botonCancelar);
+            botones.getChildren().add(
+                    botonCancelar
+            );
         }
 
-        // TARJETA FINAL
+        // CONSTRUCCIÓN DE LA TARJETA FINAL
         VBox tarjeta = new VBox(
                 16,
                 encabezado,
@@ -275,7 +377,9 @@ public class MisReservasController {
                 botones
         );
 
-        tarjeta.setPadding(new Insets(20));
+        tarjeta.setPadding(
+                new Insets(20)
+        );
 
         tarjeta.setStyle(
                 "-fx-background-color: #151F30;"
@@ -288,71 +392,141 @@ public class MisReservasController {
     }
 
     /**
-     * Crea un bloque de información para una tarjeta de reserva.
+     * Crea un bloque visual con una etiqueta y su valor.
      *
-     * @param etiqueta Nombre del dato que se muestra.
-     * @param valor Contenido correspondiente al dato.
-     * @return Contenedor con la etiqueta y su valor.
+     * Se utiliza para mostrar información dentro de las tarjetas, como la
+     * fecha, sala, butacas y cantidad de entradas.
+     *
+     * @param etiqueta Nombre del dato que se desea mostrar.
+     * @param valor Contenido correspondiente a ese dato.
+     * 
+     * @return Contenedor VBox con la etiqueta y su valor.
      */
-    private VBox crearDatoReserva(String etiqueta, String valor) {
+    private VBox crearDatoReserva(
+            String etiqueta,
+            String valor) {
 
         Label tituloDato = new Label(etiqueta);
+
         tituloDato.setStyle(
                 "-fx-text-fill: #94A3B8;"
                 + "-fx-font-size: 11px;"
         );
 
         Label valorDato = new Label(valor);
+
         valorDato.setStyle(
                 "-fx-text-fill: #E2E8F0;"
                 + "-fx-font-size: 14px;"
                 + "-fx-font-weight: bold;"
         );
+
         valorDato.setWrapText(true);
 
-        return new VBox(5, tituloDato, valorDato);
+        return new VBox(
+                5, tituloDato, valorDato
+        );
     }
 
     /**
-     * Cancela una reserva del cliente autenticado.
+     * Muestra el comprobante de una reserva del cliente autenticado.
      *
-     * Verifica que la reserva pertenezca al cliente y que la función todavía no
-     * haya comenzado.
+     * Comprueba que exista una sesión y que el DNI del cliente asociado a la
+     * reserva coincida con el DNI del usuario actual.
      *
-     * Trabaja sobre una copia del cine para evitar modificar los datos
-     * originales si ocurre un error al guardar.
+     * Si la validación es correcta, utiliza VentanaComprobante para mostrar los
+     * datos de la reserva.
+     *
+     * Si la reserva no pertenece al cliente, informa que no tiene autorización
+     * para consultarla.
+     *
+     * @param reserva Reserva cuyo comprobante se desea visualizar.
+     */
+    private void verComprobante(Reserva reserva) {
+
+        Cliente cliente = SesionCliente.getClienteActual();
+
+        if (cliente == null
+                || reserva.getCliente().getDni() != cliente.getDni()) {
+
+            DialogoCinema.mostrarError(
+                    contenedorReservas.getScene().getWindow(),
+                    "Acceso denegado",
+                    "No podés consultar esta reserva."
+            );
+
+            return;
+        }
+
+        VentanaComprobante.mostrar(reserva);
+    }
+
+    /**
+     * Cancela una reserva perteneciente al cliente autenticado.
+     *
+     * Verifica que exista una sesión activa y que la reserva corresponda al
+     * cliente que inició sesión.
+     *
+     * Antes de cancelar, solicita confirmación mediante un diálogo de JavaFX.
+     *
+     * Realiza la operación sobre una copia del cine y vuelve a comprobar que la
+     * reserva pertenezca al cliente.
+     *
+     * ServicioDeReservas valida el estado de la reserva y que la función
+     * todavía no haya comenzado.
+     *
+     * Si la cancelación es válida, guarda los cambios, actualiza el cine y
+     * recarga las tarjetas.
+     *
+     * La reserva permanece en el historial y sus butacas vuelven a estar
+     * disponibles.
      *
      * @param reserva Reserva que el cliente desea cancelar.
      */
     private void cancelarReserva(Reserva reserva) {
 
-        Cliente clienteActual = SesionCliente.getClienteActual();
+        Cliente clienteActual
+                = SesionCliente.getClienteActual();
 
         if (clienteActual == null) {
+
             DialogoCinema.mostrarError(
                     contenedorReservas.getScene().getWindow(),
                     "Sesión requerida",
                     "Debés iniciar sesión para cancelar una reserva."
             );
+
             principalController.mostrarCartelera();
+
             return;
         }
 
-        // Confirmar que la reserva pertenezca al cliente.
-        if (reserva.getCliente().getDni() != clienteActual.getDni()) {
+        // Comprobar que la reserva pertenezca al cliente.
+        if (reserva.getCliente().getDni()
+                != clienteActual.getDni()) {
+
             DialogoCinema.mostrarError(
                     contenedorReservas.getScene().getWindow(),
                     "Acceso denegado",
                     "No podés cancelar una reserva de otro cliente."
             );
+
             return;
         }
 
         // Solicitar confirmación antes de cancelar.
-        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+        Alert confirmacion = new Alert(
+                Alert.AlertType.CONFIRMATION
+        );
 
-        confirmacion.setTitle("Cancelar reserva");
-        confirmacion.setHeaderText("¿Querés cancelar esta reserva?");
+        confirmacion.setTitle(
+                "Cancelar reserva"
+        );
+
+        confirmacion.setHeaderText(
+                "¿Querés cancelar esta reserva?"
+        );
+
         confirmacion.setContentText(
                 "Código: " + reserva.getCodigoReserva()
                 + "\nEsta operación liberará las butacas reservadas."
@@ -376,9 +550,12 @@ public class MisReservasController {
 
             Reserva reservaTrabajo = cineTrabajo
                     .getServicioDeReservas()
-                    .buscarPorCodigo(reserva.getCodigoReserva());
+                    .buscarPorCodigo(
+                            reserva.getCodigoReserva()
+                    );
 
             if (reservaTrabajo == null) {
+
                 throw new IllegalArgumentException(
                         "La reserva ya no existe."
                 );
@@ -393,17 +570,20 @@ public class MisReservasController {
                 );
             }
 
-            // El servicio verifica el estado y la fecha.
+            // ServicioDeReservas aplica las reglas de cancelación.
             cineTrabajo.getServicioDeReservas()
-                    .cancelarReserva(reservaTrabajo.getCodigoReserva());
+                    .cancelarReserva(
+                            reservaTrabajo.getCodigoReserva()
+                    );
 
-            // Guardar los cambios solamente si la cancelación fue válida.
+            // Persistir antes de actualizar el cine activo.
             persistencia.guardar(cineTrabajo);
 
             principalController.actualizarCine(cineTrabajo);
+
             this.cine = cineTrabajo;
 
-            // Actualizar las tarjetas con los nuevos estados.
+            // Actualizar las tarjetas.
             cargarReservas();
 
             DialogoCinema.mostrarExito(
@@ -418,7 +598,8 @@ public class MisReservasController {
             DialogoCinema.mostrarError(
                     contenedorReservas.getScene().getWindow(),
                     "Error al guardar",
-                    "No se pudo guardar la cancelación: " + e.getMessage()
+                    "No se pudo guardar la cancelación: "
+                    + e.getMessage()
             );
 
         } catch (IllegalArgumentException | IllegalStateException e) {
@@ -432,48 +613,34 @@ public class MisReservasController {
     }
 
     /**
-     * Muestra el comprobante de una reserva perteneciente al cliente que inició
-     * sesión.
+     * Muestra un mensaje informativo dentro del contenedor de reservas.
      *
-     * @param reserva Reserva cuyo comprobante se desea consultar.
-     */
-    private void verComprobante(Reserva reserva) {
-
-        Cliente cliente = SesionCliente.getClienteActual();
-
-        if (cliente == null
-                || reserva.getCliente().getDni() != cliente.getDni()) {
-
-            DialogoCinema.mostrarError(
-                    contenedorReservas.getScene().getWindow(),
-                    "Acceso denegado",
-                    "No podés consultar esta reserva."
-            );
-            return;
-        }
-
-        VentanaComprobante.mostrar(reserva);
-    }
-
-    /**
-     * Muestra un mensaje cuando no existen reservas para visualizar.
+     * Se utiliza cuando no existe una sesión iniciada, no se encuentra el
+     * cliente o no existen reservas para visualizar.
      *
-     * @param mensaje Texto informativo que se desea mostrar.
+     * @param mensaje Texto que se desea mostrar al usuario.
      */
     private void mostrarMensaje(String mensaje) {
+
         Label etiqueta = new Label(mensaje);
+
         etiqueta.setStyle(
                 "-fx-text-fill: #94A3B8;"
                 + "-fx-font-size: 14px;"
         );
-        contenedorReservas.getChildren().add(etiqueta);
+
+        contenedorReservas.getChildren().add(
+                etiqueta
+        );
     }
 
     /**
-     * Regresa a la cartelera principal.
+     * Regresa a la pantalla anterior mediante el controlador principal de la
+     * aplicación.
      */
     @FXML
     private void volverCartelera() {
+
         principalController.volver();
     }
 }
