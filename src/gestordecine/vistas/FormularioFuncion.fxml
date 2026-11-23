@@ -9,7 +9,7 @@
 <?import javafx.scene.control.DatePicker?>
 
 <VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="gestordecine.FormularioFuncionController"
+      fx:controller="gestordecine.controladores.FormularioFuncionController"
       spacing="25"
       styleClass="contenido-principal">
 

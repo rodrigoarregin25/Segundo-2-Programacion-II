@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.FlowPane?>
 
 <ScrollPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="gestordecine.FormularioPeliculaController"
+            fx:controller="gestordecine.controladores.FormularioPeliculaController"
             fitToWidth="true"
             hbarPolicy="NEVER"
             vbarPolicy="AS_NEEDED"

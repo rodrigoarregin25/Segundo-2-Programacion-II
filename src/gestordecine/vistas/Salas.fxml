@@ -10,7 +10,7 @@
 <?import javafx.scene.control.TableColumn?>
 
 <VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="gestordecine.SalasController"
+      fx:controller="gestordecine.controladores.SalasController"
       spacing="25"
       styleClass="contenido-principal">
 

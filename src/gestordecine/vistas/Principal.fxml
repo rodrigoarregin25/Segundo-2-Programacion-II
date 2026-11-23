@@ -11,10 +11,10 @@
 
 <BorderPane fx:id="contenedorPrincipal"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="gestordecine.PrincipalController"
+            fx:controller="gestordecine.controladores.PrincipalController"
             prefWidth="1200"
             prefHeight="750"
-            stylesheets="@estilos.css"
+            stylesheets="@../estilos/estilos.css"
             styleClass="ventana-principal">
 
     <left>

@@ -1,5 +1,18 @@
-package gestordecine;
+package gestordecine.controladores;
 
+import gestordecine.Cine;
+import gestordecine.Cliente;
+import gestordecine.Funcion;
+import gestordecine.Pelicula;
+import gestordecine.PersistenciaCine;
+import gestordecine.Sala;
+import gestordecine.controladores.NuevaReservaController;
+import gestordecine.controladores.DetallePeliculaController;
+import gestordecine.controladores.CarteleraController;
+import gestordecine.controladores.ReservasController;
+import gestordecine.controladores.FuncionesController;
+import gestordecine.controladores.SalasController;
+import gestordecine.controladores.PeliculasController;
 import java.io.IOException;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -109,7 +122,7 @@ public class PrincipalController {
 
         try {
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("Peliculas.fxml")
+                    getClass().getResource("/gestordecine/vistas/Peliculas.fxml")
             );
 
             Parent pantalla = loader.load();
@@ -186,7 +199,7 @@ public class PrincipalController {
 
         try {
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("FormularioPelicula.fxml")
+                    getClass().getResource("/gestordecine/vistas/FormularioPelicula.fxml")
             );
 
             Parent pantalla = loader.load();
@@ -211,7 +224,7 @@ public class PrincipalController {
 
         try {
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("FormularioPelicula.fxml")
+                    getClass().getResource("/gestordecine/vistas/FormularioPelicula.fxml")
             );
 
             Parent pantalla = loader.load();
@@ -238,7 +251,7 @@ public class PrincipalController {
 
         try {
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("Salas.fxml")
+                    getClass().getResource("/gestordecine/vistas/Salas.fxml")
             );
 
             Parent pantalla = loader.load();
@@ -266,7 +279,7 @@ public class PrincipalController {
 
         try {
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("Reservas.fxml")
+                    getClass().getResource("/gestordecine/vistas/Reservas.fxml")
             );
 
             Parent pantalla = loader.load();
@@ -295,7 +308,7 @@ public class PrincipalController {
 
         try {
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("Funciones.fxml")
+                    getClass().getResource("/gestordecine/vistas/Funciones.fxml")
             );
 
             Parent pantalla = loader.load();
@@ -323,7 +336,7 @@ public class PrincipalController {
 
         try {
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("FormularioFuncion.fxml")
+                    getClass().getResource("/gestordecine/vistas/FormularioFuncion.fxml")
             );
 
             Parent pantalla = loader.load();
@@ -352,7 +365,7 @@ public class PrincipalController {
 
         try {
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("FormularioFuncion.fxml")
+                    getClass().getResource("/gestordecine/vistas/FormularioFuncion.fxml")
             );
 
             Parent pantalla = loader.load();
@@ -378,7 +391,7 @@ public class PrincipalController {
 
         try {
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("FormularioSala.fxml")
+                    getClass().getResource("/gestordecine/vistas/FormularioSala.fxml")
             );
 
             Parent pantalla = loader.load();
@@ -403,7 +416,7 @@ public class PrincipalController {
 
         try {
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("FormularioSala.fxml")
+                    getClass().getResource("/gestordecine/vistas/FormularioSala.fxml")
             );
 
             Parent pantalla = loader.load();
@@ -426,7 +439,7 @@ public class PrincipalController {
 
         try {
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("Cartelera.fxml")
+                    getClass().getResource("/gestordecine/vistas/Cartelera.fxml")
             );
 
             Parent pantalla = loader.load();
@@ -446,7 +459,7 @@ public class PrincipalController {
 
         try {
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("DetallePelicula.fxml")
+                    getClass().getResource("/gestordecine/vistas/DetallePelicula.fxml")
             );
 
             Parent pantalla = loader.load();
@@ -469,7 +482,7 @@ public class PrincipalController {
 
         try {
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("NuevaReserva.fxml")
+                    getClass().getResource("/gestordecine/vistas/NuevaReserva.fxml")
             );
 
             Parent pantalla = loader.load();
@@ -490,7 +503,7 @@ public class PrincipalController {
 
         try {
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("NuevaReserva.fxml")
+                    getClass().getResource("/gestordecine/vistas/NuevaReserva.fxml")
             );
 
             Parent pantalla = loader.load();
@@ -668,7 +681,7 @@ public class PrincipalController {
 
             // Aplicar los estilos generales de CINEMA al formulario.
             escena.getStylesheets().add(
-                    getClass().getResource("estilos.css").toExternalForm()
+                    getClass().getResource("/gestordecine/estilos/estilos.css").toExternalForm()
             );
 
             // Cerrar también con ESC.

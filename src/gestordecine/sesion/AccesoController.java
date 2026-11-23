@@ -3,7 +3,7 @@ package gestordecine.sesion;
 import gestordecine.Cine;
 import gestordecine.Cliente;
 import gestordecine.PersistenciaCine;
-import gestordecine.PrincipalController;
+import gestordecine.controladores.PrincipalController;
 
 import java.io.IOException;
 import javafx.fxml.FXML;

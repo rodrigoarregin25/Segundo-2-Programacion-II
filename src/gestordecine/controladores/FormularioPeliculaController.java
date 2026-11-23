@@ -1,5 +1,10 @@
-package gestordecine;
+package gestordecine.controladores;
 
+import gestordecine.Cine;
+import gestordecine.Genero;
+import gestordecine.Pelicula;
+import gestordecine.PersistenciaCine;
+import gestordecine.controladores.PrincipalController;
 import java.io.*;
 import java.nio.file.*;
 import java.util.UUID;

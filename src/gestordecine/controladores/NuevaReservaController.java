@@ -1,5 +1,19 @@
-package gestordecine;
+package gestordecine.controladores;
 
+import gestordecine.Butaca;
+import gestordecine.Cine;
+import gestordecine.Cliente;
+import gestordecine.Entrada;
+import gestordecine.EntradaEstudiante;
+import gestordecine.EntradaGeneral;
+import gestordecine.EntradaJubilados;
+import gestordecine.Funcion;
+import gestordecine.Pelicula;
+import gestordecine.PersistenciaCine;
+import gestordecine.Reserva;
+import gestordecine.Sala;
+import gestordecine.ServicioDeReservas;
+import gestordecine.VentanaComprobante;
 import gestordecine.sesion.SesionCliente;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;

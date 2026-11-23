@@ -10,7 +10,7 @@
 <?import javafx.scene.control.ComboBox?>
 
 <VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="gestordecine.PeliculasController"
+      fx:controller="gestordecine.controladores.PeliculasController"
       spacing="25"
       styleClass="contenido-principal">
 

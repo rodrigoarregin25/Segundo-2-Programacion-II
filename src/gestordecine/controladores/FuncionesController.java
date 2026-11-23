@@ -1,5 +1,9 @@
-package gestordecine;
+package gestordecine.controladores;
 
+import gestordecine.Cine;
+import gestordecine.DialogoCinema;
+import gestordecine.Funcion;
+import gestordecine.PersistenciaCine;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import javafx.beans.property.SimpleStringProperty;

@@ -2,7 +2,7 @@ package gestordecine.usuarios;
 
 import gestordecine.Cine;
 import gestordecine.Cliente;
-import gestordecine.PrincipalController;
+import gestordecine.controladores.PrincipalController;
 import gestordecine.sesion.SesionCliente;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;

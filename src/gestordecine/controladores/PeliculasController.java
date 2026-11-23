@@ -1,5 +1,10 @@
-package gestordecine;
+package gestordecine.controladores;
 
+import gestordecine.Cine;
+import gestordecine.DialogoCinema;
+import gestordecine.Genero;
+import gestordecine.Pelicula;
+import gestordecine.PersistenciaCine;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn;

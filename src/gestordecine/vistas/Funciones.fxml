@@ -13,7 +13,7 @@
 <?import javafx.scene.shape.SVGPath?>
 
 <VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="gestordecine.FuncionesController"
+      fx:controller="gestordecine.controladores.FuncionesController"
       spacing="25"
       styleClass="contenido-principal">
 

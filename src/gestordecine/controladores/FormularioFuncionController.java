@@ -1,5 +1,11 @@
-package gestordecine;
+package gestordecine.controladores;
 
+import gestordecine.Cine;
+import gestordecine.Funcion;
+import gestordecine.Pelicula;
+import gestordecine.PersistenciaCine;
+import gestordecine.Sala;
+import gestordecine.controladores.PrincipalController;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

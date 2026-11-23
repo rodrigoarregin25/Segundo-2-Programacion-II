@@ -1,5 +1,9 @@
-package gestordecine;
+package gestordecine.controladores;
 
+import gestordecine.Cine;
+import gestordecine.PersistenciaCine;
+import gestordecine.Sala;
+import gestordecine.controladores.PrincipalController;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
