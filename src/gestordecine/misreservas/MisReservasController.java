@@ -18,9 +18,7 @@ import java.util.stream.Collectors;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -514,32 +512,12 @@ public class MisReservasController {
             return;
         }
 
-        // Solicitar confirmación antes de cancelar.
-        Alert confirmacion = new Alert(
-                Alert.AlertType.CONFIRMATION
-        );
-
-        confirmacion.setTitle(
-                "Cancelar reserva"
-        );
-
-        confirmacion.setHeaderText(
-                "¿Querés cancelar esta reserva?"
-        );
-
-        confirmacion.setContentText(
-                "Código: " + reserva.getCodigoReserva()
-                + "\nEsta operación liberará las butacas reservadas."
-        );
-
-        confirmacion.initOwner(
-                contenedorReservas.getScene().getWindow()
-        );
-
-        ButtonType respuesta = confirmacion.showAndWait()
-                .orElse(ButtonType.CANCEL);
-
-        if (respuesta != ButtonType.OK) {
+        // Pedir confirmación con el mismo diseño que las demás ventanas.
+        // Sin confirmación explícita, no se cambia la reserva.
+        if (!DialogoCinema.confirmarCancelacion(
+                contenedorReservas.getScene().getWindow(),
+                reserva.getCodigoReserva()
+        )) {
             return;
         }
 

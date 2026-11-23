@@ -15,9 +15,7 @@ import java.util.Locale;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
@@ -456,62 +454,12 @@ public class ReservasController {
             return;
         }
 
-        // Solicitar confirmación antes de cancelar.
-        Alert confirmacion = new Alert(
-                Alert.AlertType.CONFIRMATION
-        );
-
-        confirmacion.setTitle("Cancelar reserva");
-
-        confirmacion.setHeaderText(
-                "¿Querés cancelar esta reserva?"
-        );
-
-        confirmacion.setContentText(
-                "Código: " + seleccionada.getCodigoReserva()
-                + "\nEsta operación liberará las butacas reservadas."
-        );
-
-        confirmacion.initOwner(
-                listaReservas.getScene().getWindow()
-        );
-
-        // Aplicar el estilo visual de CINEMA.
-        confirmacion.getDialogPane().getStylesheets().add(
-                getClass().getResource(
-                        "/gestordecine/estilos/estilos.css"
-                ).toExternalForm()
-        );
-
-        confirmacion.getDialogPane()
-                .getStyleClass()
-                .add("alerta-cinema");
-
-        // Personalizar el botón de confirmación.
-        Button botonSi = (Button) confirmacion.getDialogPane()
-                .lookupButton(ButtonType.OK);
-
-        botonSi.setText("Sí, cancelar");
-
-        botonSi.getStyleClass().add(
-                "boton-alerta-cinema"
-        );
-
-        // Personalizar el botón para conservar la reserva.
-        Button botonNo = (Button) confirmacion.getDialogPane()
-                .lookupButton(ButtonType.CANCEL);
-
-        botonNo.setText("Conservar");
-
-        botonNo.getStyleClass().add(
-                "boton-alerta-cinema"
-        );
-
-        ButtonType respuesta = confirmacion.showAndWait()
-                .orElse(ButtonType.CANCEL);
-
-        // No realizar cambios si el usuario no confirma.
-        if (respuesta != ButtonType.OK) {
+        // Mostrar una confirmación con el estilo visual de CINEMA.
+        // Si el usuario elige conservar, no modificar la reserva.
+        if (!DialogoCinema.confirmarCancelacion(
+                listaReservas.getScene().getWindow(),
+                seleccionada.getCodigoReserva()
+        )) {
             return;
         }
 

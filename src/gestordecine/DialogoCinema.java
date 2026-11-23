@@ -66,6 +66,142 @@ public class DialogoCinema {
         );
     }
 
+
+    /**
+     * Solicita la confirmación de cancelación de una reserva utilizando
+     * una ventana modal con el mismo diseño oscuro de CINEMA.
+     *
+     * El valor predeterminado es false: cerrar o rechazar el diálogo no
+     * ejecuta ninguna operación sobre la reserva.
+     *
+     * @param ventanaPrincipal Ventana propietaria del diálogo.
+     * @param codigoReserva Código de la reserva a cancelar.
+     * @return true únicamente cuando se pulsa «Sí, cancelar».
+     */
+    public static boolean confirmarCancelacion(Window ventanaPrincipal,
+                                                String codigoReserva) {
+
+        final boolean[] confirmada = {false};
+
+        Stage ventana = new Stage();
+        ventana.initStyle(StageStyle.TRANSPARENT);
+        ventana.initModality(Modality.WINDOW_MODAL);
+        ventana.initOwner(ventanaPrincipal);
+        ventana.setResizable(false);
+
+        Label icono = new Label("!");
+        icono.setStyle(
+                "-fx-text-fill: #FDA4AF;"
+                + "-fx-font-size: 23px;"
+                + "-fx-font-weight: bold;"
+        );
+
+        VBox fondoIcono = new VBox(icono);
+        fondoIcono.setAlignment(Pos.CENTER);
+        fondoIcono.setMinSize(45, 45);
+        fondoIcono.setMaxSize(45, 45);
+        fondoIcono.setStyle(
+                "-fx-background-color: #42252D;"
+                + "-fx-background-radius: 12;"
+        );
+
+        Label titulo = new Label("¿Querés cancelar esta reserva?");
+        titulo.setWrapText(true);
+        titulo.setStyle(
+                "-fx-text-fill: #FFFFFF;"
+                + "-fx-font-size: 16px;"
+                + "-fx-font-weight: bold;"
+        );
+
+        Label subtitulo = new Label("Esta acción requiere confirmación.");
+        subtitulo.setStyle(
+                "-fx-text-fill: #94A3B8;"
+                + "-fx-font-size: 12px;"
+        );
+
+        VBox textos = new VBox(5, titulo, subtitulo);
+        HBox.setHgrow(textos, Priority.ALWAYS);
+
+        HBox encabezado = new HBox(15, fondoIcono, textos);
+        encabezado.setAlignment(Pos.CENTER_LEFT);
+
+        Label codigo = new Label("Reserva: " + codigoReserva);
+        codigo.setStyle(
+                "-fx-text-fill: #FFFFFF;"
+                + "-fx-font-size: 14px;"
+                + "-fx-font-weight: bold;"
+        );
+
+        Label advertencia = new Label(
+                "Al cancelar, las butacas reservadas volverán a estar disponibles."
+        );
+        advertencia.setWrapText(true);
+        advertencia.setStyle(
+                "-fx-text-fill: #CBD5E1;"
+                + "-fx-font-size: 13px;"
+        );
+
+        VBox detalle = new VBox(8, codigo, advertencia);
+
+        Button botonConservar = new Button("Conservar reserva");
+        botonConservar.setStyle(
+                "-fx-background-color: #27364D;"
+                + "-fx-text-fill: #FFFFFF;"
+                + "-fx-background-radius: 7;"
+                + "-fx-padding: 10 16;"
+                + "-fx-cursor: hand;"
+        );
+        // Enter y Escape mantienen la reserva; no se confirma por accidente.
+        botonConservar.setDefaultButton(true);
+        botonConservar.setCancelButton(true);
+        botonConservar.setOnAction(evento -> ventana.close());
+
+        Button botonCancelar = new Button("Sí, cancelar");
+        botonCancelar.setStyle(
+                "-fx-background-color: #A33D55;"
+                + "-fx-text-fill: #FFFFFF;"
+                + "-fx-font-weight: bold;"
+                + "-fx-background-radius: 7;"
+                + "-fx-padding: 10 16;"
+                + "-fx-cursor: hand;"
+        );
+        botonCancelar.setOnAction(evento -> {
+            confirmada[0] = true;
+            ventana.close();
+        });
+
+        HBox botones = new HBox(10, botonConservar, botonCancelar);
+        botones.setAlignment(Pos.CENTER_RIGHT);
+
+        VBox contenido = new VBox(22, encabezado, detalle, botones);
+        contenido.setPadding(new Insets(24));
+        contenido.setStyle(
+                "-fx-background-color: #101827;"
+                + "-fx-background-radius: 12;"
+                + "-fx-border-color: #334155;"
+                + "-fx-border-radius: 12;"
+                + "-fx-border-width: 1;"
+        );
+
+        Scene escena = new Scene(contenido, 465, 245);
+        escena.setFill(javafx.scene.paint.Color.TRANSPARENT);
+        ventana.setScene(escena);
+
+        ventana.setOnShown(evento -> {
+            ventana.setX(
+                    ventanaPrincipal.getX()
+                    + (ventanaPrincipal.getWidth() - ventana.getWidth()) / 2
+            );
+            ventana.setY(
+                    ventanaPrincipal.getY()
+                    + (ventanaPrincipal.getHeight() - ventana.getHeight()) / 2
+            );
+        });
+
+        ventana.showAndWait();
+        return confirmada[0];
+    }
+
     /**
      * Construye y muestra un diálogo modal personalizado.
      *
