@@ -4,16 +4,16 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 public class Funcion implements Serializable, Desactivable {
-    
+
     private static final long serialVersionUID = -8444399254319352013L;
 
     private final int idFuncion;
-    private final Sala sala;
-    private final Pelicula pelicula;
+    private Sala sala;
+    private Pelicula pelicula;
     private double precio;
-    private final LocalDateTime fechaHora;
-    private final String formatoPelicula;
-    private final String idiomaPelicula;
+    private LocalDateTime fechaHora;
+    private String formatoPelicula;
+    private String idiomaPelicula;
     // false por defecto: en los datos guardados antes, todas las funciones siguen activas
     private boolean desactivada;
 
@@ -116,8 +116,8 @@ public class Funcion implements Serializable, Desactivable {
     }
 
     /**
-     * Que hace: dice si la funcion esta activa
-     * Retorna: true si esta activa, false si esta desactivada
+     * Que hace: dice si la funcion esta activa Retorna: true si esta activa,
+     * false si esta desactivada
      */
     @Override
     public boolean isActiva() {
@@ -125,7 +125,8 @@ public class Funcion implements Serializable, Desactivable {
     }
 
     /**
-     * Que hace: desactiva la funcion (no se borra, las reservas quedan en el historial)
+     * Que hace: desactiva la funcion (no se borra, las reservas quedan en el
+     * historial)
      */
     @Override
     public void desactivar() {
@@ -138,6 +139,21 @@ public class Funcion implements Serializable, Desactivable {
     @Override
     public void reactivar() {
         this.desactivada = false;
+    }
+
+    /**
+     * Actualiza los datos de la función después de que Cine haya validado las
+     * reglas de negocio.
+     *
+     * No modifica el identificador ni el estado de activación.
+     */
+    public void actualizarDatos(Funcion nuevosDatos) {
+        this.sala = nuevosDatos.getSala();
+        this.pelicula = nuevosDatos.getPelicula();
+        this.fechaHora = nuevosDatos.getFechaHora();
+        this.formatoPelicula = nuevosDatos.getFormatoPelicula();
+        this.idiomaPelicula = nuevosDatos.getIdiomaPelicula();
+        this.precio = nuevosDatos.getPrecio();
     }
 
 }

@@ -19,6 +19,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import java.time.LocalDate;
 import javafx.scene.control.DatePicker;
+import java.time.LocalDateTime;
 
 public class FuncionesController {
 
@@ -279,7 +280,10 @@ public class FuncionesController {
             mostrarError("Restaure la funcion para poder editarla");
             return;
         }
-
+        if (!seleccionada.getFechaHora().isAfter(LocalDateTime.now())) {
+            mostrarError("No se puede editar una función que ya comenzó o terminó.");
+            return;
+        }
         principalController.mostrarFormularioEditarFuncion(seleccionada);
     }
 

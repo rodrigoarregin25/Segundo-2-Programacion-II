@@ -67,8 +67,8 @@ public class FormularioFuncionController {
     }
 
     /**
-     * Que hace: recibe el cine, la persistencia y el controlador principal,
-     * y llena los desplegables de pelicula y sala solo con las activas.
+     * Que hace: recibe el cine, la persistencia y el controlador principal, y
+     * llena los desplegables de pelicula y sala solo con las activas.
      */
     public void configurar(Cine cine, PersistenciaCine persistencia,
             PrincipalController principalController) {
@@ -94,42 +94,64 @@ public class FormularioFuncionController {
         }
     }
 
-    /**
-     * Que hace: prepara el formulario para editar el precio de una funcion existente.
-     * Muestra sus datos y deja habilitado solo el precio.
-     * Parametros: funcion (la funcion a editar).
-     */
     public void configurarEdicion(Funcion funcion) {
         this.funcionEnEdicion = funcion;
 
-        // Se muestran los datos de la funcion (aunque su pelicula o sala este inactiva)
-        comboPelicula.getItems().clear();
-        comboPelicula.getItems().add(funcion.getPelicula().getTituloPelicula());
-        comboPelicula.setValue(funcion.getPelicula().getTituloPelicula());
+        // Incorporar la película y la sala actuales si están inactivas.
+        if (!peliculasActivas.contains(funcion.getPelicula())) {
+            peliculasActivas.add(funcion.getPelicula());
+            comboPelicula.getItems().add(funcion.getPelicula().getTituloPelicula());
+        }
 
-        comboSala.getItems().clear();
-        comboSala.getItems().add(funcion.getSala().getNombreSala());
-        comboSala.setValue(funcion.getSala().getNombreSala());
+        if (!salasActivas.contains(funcion.getSala())) {
+            salasActivas.add(funcion.getSala());
+            comboSala.getItems().add(funcion.getSala().getNombreSala());
+        }
+
+        comboPelicula.getSelectionModel().select(
+                peliculasActivas.indexOf(funcion.getPelicula())
+        );
+
+        comboSala.getSelectionModel().select(
+                salasActivas.indexOf(funcion.getSala())
+        );
 
         LocalDateTime fechaHora = funcion.getFechaHora();
+
         selectorFecha.setValue(fechaHora.toLocalDate());
         comboHora.setValue(String.format("%02d", fechaHora.getHour()));
-        comboMinutos.setValue(String.format("%02d", fechaHora.getMinute()));
+
+        String minutos = String.format("%02d", fechaHora.getMinute());
+
+        if (!comboMinutos.getItems().contains(minutos)) {
+            comboMinutos.getItems().add(minutos);
+        }
+
+        comboMinutos.setValue(minutos);
         comboFormato.setValue(funcion.getFormatoPelicula());
         comboIdioma.setValue(funcion.getIdiomaPelicula());
         campoPrecio.setText(String.valueOf(funcion.getPrecio()));
 
-        // Solo se puede cambiar el precio
-        comboPelicula.setDisable(true);
-        comboSala.setDisable(true);
-        selectorFecha.setDisable(true);
-        comboHora.setDisable(true);
-        comboMinutos.setDisable(true);
-        comboFormato.setDisable(true);
-        comboIdioma.setDisable(true);
+        boolean tieneReservas
+                = cine.getServicioDeReservas().tieneReservas(funcion);
 
-        tituloFormulario.setText("Editar precio de la función");
-        botonGuardar.setText("Guardar precio");
+        boolean bloquearProgramacion = tieneReservas || !funcion.isActiva();
+
+        comboPelicula.setDisable(bloquearProgramacion);
+        comboSala.setDisable(bloquearProgramacion);
+        selectorFecha.setDisable(bloquearProgramacion);
+        comboHora.setDisable(bloquearProgramacion);
+        comboMinutos.setDisable(bloquearProgramacion);
+        comboFormato.setDisable(bloquearProgramacion);
+        comboIdioma.setDisable(bloquearProgramacion);
+
+        tituloFormulario.setText(
+                bloquearProgramacion
+                        ? "Editar precio de la función"
+                        : "Editar función"
+        );
+
+        botonGuardar.setText("Guardar cambios");
     }
 
     @FXML
@@ -138,9 +160,9 @@ public class FormularioFuncionController {
     }
 
     /**
-     * Que hace: guarda la funcion nueva o el precio nuevo, segun el modo.
-     * Las reglas (horarios superpuestos, ID repetido, etc.) las valida Cine y Funcion;
-     * aca solo se muestran los errores en pantalla.
+     * Que hace: guarda la funcion nueva o el precio nuevo, segun el modo. Las
+     * reglas (horarios superpuestos, ID repetido, etc.) las valida Cine y
+     * Funcion; aca solo se muestran los errores en pantalla.
      */
     @FXML
     private void guardarFuncion() {
@@ -159,8 +181,52 @@ public class FormularioFuncionController {
 
             if (funcionEnEdicion != null) {
 
-                // EDITAR: solo cambia el precio
-                cineTrabajo.editarPrecioFuncion(funcionEnEdicion.getIdFuncion(), precio);
+                Funcion actual = cineTrabajo.buscarFuncionPorId(
+                        funcionEnEdicion.getIdFuncion()
+                );
+
+                boolean tieneReservas
+                        = cineTrabajo.getServicioDeReservas().tieneReservas(actual);
+
+                if (tieneReservas || !actual.isActiva()) {
+
+                    // Se conserva el comportamiento anterior.
+                    cineTrabajo.editarPrecioFuncion(actual.getIdFuncion(), precio);
+
+                } else {
+
+                    int posPelicula = comboPelicula.getSelectionModel().getSelectedIndex();
+                    int posSala = comboSala.getSelectionModel().getSelectedIndex();
+                    LocalDate fecha = selectorFecha.getValue();
+
+                    if (posPelicula < 0 || posSala < 0 || fecha == null
+                            || comboHora.getValue() == null
+                            || comboMinutos.getValue() == null
+                            || comboFormato.getValue() == null
+                            || comboIdioma.getValue() == null) {
+                        throw new IllegalArgumentException(
+                                "Complete todos los datos de la función"
+                        );
+                    }
+
+                    LocalDateTime fechaHora = fecha.atTime(
+                            Integer.parseInt(comboHora.getValue()),
+                            Integer.parseInt(comboMinutos.getValue())
+                    );
+
+                    Pelicula pelicula = peliculasActivas.get(posPelicula);
+                    Sala sala = salasActivas.get(posSala);
+
+                    cineTrabajo.editarFuncion(
+                            actual.getIdFuncion(),
+                            sala.getIdSala(),
+                            pelicula.getIdPelicula(),
+                            precio,
+                            fechaHora,
+                            comboFormato.getValue(),
+                            comboIdioma.getValue()
+                    );
+                }
 
             } else {
 

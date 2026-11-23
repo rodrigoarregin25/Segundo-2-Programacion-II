@@ -46,14 +46,15 @@
 
             <Region HBox.hgrow="ALWAYS"/>
 
-            <Button fx:id="botonComprobante"
-                    text="Ver comprobante"
-                    prefWidth="145"
-                    minWidth="145"
-                    prefHeight="45"
-                    styleClass="boton-secundario"
-                    onAction="#verComprobante"/>
-
+            <Button
+                fx:id="botonComprobante"
+                text="Ver comprobante"
+                prefWidth="160"
+                minWidth="160"
+                maxWidth="160"
+                styleClass="boton-secundario"
+                onAction="#verComprobante"/>
+            
             <Button fx:id="botonCancelar"
                     text="Cancelar reserva"
                     prefWidth="160"
@@ -61,7 +62,6 @@
                     prefHeight="45"
                     styleClass="boton-peligro"
                     onAction="#cancelarReserva"/>
-
         </HBox>
 
     </VBox>

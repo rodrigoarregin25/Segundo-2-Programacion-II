@@ -287,7 +287,7 @@ public class UsuariosController {
         }
 
         if (seleccionado == null) {
-            botonEstado.setText("Eliminar usuario");
+            botonEstado.setText("Desactivar usuario");
             botonEstado.setDisable(true);
             return;
         }
@@ -295,7 +295,7 @@ public class UsuariosController {
         botonEstado.setDisable(false);
 
         if (seleccionado.isActivo()) {
-            botonEstado.setText("Eliminar usuario");
+            botonEstado.setText("Desactivar usuario");
         } else {
             botonEstado.setText("Restaurar usuario");
         }

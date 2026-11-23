@@ -54,7 +54,7 @@
                     onAction="#editarUsuario"/>
 
             <Button fx:id="botonEstado"
-                    text="Eliminar usuario"
+                    text="Desactivar usuario"
                     prefWidth="160"
                     minWidth="160"
                     prefHeight="45"
