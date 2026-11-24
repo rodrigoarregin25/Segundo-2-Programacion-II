@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+
+<!--
+    FORMULARIO DE SALAS
+
+    Define la interfaz para registrar una sala del cine.
+    Permite ingresar el nombre, la cantidad de filas y
+    la distribución de butacas.
+
+    La lógica y las validaciones se encuentran en
+    FormularioSalaController.
+-->
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="gestordecine.controladores.FormularioSalaController"
+      spacing="20"
+      styleClass="contenido-principal">
+
+    <!--
+        ENCABEZADO
+
+        Muestra el título y la descripción del formulario.
+        El título puede modificarse desde el controlador.
+    -->
+
+    <VBox spacing="8">
+        <Label fx:id="tituloFormulario"
+               text="Registrar sala"
+               styleClass="titulo-pagina"/>
+
+        <Label text="Configurá la capacidad y distribución de la sala"
+               styleClass="subtitulo-pagina"/>
+    </VBox>
+
+    <!--
+        CONTENEDOR DEL FORMULARIO
+
+        Agrupa los campos de entrada y las acciones disponibles.
+        Su ancho máximo es de 650 píxeles.
+    -->
+
+    <VBox spacing="18"
+          maxWidth="650"
+          styleClass="tarjeta-contenido">
+
+        <Label text="Información de la sala"
+               styleClass="titulo-seccion"/>
+
+        <!-- NOMBRE DE LA SALA -->
+
+        <VBox spacing="8">
+            <Label text="Nombre de la sala"
+                   styleClass="etiqueta-formulario"/>
+
+            <TextField fx:id="campoNombre"
+                       promptText="Ej: Sala Premium"
+                       styleClass="campo-formulario"/>
+        </VBox>
+
+        <!--
+            CAPACIDAD Y DISTRIBUCIÓN
+
+            HBox organiza horizontalmente los dos campos.
+            HBox.hgrow permite que los contenedores aprovechen
+            el espacio horizontal disponible.
+        -->
+
+        <HBox spacing="15">
+
+            <!-- Cantidad de filas de la sala -->
+
+            <VBox spacing="8" HBox.hgrow="ALWAYS">
+
+                <Label text="Cantidad de filas"
+                       styleClass="etiqueta-formulario"/>
+
+                <TextField fx:id="campoFilas"
+                           promptText="Ej: 5"
+                           styleClass="campo-formulario"/>
+
+            </VBox>
+
+            <!--
+                Distribución de butacas por fila.
+
+                Ejemplo: 4-8-4 representa tres bloques
+                con un total de 16 butacas por fila.
+            -->
+
+            <VBox spacing="8" HBox.hgrow="ALWAYS">
+
+                <Label text="Distribución de butacas"
+                       styleClass="etiqueta-formulario"/>
+
+                <TextField fx:id="campoDistribucion"
+                           promptText="Ej: 4-8-4"
+                           styleClass="campo-formulario"/>
+
+            </VBox>
+
+        </HBox>
+
+        <!-- AYUDA PARA COMPLETAR LA DISTRIBUCIÓN -->
+
+        <Label text="Separá los bloques con guiones. Ejemplo: 4-8-4 = 16 butacas por fila."
+               styleClass="subtitulo-pagina"/>
+
+        <!--
+            MENSAJES DE ERROR
+
+            Permanece oculto inicialmente.
+            El controlador modifica su texto y visibilidad
+            cuando se produce un error de validación.
+        -->
+
+        <Label fx:id="mensajeError"
+               text=""
+               visible="false"
+               managed="false"
+               wrapText="true"
+               styleClass="mensaje-error"/>
+
+        <!--
+            ACCIONES DEL FORMULARIO
+
+            Cancelar: ejecuta cancelar() en el controlador.
+            Registrar sala: ejecuta guardarSala() para validar
+            los datos y guardar la nueva sala.
+        -->
+
+        <HBox alignment="CENTER_RIGHT" spacing="12">
+
+            <Button text="Cancelar"
+                    styleClass="boton-secundario"
+                    onAction="#cancelar"/>
+
+            <Button fx:id="botonGuardar"
+                    text="Registrar sala"
+                    styleClass="boton-primario"
+                    onAction="#guardarSala"/>
+
+        </HBox>
+
+    </VBox>
+
+</VBox>

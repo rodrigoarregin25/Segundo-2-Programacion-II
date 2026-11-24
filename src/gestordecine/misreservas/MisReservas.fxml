@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="gestordecine.misreservas.MisReservasController"
+      spacing="25"
+      styleClass="contenido-principal">
+
+    <!-- ENCABEZADO PRINCIPAL -->
+    <VBox spacing="10">
+
+        <!-- PRIMERA FILA: INFORMACIÓN Y VOLVER -->
+        <HBox alignment="CENTER_LEFT" spacing="20">
+
+            <VBox spacing="8">
+
+                <Label text="Mis reservas"
+                       styleClass="titulo-pagina"/>
+
+                <Label fx:id="etiquetaCliente"
+                       text="Cliente"
+                       styleClass="subtitulo-pagina"/>
+
+            </VBox>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Button text="← Volver"
+                    prefWidth="150"
+                    prefHeight="40"
+                    styleClass="boton-secundario"
+                    onAction="#volverCartelera"/>
+
+        </HBox>
+
+    </VBox>
+
+    <!-- LISTADO DE RESERVAS -->
+    <ScrollPane fitToWidth="true"
+                VBox.vgrow="ALWAYS"
+                style="-fx-background-color: transparent; -fx-background: transparent;">
+
+        <content>
+
+            <VBox fx:id="contenedorReservas"
+                  spacing="15"
+                  fillWidth="true">
+
+                <padding>
+                    <Insets top="10"
+                            right="10"
+                            bottom="10"
+                            left="0"/>
+                </padding>
+
+            </VBox>
+
+        </content>
+
+    </ScrollPane>
+
+</VBox>

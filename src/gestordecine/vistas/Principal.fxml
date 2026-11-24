@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.shape.SVGPath?>
+
+<!--
+    Ventana principal de CINEMA. Tiene un menú lateral a la izquierda y un
+    centro donde PrincipalController va cargando cada pantalla (cartelera,
+    reservas, películas, etc.).
+    La controla PrincipalController.
+-->
+<BorderPane fx:id="contenedorPrincipal"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="gestordecine.controladores.PrincipalController"
+            prefWidth="1200"
+            prefHeight="750"
+            stylesheets="@../estilos/estilos.css"
+            styleClass="ventana-principal">
+
+    <!-- MENÚ LATERAL -->
+    <left>
+
+        <VBox spacing="10"
+              prefWidth="240"
+              styleClass="menu-lateral">
+
+            <!-- IDENTIDAD DE CINEMA -->
+            <VBox spacing="12"
+                  alignment="CENTER"
+                  styleClass="encabezado-menu-cinema">
+
+                <Label text="CINEMA"
+                       styleClass="logo-cine"/>
+
+                <!-- LOGO CINEMATOGRÁFICO: dibujo vectorial (SVGPath), no una imagen -->
+                <StackPane styleClass="contenedor-logo-cinema"
+                           prefWidth="85"
+                           prefHeight="70"
+                           maxWidth="85"
+                           maxHeight="70">
+
+                    <SVGPath
+                        content="M4 9h20v15H4z M4 9l-2-5 19-4 2 5z M7 3l4 5 M14 2l4 5 M4 14h20"
+                        stroke="#60A5FA"
+                        strokeWidth="1.8"
+                        strokeLineCap="ROUND"
+                        strokeLineJoin="ROUND"
+                        fill="TRANSPARENT"
+                        scaleX="2"
+                        scaleY="2"/>
+
+                </StackPane>
+
+                <Label text="SISTEMA DE RESERVAS"
+                       styleClass="subtitulo-logo-cinema"/>
+
+            </VBox>
+
+            <!-- NAVEGACIÓN -->
+            <!-- Cartelera la ve cualquiera. El resto empieza oculto
+                 (visible y managed en false) y actualizarMenuCuenta lo
+                 muestra según el rol: Mis reservas para el cliente; Reservas,
+                 Películas, Salas, Funciones y Usuarios para el administrador -->
+            <VBox spacing="7"
+                  styleClass="grupo-navegacion">
+
+                <Button fx:id="botonCartelera"
+                        text="Cartelera"
+                        styleClass="boton-menu"
+                        onAction="#mostrarCartelera"/>
+
+                <Button fx:id="botonMisReservas"
+                        text="Mis reservas"
+                        styleClass="boton-menu"
+                        onAction="#mostrarMisReservas"
+                        visible="false"
+                        managed="false"/>
+
+                <Button fx:id="botonReservas"
+                        text="Reservas"
+                        styleClass="boton-menu"
+                        onAction="#mostrarReservas"
+                        visible="false"
+                        managed="false"/>
+
+                <Button fx:id="botonPeliculas"
+                        text="Películas"
+                        styleClass="boton-menu"
+                        onAction="#mostrarPeliculas"
+                        visible="false"
+                        managed="false"/>
+
+                <Button fx:id="botonSalas"
+                        text="Salas"
+                        styleClass="boton-menu"
+                        onAction="#mostrarSalas"
+                        visible="false"
+                        managed="false"/>
+
+                <Button fx:id="botonFunciones"
+                        text="Funciones"
+                        styleClass="boton-menu"
+                        onAction="#mostrarFunciones"
+                        visible="false"
+                        managed="false"/>
+
+                <Button fx:id="botonUsuarios"
+                        text="Usuarios"
+                        styleClass="boton-menu"
+                        onAction="#mostrarUsuarios"
+                        visible="false"
+                        managed="false"/>
+
+            </VBox>
+
+            <!-- ESPACIO FLEXIBLE: empuja el panel de sesión hacia abajo -->
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <!-- SESIÓN -->
+            <!-- Sin sesión se ve "Iniciar sesión". Con sesión se ven el nombre
+                 del usuario y "Cerrar sesión" -->
+            <VBox spacing="8"
+                  styleClass="panel-sesion-cinema">
+
+                <Label fx:id="etiquetaSesion"
+                       text=""
+                       wrapText="true"
+                       maxWidth="Infinity"
+                       visible="false"
+                       managed="false"
+                       styleClass="nombre-sesion-cinema"/>
+
+                <Button fx:id="botonIniciarSesion"
+                        text="Iniciar sesión"
+                        styleClass="boton-menu"
+                        onAction="#mostrarAcceso"/>
+
+                <Button fx:id="botonCerrarSesion"
+                        text="Cerrar sesión"
+                        styleClass="boton-menu"
+                        onAction="#cerrarSesion"
+                        visible="false"
+                        managed="false"/>
+
+            </VBox>
+
+        </VBox>
+
+    </left>
+
+    <!-- CENTRO: este contenido es solo el inicial; cada mostrarXxx() de
+         PrincipalController lo reemplaza con setCenter(pantalla) -->
+    <center>
+
+        <VBox spacing="15"
+              styleClass="contenido-principal">
+
+            <Label fx:id="tituloPagina"
+                   text="Cartelera"
+                   styleClass="titulo-pagina"/>
+
+            <Label text="Descubrí las próximas funciones disponibles"
+                   styleClass="subtitulo-pagina"/>
+
+        </VBox>
+
+    </center>
+
+</BorderPane>

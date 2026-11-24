@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.FlowPane?>
+
+<!--
+    Pantalla de detalle de una película: póster, datos, sinopsis y las
+    próximas funciones para elegir fecha y horario.
+    La controla DetallePeliculaController. Está dentro de un ScrollPane
+    para poder bajar si el contenido no entra en la ventana.
+-->
+<ScrollPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="gestordecine.controladores.DetallePeliculaController"
+            fitToWidth="true"
+            hbarPolicy="NEVER"
+            styleClass="scroll-cartelera">
+
+    <VBox spacing="25"
+          styleClass="contenido-principal">
+
+        <Button text="← Volver a cartelera"
+                styleClass="boton-secundario"
+                onAction="#volverCartelera"/>
+
+        <!-- DATOS DE LA PELÍCULA: póster a la izquierda, información a la derecha -->
+        <HBox spacing="30"
+              alignment="TOP_LEFT"
+              styleClass="tarjeta-contenido">
+
+            <ImageView fx:id="imagenPoster"
+                       fitWidth="260"
+                       fitHeight="390"
+                       preserveRatio="true"/>
+
+            <!-- Los textos de estos Label son de ejemplo: el controlador los
+                 reemplaza con los datos de la película elegida -->
+            <VBox spacing="15"
+                  HBox.hgrow="ALWAYS">
+
+                <Label fx:id="tituloPelicula"
+                       text="Título de la película"
+                       wrapText="true"
+                       styleClass="titulo-pagina"/>
+
+                <Label fx:id="informacionPelicula"
+                       text="Año · Género · Duración"
+                       wrapText="true"
+                       styleClass="subtitulo-pagina"/>
+
+                <Label fx:id="puntuacionPelicula"
+                       text="★ 0.0/10"
+                       styleClass="puntuacion-pelicula"/>
+
+                <Label text="Sinopsis"
+                       styleClass="titulo-seccion"/>
+
+                <Label fx:id="sinopsisPelicula"
+                       text=""
+                       wrapText="true"
+                       styleClass="subtitulo-pagina"/>
+
+                <Label fx:id="directorPelicula"
+                       text=""
+                       wrapText="true"
+                       styleClass="subtitulo-pagina"/>
+
+                <Label fx:id="actoresPelicula"
+                       text=""
+                       wrapText="true"
+                       styleClass="subtitulo-pagina"/>
+
+                <Label fx:id="clasificacionPelicula"
+                       text=""
+                       styleClass="subtitulo-pagina"/>
+
+            </VBox>
+
+        </HBox>
+
+        <!-- PRÓXIMAS FUNCIONES -->
+        <VBox spacing="15"
+              styleClass="tarjeta-contenido">
+
+            <Label text="Próximas funciones"
+                   styleClass="titulo-seccion"/>
+
+            <!-- Fechas y horarios disponibles: los botones se agregan desde Java -->
+            <VBox fx:id="seccionHorarios"
+                  spacing="12">
+
+                <Label text="SELECCIONÁ UNA FECHA"
+                       styleClass="subtitulo-pagina"/>
+
+                <FlowPane fx:id="contenedorFechas"
+                          hgap="10"
+                          vgap="10"/>
+
+                <Label text="FORMATO Y HORARIO"
+                       styleClass="subtitulo-pagina"/>
+
+                <FlowPane fx:id="contenedorFunciones"
+                          hgap="12"
+                          vgap="12"/>
+
+            </VBox>
+
+            <!-- Aviso para cuando la película no tiene funciones -->
+            <Label fx:id="mensajeSinFunciones"
+                   text="No hay funciones disponibles para esta película."
+                   styleClass="subtitulo-pagina"/>
+
+        </VBox>
+
+    </VBox>
+
+</ScrollPane>

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.ComboBox?>
+
+<!--
+    Pantalla de administración de películas (solo para administradores):
+    tabla con las películas registradas, filtro por estado y botones para
+    crear, editar y desactivar o restaurar películas.
+    La controla PeliculasController.
+-->
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="gestordecine.controladores.PeliculasController"
+      spacing="25"
+      styleClass="contenido-principal">
+
+    <!-- ENCABEZADO PRINCIPAL -->
+    <VBox spacing="10">
+
+        <!-- PRIMERA FILA: INFORMACIÓN Y VOLVER -->
+        <HBox alignment="CENTER_LEFT" spacing="20">
+
+            <VBox spacing="8">
+                <Label text="Administración de películas"
+                       styleClass="titulo-pagina"/>
+
+                <Label text="Gestioná las películas registradas en el cine"
+                       styleClass="subtitulo-pagina"/>
+            </VBox>
+
+            <!-- Espacio flexible: empuja el botón Volver hacia la derecha -->
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Button text="← Volver"
+                    prefWidth="150"
+                    prefHeight="40"
+                    styleClass="boton-secundario"
+                    onAction="#volver"/>
+
+        </HBox>
+
+        <!-- SEGUNDA FILA: ACCIONES -->
+        <HBox alignment="CENTER_RIGHT" spacing="12">
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Button text="Editar película"
+                    prefWidth="145"
+                    minWidth="145"
+                    prefHeight="45"
+                    styleClass="boton-secundario"
+                    onAction="#editarPelicula"/>
+
+            <!-- El controlador cambia su texto según la película seleccionada
+                 (Desactivar o Restaurar) -->
+            <Button fx:id="botonEstado"
+                    text="Desactivar película"
+                    prefWidth="160"
+                    minWidth="160"
+                    prefHeight="45"
+                    styleClass="boton-peligro"
+                    onAction="#desactivarPelicula"/>
+
+            <Button text="+ Nueva película"
+                    prefWidth="175"
+                    minWidth="175"
+                    prefHeight="45"
+                    styleClass="boton-primario"
+                    onAction="#nuevaPelicula"/>
+
+        </HBox>
+
+    </VBox>
+
+    <!-- PANEL DE PELÍCULAS -->
+    <VBox spacing="15"
+          VBox.vgrow="ALWAYS"
+          styleClass="tarjeta-contenido">
+
+        <!-- TÍTULO Y FILTRO: Activas, Inactivas o Todas -->
+        <HBox alignment="CENTER_LEFT" spacing="12">
+
+            <Label text="Películas registradas"
+                   styleClass="titulo-seccion"/>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Label text="Estado:"
+                   styleClass="subtitulo-pagina"/>
+
+            <ComboBox fx:id="filtroEstado"
+                      prefWidth="130"
+                      styleClass="filtro-estado"/>
+
+        </HBox>
+
+        <!-- TABLA: las columnas se completan desde PeliculasController -->
+        <TableView fx:id="tablaPeliculas"
+                   VBox.vgrow="ALWAYS"
+                   styleClass="tabla-peliculas, tabla-admin-peliculas">
+
+            <columns>
+
+                <TableColumn fx:id="colEstado"
+                             id="columna-estado"
+                             text="Estado"
+                             minWidth="65"
+                             prefWidth="65"/>
+
+                <TableColumn fx:id="colTitulo"
+                             text="Título"
+                             prefWidth="400"/>
+
+                <TableColumn fx:id="colDuracion"
+                             text="Duración"
+                             prefWidth="110"/>
+
+                <TableColumn fx:id="colFechaEstreno"
+                             text="Año"
+                             prefWidth="90"/>
+
+                <TableColumn fx:id="colGenero"
+                             text="Género"
+                             prefWidth="300"/>
+
+                <TableColumn fx:id="colDirector"
+                             text="Director"
+                             prefWidth="180"/>
+
+                <TableColumn fx:id="colClasificacion"
+                             text="Clasificación"
+                             prefWidth="120"/>
+
+                <TableColumn fx:id="colPuntuacion"
+                             text="Puntuación"
+                             prefWidth="110"/>
+
+            </columns>
+
+        </TableView>
+
+        <!-- MENSAJE DE ERROR: oculto hasta que el controlador lo muestra -->
+        <Label fx:id="mensajeEstado"
+               text=""
+               visible="false"
+               managed="false"
+               wrapText="true"
+               styleClass="mensaje-error"/>
+
+    </VBox>
+
+</VBox>

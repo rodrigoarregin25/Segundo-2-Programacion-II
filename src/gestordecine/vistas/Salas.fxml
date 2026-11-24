@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+
+<!--
+    Pantalla de administración de salas (solo para administradores): a la
+    izquierda, la tabla con las salas y su filtro por estado; a la derecha, el
+    plano de butacas de la sala seleccionada.
+    La controla SalasController.
+-->
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="gestordecine.controladores.SalasController"
+      spacing="25"
+      styleClass="contenido-principal">
+
+    <!-- ENCABEZADO PRINCIPAL -->
+    <VBox spacing="10">
+
+        <!-- PRIMERA FILA: INFORMACIÓN Y VOLVER -->
+        <HBox alignment="CENTER_LEFT" spacing="20">
+
+            <VBox spacing="8">
+
+                <Label text="Administración de salas"
+                       styleClass="titulo-pagina"/>
+
+                <Label text="Gestioná las salas y su distribución de butacas"
+                       styleClass="subtitulo-pagina"/>
+
+            </VBox>
+
+            <!-- Espacio flexible: empuja el botón Volver hacia la derecha -->
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Button text="← Volver"
+                    prefWidth="150"
+                    prefHeight="40"
+                    styleClass="boton-secundario"
+                    onAction="#volver"/>
+
+        </HBox>
+
+        <!-- SEGUNDA FILA: ACCIONES -->
+        <HBox alignment="CENTER_RIGHT" spacing="12">
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Button text="Editar sala"
+                    prefWidth="145"
+                    minWidth="145"
+                    prefHeight="45"
+                    styleClass="boton-secundario"
+                    onAction="#editarSala"/>
+
+            <!-- El controlador cambia su texto según la sala seleccionada
+                 (Desactivar o Restaurar) -->
+            <Button fx:id="botonEstado"
+                    text="Desactivar sala"
+                    prefWidth="160"
+                    minWidth="160"
+                    prefHeight="45"
+                    styleClass="boton-peligro"
+                    onAction="#cambiarEstadoSala"/>
+
+            <Button text="+ Nueva sala"
+                    prefWidth="175"
+                    minWidth="175"
+                    prefHeight="45"
+                    styleClass="boton-primario"
+                    onAction="#nuevaSala"/>
+
+        </HBox>
+
+    </VBox>
+
+    <!-- MENSAJE DE ERROR: oculto hasta que el controlador lo muestra -->
+    <Label fx:id="mensajeError"
+           text=""
+           visible="false"
+           managed="false"
+           wrapText="true"
+           styleClass="mensaje-error"/>
+
+    <!-- CONTENIDO PRINCIPAL: dos tarjetas lado a lado -->
+    <HBox spacing="20" VBox.vgrow="ALWAYS">
+
+        <!-- LISTADO DE SALAS -->
+        <VBox spacing="15"
+              prefWidth="420"
+              minWidth="420"
+              styleClass="tarjeta-contenido">
+
+            <!-- TÍTULO Y FILTRO: Activas, Inactivas o Todas -->
+            <HBox alignment="CENTER_LEFT" spacing="8">
+
+                <Label text="Salas registradas"
+                       styleClass="titulo-seccion"/>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <Label text="Estado:"
+                       styleClass="subtitulo-pagina"/>
+
+                <ComboBox fx:id="filtroEstado"
+                          prefWidth="110"
+                          minWidth="110"
+                          styleClass="filtro-estado"/>
+
+            </HBox>
+
+            <!-- TABLA: las columnas se completan desde SalasController -->
+            <TableView fx:id="tablaSalas"
+                       VBox.vgrow="ALWAYS"
+                       styleClass="tabla-peliculas, tabla-admin-salas">
+
+                <columns>
+
+                    <TableColumn fx:id="columnaEstado"
+                                 text="Estado"
+                                 minWidth="65"
+                                 prefWidth="65"/>
+
+                    <TableColumn fx:id="columnaNombre"
+                                 text="Nombre"
+                                 minWidth="150"
+                                 prefWidth="185"/>
+
+                    <TableColumn fx:id="columnaCapacidad"
+                                 text="Capacidad"
+                                 minWidth="95"
+                                 prefWidth="110"/>
+
+                </columns>
+
+            </TableView>
+
+        </VBox>
+
+        <!-- DISTRIBUCIÓN DE BUTACAS -->
+        <!-- Al elegir una sala en la tabla, mostrarDistribucion dibuja acá
+             su plano de butacas -->
+        <VBox spacing="20"
+              HBox.hgrow="ALWAYS"
+              styleClass="tarjeta-contenido">
+
+            <Label text="Distribución de butacas"
+                   styleClass="titulo-seccion"/>
+
+            <Label fx:id="nombreSalaSeleccionada"
+                   text="Seleccioná una sala para ver su distribución"
+                   styleClass="subtitulo-pagina"/>
+
+            <VBox fx:id="contenedorButacas"
+                  alignment="TOP_CENTER"
+                  spacing="12"
+                  VBox.vgrow="ALWAYS"/>
+
+            <Label fx:id="cantidadButacas"
+                   text=""
+                   styleClass="subtitulo-pagina"/>
+
+        </VBox>
+
+    </HBox>
+
+</VBox>

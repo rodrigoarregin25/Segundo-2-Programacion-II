@@ -1,0 +1,1008 @@
+
+
+.ventana-principal {
+    -fx-background-color: #0D111B;
+}
+
+.menu-lateral {
+    -fx-background-color: #111B2B;
+    -fx-padding: 30 18 30 18;
+}
+
+/* =========================================
+   MENÚ LATERAL CINEMA
+   ========================================= */
+
+/* BOTONES DE NAVEGACIÓN */
+
+.boton-menu {
+    -fx-background-color: #1A2A40;
+    -fx-text-fill: #CBD5E1;
+    -fx-font-size: 14px;
+    -fx-font-weight: normal;
+
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 12 18 12 24;
+    -fx-content-display: LEFT;
+    -fx-graphic-text-gap: 10;
+
+    -fx-background-radius: 9;
+    -fx-border-color: #293B53;
+    -fx-border-width: 1;
+    -fx-border-radius: 9;
+
+    -fx-max-width: Infinity;
+    -fx-min-height: 44px;
+    -fx-pref-height: 44px;
+
+    -fx-cursor: hand;
+}
+
+/* EFECTO AL PASAR EL MOUSE */
+
+.boton-menu:hover {
+    -fx-background-color: #263C58;
+    -fx-border-color: #41658B;
+    -fx-text-fill: #FFFFFF;
+}
+
+/* EFECTO AL PRESIONAR */
+
+.boton-menu:pressed {
+    -fx-background-color: #174A75;
+    -fx-text-fill: #FFFFFF;
+}
+
+/* =========================================
+   LOGO Y ENCABEZADO
+   ========================================= */
+
+.encabezado-menu-cinema {
+    -fx-padding: 0 0 24 0;
+    -fx-alignment: CENTER;
+}
+
+.logo-cine {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 27px;
+    -fx-font-weight: bold;
+    -fx-padding: 0;
+}
+
+.contenedor-logo-cinema {
+    -fx-background-color: #192D46;
+    -fx-background-radius: 14;
+    -fx-border-color: #304765;
+    -fx-border-radius: 14;
+    -fx-border-width: 1;
+}
+
+.subtitulo-logo-cinema {
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+}
+
+/* =========================================
+   PANEL DE SESIÓN
+   ========================================= */
+
+.panel-sesion-cinema {
+    -fx-border-color: #334155 transparent transparent transparent;
+    -fx-border-width: 1 0 0 0;
+    -fx-padding: 16 0 0 0;
+}
+
+.nombre-sesion-cinema {
+    -fx-text-fill: #CBD5E1;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+
+    /* Mismo margen horizontal que los botones */
+    -fx-padding: 8 18 8 18;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.contenido-principal {
+    -fx-padding: 40;
+}
+
+.titulo-pagina {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+}
+
+.subtitulo-pagina {
+    -fx-text-fill: #8998AE;
+    -fx-font-size: 15px;
+}
+
+.boton-primario {
+    -fx-background-color: #2389F5;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 12px 20px;
+    -fx-background-radius: 10px;
+    -fx-cursor: hand;
+}
+
+.boton-primario:hover {
+    -fx-background-color: #45A0FF;
+}
+
+.tarjeta-contenido {
+    -fx-background-color: #151F30;
+    -fx-background-radius: 14px;
+    -fx-padding: 25px;
+}
+
+.titulo-seccion {
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+
+
+/* TABLA DE PELICULAS */
+
+.tabla-peliculas {
+    -fx-background-color: #151F30;
+    -fx-control-inner-background: #151F30;
+    -fx-border-color: #2B3A50;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 1;
+}
+
+.tabla-peliculas .column-header-background {
+    -fx-background-color: #1E3048;
+}
+
+.tabla-peliculas .column-header,
+.tabla-peliculas .filler {
+    -fx-background-color: transparent;
+    -fx-size: 46px;
+    -fx-border-color: transparent;
+}
+
+.tabla-peliculas .column-header .label {
+    -fx-text-fill: #AFC4DA;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.tabla-peliculas .table-row-cell {
+    -fx-background-color: #151F30;
+    -fx-border-color: transparent transparent #243247 transparent;
+    -fx-cell-size: 50px;
+}
+
+.tabla-peliculas .table-row-cell:odd {
+    -fx-background-color: #192538;
+}
+
+.tabla-peliculas .table-row-cell:hover {
+    -fx-background-color: #263C58;
+}
+
+.tabla-peliculas .table-row-cell:selected {
+    -fx-background-color: #174A75;
+}
+
+.tabla-peliculas .table-cell {
+    -fx-text-fill: #E4EDF8;
+    -fx-font-size: 14px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 14;
+    -fx-border-color: transparent;
+}
+
+.tabla-peliculas .placeholder .label {
+    -fx-text-fill: #8FA4BC;
+}
+
+.tabla-peliculas:focused {
+    -fx-background-insets: 0;
+}
+
+.tabla-peliculas .scroll-bar {
+    -fx-background-color: #151F30;
+}
+
+.tabla-peliculas .scroll-bar .thumb {
+    -fx-background-color: #354B66;
+    -fx-background-radius: 8;
+}
+
+/* FORMULARIOS */
+
+.etiqueta-formulario {
+    -fx-text-fill: #DCE6F3;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.campo-formulario {
+    -fx-background-color: #0D1625;
+    -fx-text-fill: #FFFFFF;
+    -fx-prompt-text-fill: #71849D;
+    -fx-border-color: #30415A;
+    -fx-border-width: 1;
+    -fx-border-radius: 9;
+    -fx-background-radius: 9;
+    -fx-padding: 13 15;
+    -fx-font-size: 14px;
+}
+
+.campo-formulario:focused {
+    -fx-border-color: #2389F5;
+    -fx-border-width: 2;
+}
+
+.boton-secundario {
+    -fx-background-color: #26364C;
+    -fx-text-fill: #DCE6F3;
+    -fx-font-size: 14px;
+    -fx-padding: 12 22;
+    -fx-background-radius: 9;
+    -fx-cursor: hand;
+}
+
+.boton-secundario:hover {
+    -fx-background-color: #354B66;
+}
+
+.mensaje-error {
+    -fx-text-fill: #FF7B85;
+    -fx-font-size: 13px;
+}
+
+.boton-peligro {
+    -fx-background-color: #773044;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14px;
+    -fx-padding: 12 22;
+    -fx-background-radius: 9;
+    -fx-cursor: hand;
+}
+
+.boton-peligro:hover {
+    -fx-background-color: #A33D55;
+}
+
+.scroll-formulario {
+    -fx-background-color: transparent;
+    -fx-background: #0D111B;
+    -fx-border-color: transparent;
+}
+
+.scroll-formulario > .viewport {
+    -fx-background-color: #0D111B;
+}
+
+
+/* =====================================
+   FORMULARIO DE PELICULAS - COMPACTO
+   ===================================== */
+
+.contenido-formulario-compacto {
+    -fx-padding: 25 35 35 35;
+    -fx-spacing: 18;
+    -fx-alignment: TOP_CENTER;
+}
+
+.tarjeta-formulario-compacto {
+    -fx-background-color: #151F30;
+    -fx-background-radius: 14;
+    -fx-padding: 24;
+    -fx-spacing: 15;
+    -fx-max-width: 850;
+}
+
+.tarjeta-formulario-compacto .titulo-seccion {
+    -fx-font-size: 17px;
+}
+
+.tarjeta-formulario-compacto .etiqueta-formulario {
+    -fx-font-size: 12px;
+}
+
+.tarjeta-formulario-compacto .campo-formulario {
+    -fx-padding: 9 12;
+    -fx-font-size: 13px;
+}
+
+/* SCROLL OSCURO */
+
+.scroll-formulario {
+    -fx-background-color: #0D111B;
+    -fx-background: #0D111B;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+.scroll-formulario > .viewport {
+    -fx-background-color: #0D111B;
+}
+
+.scroll-formulario .scroll-bar:vertical {
+    -fx-background-color: #0D111B;
+}
+
+.scroll-formulario .scroll-bar:vertical .thumb {
+    -fx-background-color: #354B66;
+    -fx-background-radius: 8;
+}
+
+/* SINOPSIS - TEXTAREA */
+
+.campo-formulario.text-area {
+    -fx-background-color: #0D1625;
+    -fx-control-inner-background: #0D1625;
+    -fx-text-fill: #FFFFFF;
+    -fx-prompt-text-fill: #71849D;
+    -fx-border-color: #30415A;
+    -fx-border-radius: 9;
+    -fx-background-radius: 9;
+}
+
+.campo-formulario.text-area .scroll-pane {
+    -fx-background-color: #0D1625;
+}
+
+.campo-formulario.text-area .scroll-pane .viewport {
+    -fx-background-color: #0D1625;
+}
+
+.campo-formulario.text-area .content {
+    -fx-background-color: #0D1625;
+}
+
+.campo-formulario.text-area .text {
+    -fx-fill: #FFFFFF;
+}
+
+.campo-formulario.text-area:focused {
+    -fx-border-color: #2389F5;
+}
+
+/* INDICADORES DE ESTADO */
+
+.tabla-peliculas .table-cell.estado-activo {
+    -fx-text-fill: #22C55E;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.tabla-peliculas .table-cell.estado-inactivo {
+    -fx-text-fill: #EF4444;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+
+/* ADMINISTRACION DE SALAS */
+
+.lista-salas {
+    -fx-background-color: #0D1625;
+    -fx-control-inner-background: #0D1625;
+    -fx-border-color: #30415A;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+.lista-salas .list-cell {
+    -fx-background-color: #0D1625;
+    -fx-text-fill: #DCE6F3;
+    -fx-font-size: 14px;
+    -fx-padding: 15;
+}
+
+.lista-salas .list-cell:filled:hover {
+    -fx-background-color: #263C58;
+}
+
+.lista-salas .list-cell:filled:selected {
+    -fx-background-color: #174A75;
+    -fx-text-fill: #FFFFFF;
+}
+
+.lista-salas .list-cell:empty {
+    -fx-background-color: transparent;
+}
+
+/* REPRESENTACION DE BUTACAS */
+
+.butaca-visual {
+    -fx-background-color: #28618D;
+    -fx-background-radius: 5;
+    -fx-min-width: 28;
+    -fx-min-height: 28;
+    -fx-pref-width: 28;
+    -fx-pref-height: 28;
+}
+
+.butaca-visual:hover {
+    -fx-background-color: #3987BF;
+}
+
+.pantalla-cine {
+    -fx-background-color: #426B91;
+    -fx-background-radius: 12;
+    -fx-pref-height: 8;
+    -fx-max-height: 8;
+}
+
+/* PLANO DE SALAS */
+
+.texto-pantalla {
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 12px;
+    -fx-padding: 0 0 20 0;
+}
+
+.etiqueta-fila {
+    -fx-text-fill: #AFC4DA;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-min-width: 25px;
+    -fx-alignment: CENTER;
+}
+
+.butaca-visual {
+    -fx-background-color: #28618D;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 10px;
+    -fx-background-radius: 5;
+    -fx-min-width: 28px;
+    -fx-min-height: 28px;
+    -fx-pref-width: 28px;
+    -fx-pref-height: 28px;
+    -fx-alignment: CENTER;
+}
+
+.texto-pantalla {
+    -fx-text-fill: #C7CFDB;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.barra-pantalla {
+    -fx-background-color: linear-gradient(to right, #1A5E94, #39A8FF, #1A5E94);
+    -fx-background-radius: 999;
+    -fx-effect: dropshadow(gaussian, rgba(57,168,255,0.35), 14, 0.2, 0, 0);
+}
+
+.encabezado-lista-salas {
+    -fx-padding: 0 0 0 16;
+}
+
+.encabezado-lista-salas .label {
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 13px;
+}
+
+/* CARTELERA */
+
+.scroll-cartelera,
+.scroll-cartelera > .viewport {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+.contenedor-cartelera {
+    -fx-padding: 10 0 20 0;
+}
+
+.tarjeta-pelicula {
+    -fx-background-color: #151F30;
+    -fx-background-radius: 12;
+    -fx-padding: 12;
+    -fx-spacing: 8;
+
+    -fx-pref-width: 224;
+    -fx-min-width: 224;
+    -fx-max-width: 224;
+
+    -fx-pref-height: 440;
+    -fx-min-height: 440;
+    -fx-max-height: 440;
+}
+
+.titulo-tarjeta-pelicula {
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+.info-tarjeta-pelicula {
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 12px;
+}
+
+.puntuacion-pelicula {
+    -fx-text-fill: #FBBF24;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.tarjeta-pelicula {
+    -fx-cursor: hand;
+}
+
+.tarjeta-pelicula:hover {
+    -fx-background-color: #1E2E46;
+}
+
+/* FILTROS DE CARTELERA */
+
+.filtros-cartelera {
+    -fx-padding: 5 0 5 0;
+}
+
+.campo-busqueda-cartelera {
+    -fx-background-color: #151F30;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #94A3B8;
+    -fx-border-color: #30415A;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 10;
+}
+
+.campo-busqueda-cartelera:focused {
+    -fx-border-color: #2389F5;
+}
+
+.contenedor-generos {
+    -fx-padding: 4 0 4 0;
+}
+
+.chip-genero {
+    -fx-background-color: #0D1625;
+    -fx-text-fill: #DCE6F3;
+    -fx-border-color: #30415A;
+    -fx-border-radius: 18;
+    -fx-background-radius: 18;
+    -fx-padding: 8 16;
+    -fx-font-size: 13px;
+    -fx-cursor: hand;
+}
+
+.chip-genero:hover {
+    -fx-background-color: #1A2740;
+    -fx-border-color: #3C5A7A;
+}
+
+.chip-genero:selected {
+    -fx-background-color: #2389F5;
+    -fx-text-fill: white;
+    -fx-border-color: #2389F5;
+}
+
+.tarjeta-funcion {
+    -fx-background-color: #0D1625;
+    -fx-background-radius: 8;
+    -fx-padding: 15;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.tarjeta-funcion .label {
+    -fx-text-fill: #CBD5E1;
+}
+
+/* FECHAS DE FUNCIONES */
+
+.boton-fecha {
+    -fx-background-color: #0D1625;
+    -fx-border-color: #30415A;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+
+    -fx-alignment: CENTER;
+    -fx-text-alignment: CENTER;
+
+    -fx-min-width: 75;
+    -fx-pref-width: 75;
+    -fx-min-height: 75;
+    -fx-pref-height: 75;
+
+    -fx-cursor: hand;
+}
+
+.boton-fecha:hover {
+    -fx-border-color: #2389F5;
+    -fx-background-color: #1E2E46;
+}
+
+.tarjeta-horario {
+    -fx-background-color: #0D1625;
+    -fx-background-radius: 10;
+    -fx-border-color: #30415A;
+    -fx-border-radius: 10;
+    -fx-padding: 15;
+    -fx-pref-width: 180;
+    -fx-min-width: 180;
+    -fx-alignment: CENTER;
+    -fx-cursor: hand;
+}
+
+.tarjeta-horario:hover {
+    -fx-background-color: #1E2E46;
+    -fx-border-color: #2389F5;
+}
+
+.hora-funcion {
+    -fx-text-fill: white;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+.detalle-horario {
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 12px;
+}
+
+.precio-horario {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+/* =========================
+   COMBOBOX / FILTROS OSCUROS
+   ========================= */
+
+.combo-box {
+    -fx-background-color: #0B1730;
+    -fx-border-color: #2A4B7C;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 2;
+}
+
+.combo-box .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+}
+
+.combo-box .arrow-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0 8 8 0;
+}
+
+.combo-box .arrow {
+    -fx-background-color: #9FB3D9;
+}
+
+.combo-box:hover {
+    -fx-border-color: #3A8DFF;
+}
+
+.combo-box:focused {
+    -fx-border-color: #3A8DFF;
+    -fx-effect: dropshadow(gaussian, rgba(58,141,255,0.25), 8, 0.2, 0, 0);
+}
+
+/* desplegable */
+.combo-box-popup .list-view {
+    -fx-background-color: #12213D;
+    -fx-border-color: #2A4B7C;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+}
+
+.combo-box-popup .list-cell {
+    -fx-background-color: #12213D;
+    -fx-text-fill: white;
+    -fx-padding: 8 10;
+}
+
+.combo-box-popup .list-cell:hover {
+    -fx-background-color: #1E3A5F;
+}
+
+.combo-box-popup .list-cell:selected {
+    -fx-background-color: #2F80ED;
+    -fx-text-fill: white;
+}
+
+/* VENTANA DE ALERTA CINEMA */
+
+.alerta-cinema {
+    -fx-background-color: #111827;
+    -fx-border-color: #334155;
+    -fx-border-width: 1;
+}
+
+.alerta-cinema .header-panel {
+    -fx-background-color: #162238;
+    -fx-padding: 20;
+}
+
+.alerta-cinema .header-panel .label {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+}
+
+.alerta-cinema .content {
+    -fx-background-color: #111827;
+    -fx-padding: 20;
+}
+
+.alerta-cinema .content.label {
+    -fx-text-fill: #CBD5E1;
+    -fx-font-size: 13px;
+}
+
+.alerta-cinema .button-bar {
+    -fx-background-color: #111827;
+    -fx-padding: 10 20 20 20;
+}
+
+.boton-alerta-cinema {
+    -fx-background-color: #2563EB;
+    -fx-text-fill: white;
+    -fx-background-radius: 7;
+    -fx-padding: 9 22;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.boton-alerta-cinema:hover {
+    -fx-background-color: #3B82F6;
+}
+
+/* INGRESAR / REGISTRARSE */
+
+.acceso-cinema .text-field,
+.acceso-cinema .password-field {
+    -fx-background-color: #0D1728;
+    -fx-text-fill: #FFFFFF;
+    -fx-prompt-text-fill: #64748B;
+    -fx-border-color: #334155;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 10 12;
+}
+
+.acceso-cinema .text-field:focused,
+.acceso-cinema .password-field:focused {
+    -fx-border-color: #3B82F6;
+    -fx-border-width: 1.5;
+}
+
+/* BOTONES DE ENCABEZADO UNIFICADOS */
+
+.boton-encabezado-editar {
+    -fx-pref-width: 145px;
+    -fx-min-width: 145px;
+    -fx-max-width: 145px;
+    -fx-pref-height: 45px;
+    -fx-min-height: 45px;
+}
+
+.boton-encabezado-desactivar {
+    -fx-pref-width: 160px;
+    -fx-min-width: 160px;
+    -fx-max-width: 160px;
+    -fx-pref-height: 45px;
+    -fx-min-height: 45px;
+}
+
+.boton-encabezado-nuevo {
+    -fx-pref-width: 150px;
+    -fx-min-width: 150px;
+    -fx-max-width: 150px;
+    -fx-pref-height: 45px;
+    -fx-min-height: 45px;
+}
+
+/* CAMPOS DE TEXTO - ESTILO CINEMA */
+
+.text-field,
+.password-field {
+    -fx-background-color: #151F30;
+    -fx-text-fill: #FFFFFF;
+    -fx-prompt-text-fill: #94A3B8;
+
+    -fx-border-color: #334B6E;
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+
+    -fx-padding: 10 12;
+}
+
+.text-field:focused,
+.password-field:focused {
+    -fx-border-color: #3B82F6;
+    -fx-border-width: 1.5;
+}
+
+/* CAMPOS DE ESCRITURA - CINEMA */
+
+.campo-cinema {
+    -fx-background-color: #151F30;
+    -fx-text-fill: #FFFFFF;
+    -fx-prompt-text-fill: #94A3B8;
+
+    -fx-border-color: #334155;
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+
+    -fx-font-size: 13px;
+    -fx-padding: 10 12;
+}
+
+.campo-cinema:focused {
+    -fx-border-color: #3B82F6;
+    -fx-background-color: #151F30;
+}
+
+
+/* FILTROS UNIFICADOS DE CARTELERA */
+
+.filtro-cartelera-unificado,
+.boton-limpiar-unificado {
+    -fx-background-color: #101827;
+    -fx-border-color: #294A80;
+    -fx-border-width: 1;
+    -fx-border-radius: 7;
+    -fx-background-radius: 7;
+    -fx-min-height: 40px;
+    -fx-pref-height: 40px;
+    -fx-max-height: 40px;
+}
+
+/* BUSCADOR */
+
+.text-field.filtro-cartelera-unificado {
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #94A3B8;
+    -fx-padding: 0 12px;
+}
+
+/* GENERO */
+
+.combo-box.filtro-cartelera-unificado {
+    -fx-padding: 0;
+}
+
+.combo-box.filtro-cartelera-unificado .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-padding: 0 12px;
+}
+
+.combo-box.filtro-cartelera-unificado .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.combo-box.filtro-cartelera-unificado .arrow {
+    -fx-background-color: #CBD5E1;
+}
+
+/* FECHA */
+
+.date-picker.filtro-cartelera-unificado {
+    -fx-padding: 0;
+}
+
+.date-picker.filtro-cartelera-unificado .text-field {
+    -fx-background-color: transparent;
+    -fx-control-inner-background: transparent;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #94A3B8;
+    -fx-border-color: transparent;
+    -fx-padding: 0 12px;
+}
+
+.date-picker.filtro-cartelera-unificado .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.date-picker.filtro-cartelera-unificado .arrow {
+    -fx-background-color: #CBD5E1;
+}
+
+/* PAPELERA */
+
+.boton-limpiar-unificado {
+    -fx-padding: 0;
+    -fx-alignment: CENTER;
+    -fx-content-display: GRAPHIC_ONLY;
+    -fx-cursor: hand;
+}
+
+.boton-limpiar-unificado:hover {
+    -fx-background-color: #1D3554;
+}
+
+/* Encabezados de tablas administrativas */
+.tabla-peliculas .column-header .label {
+    -fx-alignment: CENTER_LEFT;
+}
+
+/* Columnas con encabezado centrado */
+.tabla-peliculas .column-header:focused .label {
+    -fx-alignment: CENTER_LEFT;
+}
+
+/* RESERVAS: encabezados y datos alineados exactamente igual */
+
+.tabla-reservas .column-header .label {
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 8 0 8;
+}
+
+.tabla-reservas .table-cell {
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 8 0 8;
+}
+
+/* =========================================
+   ADMINISTRACIÓN DE PELÍCULAS
+   ========================================= */
+
+/* Encabezados y celdas con la misma alineación y margen */
+.tabla-admin-peliculas .column-header .label,
+.tabla-admin-peliculas .table-cell {
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 8 0 12;
+}
+
+/* =========================================
+   ADMINISTRACIÓN DE SALAS
+   ========================================= */
+
+/* Encabezados y datos alineados a la izquierda */
+.tabla-admin-salas .column-header .label,
+.tabla-admin-salas .table-cell {
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 8 0 12;
+}
+
+/* =========================================
+   ADMINISTRACIÓN DE FUNCIONES
+   ========================================= */
+
+/* Encabezados y datos con idéntica alineación */
+.tabla-admin-funciones .column-header .label,
+.tabla-admin-funciones .table-cell {
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 8 0 12;
+}
+
+/* Fecha en filtros de administración de funciones */
+.tabla-admin-funciones .date-picker .text-field {
+    -fx-text-fill: #FFFFFF;
+}
+
+/* Fecha en los filtros de funciones */
+.fecha-funciones .text-field {
+    -fx-text-fill: #FFFFFF;
+    -fx-prompt-text-fill: #FFFFFF;
+}
+
+/* =========================================
+   ADMINISTRACIÓN DE USUARIOS
+   ========================================= */
+
+/* Encabezados y datos alineados a la izquierda */
+.tabla-admin-usuarios .column-header .label,
+.tabla-admin-usuarios .table-cell {
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 8 0 12;
+}
