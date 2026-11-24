@@ -17,7 +17,7 @@ Trabajo Final de Programación II · Tecnicatura Universitaria en Programación
 Ing. Daniel Benítez · Cristian Corsaro
 
 **Alumnos**<br>
-Jimena Díaz · Rodrigo Arregin
+Gimena Díaz · Rodrigo Arregin
 
 <br>
 
