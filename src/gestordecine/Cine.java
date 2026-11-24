@@ -584,7 +584,7 @@ public class Cine implements Serializable {
             boolean funcionPendiente
                     = funcion.getFechaHoraFin().isAfter(LocalDateTime.now());
 
-            if (mismaPelicula && funcionPendiente) {
+            if (mismaPelicula && funcion.isActiva() && funcionPendiente) {
                 throw new IllegalStateException(
                         "No se puede desactivar la película porque tiene "
                         + "funciones pendientes o en curso."
