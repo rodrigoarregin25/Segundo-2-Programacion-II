@@ -22,8 +22,6 @@ import gestordecine.misreservas.MisReservasController;
 import gestordecine.sesion.AccesoController;
 import gestordecine.sesion.SesionCliente;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -40,12 +38,16 @@ import gestordecine.usuarios.UsuariosController;
 import gestordecine.usuarios.FormularioUsuarioController;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
+import javafx.scene.Node;
+import javafx.scene.layout.StackPane;
+import javafx.scene.shape.SVGPath;
+import javafx.scene.shape.StrokeLineCap;
+import javafx.scene.shape.StrokeLineJoin;
 
 /**
- * Controlador de la ventana principal. Guarda el cine activo y se encarga de
- * la navegación: carga cada pantalla en el centro de la ventana, le pasa los
- * datos que necesita y controla qué opciones del menú ve cada usuario según
- * su rol.
+ * Controlador de la ventana principal. Guarda el cine activo y se encarga de la
+ * navegación: carga cada pantalla en el centro de la ventana, le pasa los datos
+ * que necesita y controla qué opciones del menú ve cada usuario según su rol.
  */
 public class PrincipalController {
 
@@ -97,20 +99,20 @@ public class PrincipalController {
     private Button botonCartelera;
 
     /**
-     * Se ejecuta sola cuando JavaFX termina de cargar la ventana. Le pone el
-     * ícono a cada botón del menú.
+     * Se ejecuta automáticamente al cargar la ventana principal. Asigna a cada
+     * botón su ícono correspondiente.
      */
     @FXML
     private void initialize() {
-        aplicarIcono(botonMisReservas);
-        aplicarIcono(botonReservas);
-        aplicarIcono(botonPeliculas);
-        aplicarIcono(botonSalas);
-        aplicarIcono(botonFunciones);
-        aplicarIcono(botonUsuarios);
-        aplicarIcono(botonIniciarSesion);
-        aplicarIcono(botonCerrarSesion);
-        aplicarIcono(botonCartelera);
+        aplicarIcono(botonCartelera, "Cartelera");
+        aplicarIcono(botonMisReservas, "Mis reservas");
+        aplicarIcono(botonReservas, "Reservas");
+        aplicarIcono(botonPeliculas, "Películas");
+        aplicarIcono(botonSalas, "Salas");
+        aplicarIcono(botonFunciones, "Funciones");
+        aplicarIcono(botonUsuarios, "Usuarios");
+        aplicarIcono(botonIniciarSesion, "Iniciar sesión");
+        aplicarIcono(botonCerrarSesion, "Cerrar sesión");
     }
 
     /**
@@ -576,9 +578,9 @@ public class PrincipalController {
     }
 
     /**
-     * Abre la pantalla de nueva reserva con una función ya elegida, por
-     * ejemplo cuando se llega desde el detalle de una película. Si no hay
-     * sesión iniciada, pide el acceso.
+     * Abre la pantalla de nueva reserva con una función ya elegida, por ejemplo
+     * cuando se llega desde el detalle de una película. Si no hay sesión
+     * iniciada, pide el acceso.
      *
      * @param funcion Función que se quiere reservar.
      */
@@ -932,28 +934,89 @@ public class PrincipalController {
     }
 
     /**
-     * Crea el ícono (una flechita azul) que llevan los botones del menú.
+     * Crea un ícono vectorial para cada sección del menú.
      *
-     * @return El Label con el ícono.
+     * Los íconos utilizan trazados SVG y un color azul uniforme para mantener
+     * la identidad visual de CINEMA.
+     *
+     * @param seccion Nombre de la sección del menú.
+     * @return Nodo con el ícono correspondiente.
      */
-    private Label crearIconoMenu() {
-        Label icono = new Label("▸");
-        icono.setStyle(
-                "-fx-text-fill: #60A5FA;"
-                + "-fx-font-size: 13px;"
-                + "-fx-font-weight: bold;"
-        );
-        return icono;
+    private Node crearIconoMenu(String seccion) {
+
+        String trazado = switch (seccion) {
+
+            case "Cartelera" ->
+                "M3 9h18v12H3z M3 9L2 4l19-2 1 5z "
+                + "M7 3l3 5 M14 2l3 5";
+
+            case "Reservas", "Mis reservas" ->
+                "M3 7h18v4a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4z "
+                + "M13 7v2 M13 12v2 M13 17v1";
+
+            case "Películas" ->
+                "M4 3h16v18H4z M8 3v18 M16 3v18 "
+                + "M4 8h4 M4 15h4 M16 8h4 M16 15h4";
+
+            case "Salas" ->
+                "M7 5v9h10V5 M5 10H3v7h18v-7h-2 "
+                + "M7 17v3 M17 17v3";
+
+            case "Funciones" ->
+                "M4 6h16v15H4z M4 10h16 "
+                + "M8 3v5 M16 3v5";
+
+            case "Usuarios" ->
+                "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 "
+                + "M9 11a4 4 0 1 0 0-8a4 4 0 0 0 0 8 "
+                + "M20 21v-2a4 4 0 0 0-3-3.87";
+
+            case "Iniciar sesión" ->
+                "M10 17l5-5-5-5 M15 12H3 "
+                + "M12 3h6a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3h-6";
+
+            case "Cerrar sesión" ->
+                "M9 17l5-5-5-5 M14 12H3 "
+                + "M12 3h6a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3h-6";
+
+            default ->
+                "M6 4l10 8-10 8";
+        };
+
+        SVGPath icono = new SVGPath();
+        icono.setContent(trazado);
+
+        // Color azul de CINEMA.
+        icono.setStroke(Color.web("#60A5FA"));
+        icono.setStrokeWidth(1.8);
+        icono.setFill(Color.TRANSPARENT);
+
+        // Trazos suaves y redondeados.
+        icono.setStrokeLineCap(StrokeLineCap.ROUND);
+        icono.setStrokeLineJoin(StrokeLineJoin.ROUND);
+
+        StackPane contenedor = new StackPane(icono);
+        contenedor.setMinSize(26, 26);
+        contenedor.setPrefSize(26, 26);
+        contenedor.setMaxSize(26, 26);
+
+        return contenedor;
     }
 
     /**
-     * Le pone el ícono del menú a un botón, si el botón existe.
+     * Asigna un ícono al botón indicado.
      *
-     * @param boton Botón al que se le quiere poner el ícono.
+     * @param boton Botón al que se le asignará el ícono.
+     * @param seccion Nombre de la sección del menú.
      */
-    private void aplicarIcono(Button boton) {
+    private void aplicarIcono(Button boton, String seccion) {
+
         if (boton != null) {
-            boton.setGraphic(crearIconoMenu());
+            boton.setGraphic(crearIconoMenu(seccion));
+            boton.setContentDisplay(
+                    javafx.scene.control.ContentDisplay.LEFT
+            );
+            boton.setGraphicTextGap(10);
         }
     }
 
