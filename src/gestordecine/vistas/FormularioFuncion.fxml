@@ -10,7 +10,7 @@
 
 <!--
     Formulario de funciones: sirve para programar una función nueva o para
-    editar el precio de una existente.
+    editar una existente.
     Lo controla FormularioFuncionController.
 -->
 <VBox xmlns:fx="http://javafx.com/fxml"

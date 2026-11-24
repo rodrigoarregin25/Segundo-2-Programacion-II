@@ -94,7 +94,7 @@ public class Reserva implements Serializable {
      */
     public void cancelar() {
         if (!confirmada) {
-            throw new IllegalArgumentException("Ya se encuentra cancelada la reserva");
+            throw new IllegalStateException("Ya se encuentra cancelada la reserva");
         }
         this.confirmada = false;
     }

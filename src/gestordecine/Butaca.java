@@ -10,8 +10,8 @@ public class Butaca implements Serializable {
     * Crea una butaca a partir de su fila y su numero. La fila se guarda siempre en mayúscula.
     * @param filaButaca letra de la fila, entre A Y Z
     * @param numeroButaca  Numero de la butaca dentro de la fila, mayor a cero.
-    * @throws IllegalArgumenException Si la fila no es una netra entre A y Z.
-    * @throws IllegalArgumenException Si el numero no es mayor a cero. 
+    * @throws IllegalArgumentException Si la fila no es una netra entre A y Z o si el
+    * numero no es mayor a cero.
     * 
     */
 

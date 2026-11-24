@@ -366,7 +366,7 @@ public class Cine implements Serializable {
                 return pelicula;
             }
         }
-
+        
         return null;
     }
 

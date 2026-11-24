@@ -196,7 +196,7 @@ public class Pelicula implements Serializable, Desactivable {
      *
      * @param anioEstreno año de estreno de la pelicula.
      *
-     * @throws Si el año es anterior a 1888 o supera en más de cinco años al año
+     * @throws IllegalArgumentException Si el año es anterior a 1888 o supera en más de cinco años al año
      * actual.
      */
     public void setAnioEstreno(int anioEstreno) {
